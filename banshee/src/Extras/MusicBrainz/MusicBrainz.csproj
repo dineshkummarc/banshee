@@ -1,0 +1,34 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{922F1199-FC80-4DF4-B999-BCAEEB8494C6}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputType>Library</OutputType>
+    <AssemblyName>MusicBrainz</AssemblyName>
+    <OutputPath>.\</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>
+    </DefineConstants>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include=".\Client.cs" />
+    <Compile Include=".\ClientVersion.cs" />
+    <Compile Include=".\Rdf.cs" />
+    <Compile Include=".\SimpleAlbum.cs" />
+    <Compile Include=".\SimpleArtist.cs" />
+    <Compile Include=".\SimpleDisc.cs" />
+    <Compile Include=".\SimpleQuery.cs" />
+    <Compile Include=".\SimpleTrack.cs" />
+    <Compile Include=".\Utilities.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

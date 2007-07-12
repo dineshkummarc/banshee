@@ -1,0 +1,193 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{7C20256C-80D1-4634-A451-ED4BEB2A506B}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputType>Exe</OutputType>
+    <AssemblyName>banshee</AssemblyName>
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>
+    </DefineConstants>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Banshee.Widgets\Banshee.Widgets.csproj">
+      <Project>{B89B7A12-9FC2-4337-8ED6-1F0A6873329C}</Project>
+      <Name>Banshee.Widgets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Banshee.Base\Banshee.Base.csproj">
+      <Project>{CD011A51-B1BA-414A-8BFD-CB36F4469856}</Project>
+      <Name>Banshee.Base</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Accessibility" />
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glade-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Data.SqliteClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Mono.Data.SqliteClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Mono.Posix.dll</HintPath>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral">
+      <HintPath>..\..\..\ext\dbus-sharp\NDesk.DBus.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="NDesk.DBus.GLib, Version=1.0.0.0, Culture=neutral">
+      <HintPath>..\..\..\ext\dbus-sharp\NDesk.DBus.GLib.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Hal, Version=0.0.0.0, Culture=neutral">
+      <HintPath>..\..\..\ext\hal-sharp\Hal.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include=".\Main.cs" />
+    <Compile Include=".\PlayerInterface.cs" />
+    <Compile Include=".\PlaylistModel.cs" />
+    <Compile Include=".\PlaylistView.cs" />
+    <Compile Include=".\StockIcons.cs" />
+    <Compile Include=".\TrackViewColumnWindow.cs" />
+    <Compile Include=".\Banshee.TrackView.Columns\AlbumColumn.cs" />
+    <Compile Include=".\Banshee.TrackView.Columns\ArtistColumn.cs" />
+    <Compile Include=".\Banshee.TrackView.Columns\GenreColumn.cs" />
+    <Compile Include=".\Banshee.TrackView.Columns\LastPlayedColumn.cs" />
+    <Compile Include=".\Banshee.TrackView.Columns\PlayCountColumn.cs" />
+    <Compile Include=".\Banshee.TrackView.Columns\RatingColumn.cs" />
+    <Compile Include=".\Banshee.TrackView.Columns\DurationColumn.cs" />
+    <Compile Include=".\Banshee.TrackView.Columns\TitleColumn.cs" />
+    <Compile Include=".\Banshee.TrackView.Columns\TrackNumberColumn.cs" />
+    <Compile Include=".\Banshee.TrackView.Columns\TrackViewColumn.cs" />
+    <Compile Include=".\Banshee.TrackView.Columns\YearColumn.cs" />
+    <Compile Include=".\Banshee.TrackView.Columns\UriColumn.cs" />
+    <Compile Include=".\Banshee.TrackView.Columns\DateAddedColumn.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\data\banshee.glade">
+      <LogicalName>banshee.glade</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\cd-action-burn-24.png">
+      <LogicalName>cd-action-burn-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\cd-action-burn-32.png">
+      <LogicalName>cd-action-burn-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\cd-action-burn-48.png">
+      <LogicalName>cd-action-burn-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\cd-action-rip-16.png">
+      <LogicalName>cd-action-rip-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\cd-action-rip-24.png">
+      <LogicalName>cd-action-rip-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\audio-volume-decrease.png">
+      <LogicalName>audio-volume-decrease.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\audio-volume-high.png">
+      <LogicalName>audio-volume-high.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\audio-volume-increase.png">
+      <LogicalName>audio-volume-increase.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\audio-volume-low.png">
+      <LogicalName>audio-volume-low.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\audio-volume-medium.png">
+      <LogicalName>audio-volume-medium.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\audio-volume-muted.png">
+      <LogicalName>audio-volume-muted.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\encode-action-24.png">
+      <LogicalName>encode-action-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\encoding-icon-32.png">
+      <LogicalName>encoding-icon-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\media-eject.png">
+      <LogicalName>media-eject.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\media-playback-pause.png">
+      <LogicalName>media-playback-pause.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\media-playback-start.png">
+      <LogicalName>media-playback-start.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\media-skip-backward.png">
+      <LogicalName>media-skip-backward.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\media-skip-forward.png">
+      <LogicalName>media-skip-forward.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\music-player-banshee.png">
+      <LogicalName>music-player-banshee.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\music-player-banshee-16.png">
+      <LogicalName>music-player-banshee-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\music-player-banshee-22.png">
+      <LogicalName>music-player-banshee-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\music-player-banshee-24.png">
+      <LogicalName>music-player-banshee-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\music-player-banshee-32.png">
+      <LogicalName>music-player-banshee-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\now-playing-arrow.png">
+      <LogicalName>now-playing-arrow.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\song-drm.png">
+      <LogicalName>song-drm.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\source-cd-audio.png">
+      <LogicalName>source-cd-audio.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\source-library.png">
+      <LogicalName>source-library.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\source-localqueue.png">
+      <LogicalName>source-localqueue.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\source-playlist.png">
+      <LogicalName>source-playlist.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\source-smart-playlist.png">
+      <LogicalName>source-smart-playlist.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\sync-needed.png">
+      <LogicalName>sync-needed.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\tray-icon.png">
+      <LogicalName>tray-icon.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\rating-rated.png">
+      <LogicalName>rating-rated.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\rating-unrated.png">
+      <LogicalName>rating-unrated.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\UIManagerLayout.xml">
+      <LogicalName>UIManagerLayout.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

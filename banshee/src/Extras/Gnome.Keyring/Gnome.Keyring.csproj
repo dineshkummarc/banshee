@@ -1,0 +1,44 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{1987647C-6330-49BC-BBAE-7DC4A614F8B1}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputType>Library</OutputType>
+    <AssemblyName>Gnome.Keyring</AssemblyName>
+    <OutputPath>.\</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>
+    </DefineConstants>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Mono.Posix.dll</HintPath>
+    </Reference>
+    <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include=".\AccessRights.cs" />
+    <Compile Include=".\AttributeType.cs" />
+    <Compile Include=".\GenericItemData.cs" />
+    <Compile Include=".\ItemACL.cs" />
+    <Compile Include=".\ItemData.cs" />
+    <Compile Include=".\ItemType.cs" />
+    <Compile Include=".\KeyringException.cs" />
+    <Compile Include=".\KeyringInfo.cs" />
+    <Compile Include=".\NetItemData.cs" />
+    <Compile Include=".\NoteItemData.cs" />
+    <Compile Include=".\Operation.cs" />
+    <Compile Include=".\RequestMessage.cs" />
+    <Compile Include=".\ResponseMessage.cs" />
+    <Compile Include=".\ResultCode.cs" />
+    <Compile Include=".\Ring.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

@@ -1,0 +1,82 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{A5C372AB-F37C-4449-A279-74050FC768C7}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputType>Library</OutputType>
+    <AssemblyName>Banshee.Plugins.Radio</AssemblyName>
+    <OutputPath>.\</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>
+    </DefineConstants>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gnome-vfs-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <HintPath>..\..\lib\Mono.Posix.dll</HintPath>
+    </Reference>
+    <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Banshee.Base\Banshee.Base.csproj">
+      <Project>{CD011A51-B1BA-414A-8BFD-CB36F4469856}</Project>
+      <Name>Banshee.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\Banshee.Widgets\Banshee.Widgets.csproj">
+      <Project>{B89B7A12-9FC2-4337-8ED6-1F0A6873329C}</Project>
+      <Name>Banshee.Widgets</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include=".\RadioPlugin.cs" />
+    <Compile Include=".\RadioSource.cs" />
+    <Compile Include=".\StationView.cs" />
+    <Compile Include=".\StationManager.cs" />
+    <Compile Include=".\StationModel.cs" />
+    <Compile Include=".\CellRendererStation.cs" />
+    <Compile Include=".\totem-plparser\CD.cs" />
+    <Compile Include=".\totem-plparser\EntryHandler.cs" />
+    <Compile Include=".\totem-plparser\Error.cs" />
+    <Compile Include=".\totem-plparser\IterFunc.cs" />
+    <Compile Include=".\totem-plparser\MediaType.cs" />
+    <Compile Include=".\totem-plparser\ObjectManager.cs" />
+    <Compile Include=".\totem-plparser\Parser.cs" />
+    <Compile Include=".\totem-plparser\PlaylistEndHandler.cs" />
+    <Compile Include=".\totem-plparser\PlaylistStartHandler.cs" />
+    <Compile Include=".\totem-plparser\Result.cs" />
+    <Compile Include=".\totem-plparser\TotemPlParserSharp.IterFuncNative.cs" />
+    <Compile Include=".\totem-plparser\Type.cs" />
+    <Compile Include=".\RadioTrackInfo.cs" />
+    <Compile Include=".\StationGroup.cs" />
+    <Compile Include=".\StationEditor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include=".\RadioActions.xml">
+      <LogicalName>RadioActions.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include=".\radio.png">
+      <LogicalName>radio.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include=".\source-radio.png">
+      <LogicalName>source-radio.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include=".\dialog-radio.png">
+      <LogicalName>dialog-radio.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

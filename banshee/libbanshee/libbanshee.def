@@ -1,0 +1,34 @@
+LIBRARY	"libbanshee"
+
+EXPORTS
+	gstreamer_initialize
+	gtksharp_cell_renderer_activatable_configure
+	banshee_dbus_compat_thread_init
+	
+	gst_tagger_new
+	gst_tagger_free
+	gst_tagger_process_uri_and_block
+	gst_tagger_set_tag_found_callback
+	gst_tagger_set_error_callback
+	gst_tagger_set_finished_callback
+	
+	gst_playback_new
+	gst_playback_free
+	gst_playback_set_eos_callback
+	gst_playback_set_error_callback
+	gst_playback_set_state_changed_callback
+	gst_playback_set_iterate_callback
+	gst_playback_set_buffering_callback
+	gst_playback_set_tag_found_callback
+	gst_playback_open
+	gst_playback_stop
+	gst_playback_pause
+	gst_playback_play
+	gst_playback_set_volume
+	gst_playback_get_volume
+	gst_playback_can_seek
+	gst_playback_set_position
+	gst_playback_get_position
+	gst_playback_get_duration
+	gst_playback_get_pipeline_elements
+	gst_playback_get_error_quarks

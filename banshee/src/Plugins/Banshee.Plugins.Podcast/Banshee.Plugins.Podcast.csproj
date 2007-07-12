@@ -1,0 +1,109 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{FF0D1E6C-4811-4E0F-8D2C-40932DD6EE20}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputType>Library</OutputType>
+    <AssemblyName>Banshee.Plugins.Podcast</AssemblyName>
+    <OutputPath>.\</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>
+    </DefineConstants>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Data.SqliteClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Mono.Data.SqliteClient.dll</HintPath>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <HintPath>..\..\lib\Mono.Posix.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Banshee.Widgets\Banshee.Widgets.csproj">
+      <Project>{B89B7A12-9FC2-4337-8ED6-1F0A6873329C}</Project>
+      <Name>Banshee.Widgets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\Banshee.Base\Banshee.Base.csproj">
+      <Project>{CD011A51-B1BA-414A-8BFD-CB36F4469856}</Project>
+      <Name>Banshee.Base</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include=".\FeedUtils.cs" />
+    <Compile Include=".\PodcastCore.cs" />
+    <Compile Include=".\PodcastDBManager.cs" />
+    <Compile Include=".\PodcastFeedFetcher.cs" />
+    <Compile Include=".\PodcastFeedInfo.cs" />
+    <Compile Include=".\PodcastInfo.cs" />
+    <Compile Include=".\PodcastLibrary.cs" />
+    <Compile Include=".\PodcastPlugin.cs" />
+    <Compile Include=".\StringUtils.cs" />
+    <Compile Include=".\DownloadCore\Delegates.cs" />
+    <Compile Include=".\DownloadCore\Dispatcher.cs" />
+    <Compile Include=".\DownloadCore\DownloadActiveEvent.cs" />
+    <Compile Include=".\DownloadCore\DownloadCore.cs" />
+    <Compile Include=".\DownloadCore\DownloadInfo.cs" />
+    <Compile Include=".\DownloadCore\DownloadQueue.cs" />
+    <Compile Include=".\DownloadCore\DownloadTask.cs" />
+    <Compile Include=".\DownloadCore\EventArgs.cs" />
+    <Compile Include=".\DownloadCore\HttpDownloadTask.cs" />
+    <Compile Include=".\DownloadCore\JumpTheGunOnDotNetTwo.cs" />
+    <Compile Include=".\DownloadCore\TransferStatusManager.cs" />
+    <Compile Include=".\DownloadCore\Utils.cs" />
+    <Compile Include=".\FeedParsers\PodcastFeedParser.cs" />
+    <Compile Include=".\FeedParsers\RssPodcastFeedParser.cs" />
+    <Compile Include=".\UI\PodcastFeedModel.cs" />
+    <Compile Include=".\UI\PodcastFeedPropertiesDialog.cs" />
+    <Compile Include=".\UI\PodcastFeedView.cs" />
+    <Compile Include=".\UI\PodcastPixbufs.cs" />
+    <Compile Include=".\UI\PodcastPlaylistModel.cs" />
+    <Compile Include=".\UI\PodcastPlaylistView.cs" />
+    <Compile Include=".\UI\PodcastPropertiesDialog.cs" />
+    <Compile Include=".\UI\PodcastSource.cs" />
+    <Compile Include=".\UI\PodcastSubscribeDialog.cs" />
+    <Compile Include=".\UI\SyncPreferenceComboBox.cs" />
+    <Compile Include=".\FeedParsers\RFC822DateTime.cs" />
+    <Compile Include=".\UI\PodcastErrorsSource.cs" />
+    <Compile Include=".\UI\ErrorsSource.cs" />
+    <Compile Include=".\PodcastCertificatePolicy.cs" />
+    <Compile Include=".\GConfSchemas.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include=".\data\PodcastMenu.xml">
+      <LogicalName>PodcastMenu.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include=".\data\images\document-save-as-16.png">
+      <LogicalName>document-save-as-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include=".\data\images\podcast-icon-16.png">
+      <LogicalName>podcast-icon-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include=".\data\images\podcast-icon-22.png">
+      <LogicalName>podcast-icon-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include=".\data\images\podcast-icon-48.png">
+      <LogicalName>podcast-icon-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include=".\data\images\banshee-new.png">
+      <LogicalName>banshee-new.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

@@ -1,0 +1,401 @@
+2007-07-11  Aaron Bockover  <abock@gnome.org> 
+
+	* Banshee.ThickClient/Banshee.Collection.Gui/ColumnCellAlbum.cs: Some
+	  placeholder code to render images in cairo and do hot things. Not
+	  working yet.
+	* Banshee.ThickClient/Banshee.ThickClient.mdp: Building using unsafe
+	* Hyena.Gui/Hyena.Data.Gui/ColumnHeaderCellText.cs: Draw a hot arrow in
+	  Cairo not GTK
+	* Hyena.Gui/Hyena.Data.Gui/ListView.cs: Simplified sorted header drawing
+	* Hyena.Gui/Hyena.Data.Gui/ListViewGraphics.cs: Draw the sorted header
+	  columns hot and sexy like
+
+2007-07-10  Aaron Bockover  <abock@gnome.org> 
+
+	* Hyena.Gui/Hyena.Data.Gui/ListView.cs: Compute contiguous selection
+	  rectangles; draw the contiguous rectangles instead of individual
+	  rectangles for each selected row
+	* Hyena.Gui/Hyena.Data.Gui/ListViewGraphics.cs: Implemented a
+	  DrawRowSelection method
+
+2007-07-10  Aaron Bockover  <abock@gnome.org> 
+
+	* Hyena.Gui/Hyena.Data.Gui/ListView.cs: Invalidate the windows using the new
+	  allocations that are managed properly; Fixed column text y offset
+	* Hyena.Gui/Hyena.Data.Gui/ListViewGraphics.cs: Use a 1px line width for the
+	  border that doesn't suck by using Translate(+0.5, +0.5)
+	* Banshee.ThickClient.Application/Banshee.ThickClient.Application/ApplicationEntry.cs:
+	  Show/Hide the headers conditionally
+	* Makefile: Added heap-buddy rule
+
+2007-07-05  Aaron Bockover  <abock@gnome.org> 
+
+	* NDesk.DBus/NDesk.DBus.GLib.dll, NDesk.DBus/NDesk.DBus.dll: Updated to
+	  0.5.2
+	* Banshee.ThickClient/Banshee.Collection.Gui/ColumnCellAlbum.cs,
+	  Hyena.Gui/Hyena.Data.Gui/ColumnHeaderCellText.cs,
+	  Hyena.Gui/Hyena.Data.Gui/ColumnCell.cs,
+	  Hyena.Gui/Hyena.Data.Gui/ColumnCellText.cs: Support a Cairo context; get
+	  rid of a pointless rectangle
+	* Hyena.Gui/Hyena.Data.Gui/CairoExtensions.cs: Added color manipulation
+	  utilities
+	* Hyena.Gui/Hyena.Data.Gui/ListView.cs: Redesigned the internal windowing to
+	  be much less confusing; manage allocations for all internal windows so
+	  calculations can be much less complex; refactored code layout; moved
+	  basic theme drawing operations out into ListViewGraphics
+	* Hyena.Gui/Hyena.Data.Gui/ListViewGraphics.cs: Implement all the basic
+	  themeing for the widget
+	* Banshee.Services/Banshee.ServiceStack/DBusServiceManager.cs: Fixed object
+	  path bug
+
+2007-06-28  Aaron Bockover <abock@gnome.org> 
+
+	* Banshee.ThickClient/Banshee.Collection.Gui/CompositeTrackListView.cs,
+	  Banshee.ThickClient/Banshee.Sources.Gui/SourceView.cs,
+	  Banshee.Services/Banshee.Services.mdp,
+	  Banshee.Services/Banshee.Sources/SourceManager.cs,
+	  Banshee.Services/Banshee.Sources/ITrackModelSource.cs,
+	  Banshee.Services/Banshee.Sources/Source.cs,
+	  Banshee.Services/Banshee.Library/LibrarySource.cs,
+	  Banshee.Services/Banshee.ServiceStack,
+	  Banshee.Services/Banshee.ServiceStack/Application.cs,
+	  Banshee.Services/Banshee.ServiceStack/GlobalServices.cs,
+	  Banshee.ThickClient.Application/Banshee.ThickClient.Application/Application.cs:
+	  Hot, we are serviceafied
+
+2007-06-28  Ruben Vermeersch  <ruben@savanne.be>
+
+	* Banshee.mds,
+	  NDesk.DBus/NDesk.DBus.mdp: Do something that looks like an import of
+	  NDesk.DBus.
+
+2007-06-28  Aaron Bockover  <abock@gnome.org> 
+
+	* Banshee.ThickClient/Banshee.ThickClient.mdp,
+	  Banshee.ThickClient/Banshee.Gui.DragDrop,
+	  Banshee.ThickClient/Banshee.Gui.DragDrop/DragDropUtilities.cs,
+	  Banshee.ThickClient/Banshee.Gui.DragDrop/DragDropList.cs,
+	  Banshee.ThickClient/Banshee.Gui.DragDrop/DragDropTarget.cs,
+	  Banshee.ThickClient/Banshee.Sources.Gui,
+	  Banshee.ThickClient/Banshee.Sources.Gui/SourceView.cs,
+	  Banshee.Services/Banshee.Playlist,
+	  Banshee.Services/Banshee.Playlist/PlaylistSource.cs,
+	  Banshee.Services/Banshee.Services.mdp,
+	  Banshee.Services/Banshee.Sources/Source.cs,
+	  Banshee.Services/Banshee.Library,
+	  Banshee.Services/Banshee.Library/LibrarySource.cs,
+	  Banshee.ThickClient.Application/Banshee.ThickClient.Application/Application.cs:
+	  Hastily porting things from old Banshee; Added a LibrarySource and the
+	  SourceView, a bit stripped down
+
+2007-06-28  Aaron Bockover  <abock@gnome.org> 
+
+	* Hyena/Hyena.Data/PropertyStore.cs: A general property store that needs to
+	  be optimized for value types
+	* Banshee.Services/Banshee.Sources/SourceManager.cs: Removed old bloat to
+	  work with the new slim Source class
+	* Banshee.Services/Banshee.Sources/Source.cs: Major clean up of API; use the
+	  new PropertyStore to house properties
+
+2007-06-28  Aaron Bockover  <abock@gnome.org> 
+
+	* Hyena/Hyena.Data/PropertyStore.cs: Will be a sweet store for properties
+	* Banshee.Services/Banshee.Sources/SourceManager.cs,
+	  Banshee.Services/Banshee.Sources/Source.cs,
+	  Banshee.Services/Banshee.Sources/ChildSource.cs: Initial migration of
+	  source management from old Banshee
+
+2007-06-28  Aaron Bockover <abock@gnome.org> 
+
+	* Banshee.ThickClient/TrackListView.cs,
+	  Banshee.ThickClient/ArtistListView.cs,
+	  Banshee.ThickClient/ColumnCellAlbum.cs,
+	  Banshee.ThickClient/CompositeTrackListView.cs,
+	  Banshee.ThickClient/Banshee.Collection.Gui,
+	  Banshee.ThickClient/Banshee.Collection.Gui/TrackListView.cs,
+	  Banshee.ThickClient/Banshee.Collection.Gui/ArtistListView.cs,
+	  Banshee.ThickClient/Banshee.Collection.Gui/CompositeTrackListView.cs,
+	  Banshee.ThickClient/Banshee.Collection.Gui/ColumnCellAlbum.cs,
+	  Banshee.ThickClient/Banshee.Collection.Gui/ArtworkManager.cs,
+	  Banshee.ThickClient/Banshee.Collection.Gui/AlbumListView.cs,
+	  Banshee.ThickClient/Banshee.ThickClient.mdp,
+	  Banshee.ThickClient/ArtworkManager.cs,
+	  Banshee.ThickClient/AlbumListView.cs,
+	  Banshee.ThickClient.Application/Banshee.ThickClient.Application.mdp,
+	  Banshee.ThickClient.Application/Application.cs,
+	  Banshee.ThickClient.Application/Banshee.ThickClient.Application/Application.cs,
+	  Banshee.ThickClient.Application/Banshee.ThickClient.Application:
+	  Ok, this does it, really
+
+2007-06-26  Gabriel Burt  <gabriel.burt@gmail.com>
+
+	* ListView/Banshee.Data.Gui/Selection.cs: Add raise bool to Clear method.
+
+	* ListView/Banshee.Data.Gui/ListView.cs: Pass false to Clear to avoid
+	raising Updated event twice when changing the selection.
+
+2007-06-27  Ruben Vermeersch  <ruben@savanne.be>
+
+	* ListView/Banshee/DatabaseFormatMigrator.cs: Fix importing, assign the
+	right AlbumID to a track, match by name and artist instead of only by
+	name.
+
+2007-06-26  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee/AlbumListDatabaseModel.cs: Fixed album browsing
+
+	* ListView/Banshee/ArtistListDatabaseModel.cs: Fixed an off by one
+
+2007-06-26  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Gui/Selection.cs: Added an Owner property
+
+	* ListView/Banshee.Data.Gui/ListView.cs: Set selection owner to self
+
+	* ListView/Banshee/AlbumListModel.cs: Added ArtistInfoFilter
+
+	* ListView/Banshee/CompositeTrackListView.cs: Generalize the browser 
+	selection code
+
+	* ListView/Banshee/TrackListModel.cs: Support album ID filters
+
+	* ListView/Banshee/ModelHelper.cs: A helper class with some static 
+	methods that makes doing some model chores easier
+
+	* ListView/Banshee/TrackListDatabaseModel.cs: Filter against album IDs as
+	well (from the browser)
+
+	* ListView/Banshee/AlbumListDatabaseModel.cs: Implement ArtistInfoFilter;
+	query construction isn't yet correct
+
+2007-06-26  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Gui/ColumnCell.cs: Allow binding the object itself
+	instead of just properties of the object
+
+	* ListView/Banshee.Data.Gui/ListView.cs: Allow subclasses to change the
+	row height
+
+	* ListView/Banshee/AlbumInfo.cs: Base class for album
+
+	* ListView/Banshee/AlbumListModel.cs: Base model for albums
+
+	* ListView/Banshee/CompositeTrackListView.cs: Change some dimensions
+
+	* ListView/Banshee/ColumnCellAlbum.cs: Cell renderer for the album browser
+
+	* ListView/Banshee/DatabaseFormatMigrator.cs: Album gets an ArtistID
+
+	* ListView/Banshee/ArtworkManager.cs: Class to manage a pixbuf cache of
+	cover art; provides ID methods
+
+	* ListView/Banshee/AlbumListView.cs: View for albums
+
+	* ListView/Banshee/LibraryAlbumInfo.cs: DB implementation of album
+
+	* ListView/Banshee/AlbumListDatabaseModel.cs: DB model for albums
+
+	* ListView/Banshee/Application.cs: Change the dimensions of the window
+
+	* ListView/Banshee.Data/ListItemSetup.cs: Allow applying the attribute
+	against a class as well
+
+2007-06-26  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Gui/Selection.cs: Added an AllSelected property
+
+	* ListView/Banshee/CompositeTrackListView.cs: Be efficient in the select
+	all case; properly select or unselect the 'All Artists' row depending
+	on the selection
+
+	* ListView/Banshee.Data.Gui/ListView.cs: Fixed Select/Unselect All
+
+	* ListView/Banshee/DatabaseFormatMigrator.cs: Added some indexes
+
+	* ListView/Banshee/BansheeDatabase.cs: Increase cache_size and fixed the
+	dbfile detection
+
+	* ListView/Banshee/ArtistListDatabaseModel.cs: Order by Name
+
+2007-06-25  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Gui/ListView.cs: Mark Model property as virtual
+
+	* ListView/Banshee/ArtistListView.cs: Override Model property so when
+	set, the first row (all artists) is selected automatically
+
+2007-06-25  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee/CompositeTrackListView.cs: If the fake select all
+	artist info is the only thing selected, clear the filter
+
+	* ListView/Banshee/TrackListDatabaseModel.cs: Reset the filter if is
+	explicitly set to null
+
+	* ListView/Banshee/ArtistListDatabaseModel.cs: Provide a fake 'select all'
+	artist info at index 0 
+
+2007-06-25  Aaron Bockover  <aaron@abock.org>
+
+	* ListView/Banshee.Data.Gui/ColumnCell.cs: Null check
+
+	* ListView/Banshee.Data.Gui/ListView.cs: Null checks, RulesHint, 
+	HeaderVisible
+
+	* ListView/Banshee.Data.Gui/Selection.cs: Eventful
+
+	* ListView/Banshee/AlbumInfo.cs:
+	* ListView/Banshee/ArtistInfo.cs: First class objects for artist and album
+
+	* ListView/Banshee/ArtistListModel.cs: Base list model for artist
+
+	* ListView/Banshee/ArtistListDatabaseModel.cs: Database implementation
+	of ArtistListModel
+
+	* ListView/Banshee/LibraryArtistInfo.cs: Database implementation of 
+	ArtistInfo
+
+	* ListView/Banshee/TrackListDatabaseModel.cs: Support filtering against
+	a list of ArtistIDs, supplementary to text filter
+
+	* ListView/Banshee/AlbumListView.cs:
+	* ListView/Banshee/ArtistListView.cs: Views for Artists and Albums
+
+	* ListView/Banshee/TrackListView.cs: Implement a default column controller
+
+	* ListView/Banshee/CompositeTrackListView.cs: A hybrid view/container for
+	showing artist/album browser and the track list view
+
+	* ListView/Banshee/Application.cs: Use all this new hotness
+
+2007-06-25  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee/DatabaseFormatMigrator.cs: Added more migration support;
+	completely new table schemas
+
+	* ListView/Banshee/LibraryTrackInfo.cs: Work with the new queries and 
+	table layouts
+
+	* ListView/Banshee/TrackListDatabaseModel.cs: Started migrating queries
+	to work against the new table schemas; not working currently
+
+2007-06-21  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Gui/Selection.cs: Added SelectRange, Contains
+
+	* ListView/Banshee.Data.Gui/ListView.cs: More selection support, added
+	keyboard events
+
+	* ListView/Banshee/Banshee.Collection/Album.cs: 
+	* ListView/Banshee/Banshee.Collection/Artist.cs: Stubbed out some new
+	first class objects
+
+	* ListView/Banshee/BansheeDatabase.cs: Use the DatabaseFormatMigrator
+
+	* ListView/Banshee/DatabaseFormatMigrator.cs: Define the new tables;
+	provide a tool for versioning table schema and migrating from one 
+	revision to another; migrate the old banshee tables to the new ones
+
+2007-06-15  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Gui/ListView.cs: Added focus row drawing
+
+2007-06-15  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Gui/Selection.cs: Added Clear()
+
+	* ListView/Banshee.Data.Gui/ListView.cs: Implemented proper selection
+	behavior (shift+control modifiers)
+
+2007-06-15  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Gui/Selection.cs: Stubbed/crapily implemented
+	a selection class
+
+	* ListView/Banshee.Data.Gui/ListView.cs: Support very basic toggle 
+	selections
+
+	* ListView/Banshee.Data.Query/SqlQueryGenerator.cs: Did some more crap,
+	not really sure. Am not happy with this generator and will start over.
+
+	* ListView/Banshee.Data.Query/QueryListNode.cs: Added GetRightSibling
+
+	* ListView/Banshee/TrackListDatabaseModel.cs: Do not use the cool 
+	advanced query stuff for now; bigger fish to fry with the view
+
+2007-06-15  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Query/SqlQueryGenerator.cs: Be more robust,
+	properly generate NOT
+
+	* ListView/Banshee.Data.Query/QueryKeywordNode.cs: Add AND
+
+	* ListView/Banshee.Data.Query/QueryParser.cs: Fixed scanning bug, 
+	generate AND for NOT if missing AND/OR as left sibling
+
+	* ListView/Banshee.Data.Query/QueryListNode.cs: Added GetLeftSibling
+
+	* ListView/Banshee/TrackListDatabaseModel.cs: Use the hot query stuff
+
+2007-06-14  Ruben Vermeersch  <ruben@savanne.be>
+
+	* ListView/Makefile: Fix the build, add missing Banshee.Data.Query files.
+
+2007-06-13  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Query/SqlQueryGenerator.cs: Implemented most
+	of the SQL generator
+
+2007-06-13  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Query/SqlQueryGenerator.cs: Stubbed a generator
+	for making SQL queries based on the new query parser trees
+
+	* ListView/Banshee.Data.Query/QueryTermNode.cs: Break the term into
+	an optional field match
+
+2007-06-13  Ruben Vermeersch  <ruben@savanne.be>
+
+	* ListView/Banshee/Application.cs: Reduce the filter_timeout, 250 is much
+	to high for such flaming performance. Does no justice to what it's really
+	capable off.
+
+2007-06-13  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Query/*.cs: A new query parser that will transform
+	boolean enabled queries into SQL parts
+
+2007-06-13  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Gui/ListView.cs: It was actually already fixed;
+	this commit enables it; I am pretty much awesome all the time
+
+2007-06-13  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Gui/ListView.cs: Column reszing works properly,
+	but only when it happens on ButtonRelease and not MotionNotify; needs
+	to be fixed to work in MotionNotify so we don't look like we're from 1995
+
+2007-06-12  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Gui/ListView.cs: Mostly have column sizing done;
+	a few calculation quirks to still work out
+
+2007-06-12  Aaron Bockover  <abock@gnome.org>
+
+	* ListView/Banshee.Data.Gui/ListView.cs: Tell an ICareAboutView model
+	about the rows the view can display
+
+	* ListView/Banshee/Application.cs: Reduce filter timeout to 250ms
+
+	* ListView/Banshee/TrackListDatabaseModel.cs: Implement ICareAboutView
+
+	* ListView/Banshee.Data/ICareAboutView.cs: An interface that tells
+	the view that the model cares about information the view may be able
+	to offer (such as the number of rows the view can display in a page)
+
+2007-06-12  Aaron Bockover  <abock@gnome.org>
+
+	* ListView: First import of the new ListView that will eventually land
+	in Banshee; try it out!
+

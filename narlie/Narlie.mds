@@ -1,0 +1,19 @@
+<Combine name="Narlie" fileversion="2.0">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="Narlie.Compiler" configuration="Debug" />
+      <Entry build="True" name="Narlie.Runtime" configuration="Debug" />
+      <Entry build="True" name="Narlie.Compiler.Narc" configuration="Debug" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="Narlie.Compiler.Narc" single="True">
+    <Execute type="None" entry="Narlie.Compiler" />
+    <Execute type="None" entry="Narlie.Runtime" />
+    <Execute type="None" entry="Narlie.Compiler.Narc" />
+  </StartMode>
+  <Entries>
+    <Entry filename="./Narlie.Compiler/Narlie.Compiler.mdp" />
+    <Entry filename="./Narlie.Runtime/Narlie.Runtime.mdp" />
+    <Entry filename="./Narlie.Compiler.Narc/Narlie.Compiler.Narc.mdp" />
+  </Entries>
+</Combine>

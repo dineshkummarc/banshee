@@ -1,0 +1,387 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{CD011A51-B1BA-414A-8BFD-CB36F4469856}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputType>Library</OutputType>
+    <AssemblyName>Banshee.Base</AssemblyName>
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>
+    </DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gconf-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glade-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gnome-vfs-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Cairo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Mono.Cairo.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Data.SqliteClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Mono.Data.SqliteClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Mono.Posix.dll</HintPath>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral">
+      <HintPath>..\..\..\ext\dbus-sharp\NDesk.DBus.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="NDesk.DBus.GLib, Version=1.0.0.0, Culture=neutral">
+      <HintPath>..\..\..\ext\dbus-sharp\NDesk.DBus.GLib.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Hal, Version=0.0.0.0, Culture=neutral">
+      <HintPath>..\..\..\ext\hal-sharp\Hal.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="TagLib, Version=0.0.0.0, Culture=neutral">
+      <HintPath>..\..\..\ext\taglib-sharp\TagLib.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Boo.Lang.Compiler, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
+      <HintPath>..\..\Extras\Boo\Boo.Lang.Compiler.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Boo.Lang, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
+      <HintPath>..\..\Extras\Boo\Boo.Lang.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Boo.Lang.Interpreter, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
+      <HintPath>..\..\Extras\Boo\Boo.Lang.Interpreter.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Boo.Lang.Parser, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
+      <HintPath>..\..\Extras\Boo\Boo.Lang.Parser.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Banshee.Widgets\Banshee.Widgets.csproj">
+      <Project>{B89B7A12-9FC2-4337-8ED6-1F0A6873329C}</Project>
+      <Name>Banshee.Widgets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Extras\MusicBrainz\MusicBrainz.csproj">
+      <Project>{922F1199-FC80-4DF4-B999-BCAEEB8494C6}</Project>
+      <Name>MusicBrainz</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Extras\BooBuddy\BooBuddy.csproj">
+      <Project>{79F46094-5CA6-4B4F-ACFF-4E7AB5F8C91A}</Project>
+      <Name>BooBuddy</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Extras\Last.FM\Last.FM.csproj">
+      <Project>{BF7D240C-D323-47DA-B14B-B0EE4452816B}</Project>
+      <Name>Last.FM</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include=".\AudioCd\AudioCdCore.cs" />
+    <Compile Include=".\AudioCd\AudioCdDisk.cs" />
+    <Compile Include=".\AudioCd\AudioCdTrackInfo.cs" />
+    <Compile Include=".\Banshee.AudioProfiles\GConfProfileConfiguration.cs" />
+    <Compile Include=".\Banshee.AudioProfiles\Pipeline.cs" />
+    <Compile Include=".\Banshee.AudioProfiles\PipelineVariable.cs" />
+    <Compile Include=".\Banshee.AudioProfiles\Profile.cs" />
+    <Compile Include=".\Banshee.AudioProfiles\ProfileConfiguration.cs" />
+    <Compile Include=".\Banshee.AudioProfiles\ProfileManager.cs" />
+    <Compile Include=".\Banshee.AudioProfiles.Gui\ProfileComboBox.cs" />
+    <Compile Include=".\Banshee.AudioProfiles.Gui\ProfileComboBoxConfigurable.cs" />
+    <Compile Include=".\Banshee.AudioProfiles.Gui\ProfileConfigurationDialog.cs" />
+    <Compile Include=".\Banshee.AudioProfiles.Gui\ProfileConfigureButton.cs" />
+    <Compile Include=".\Banshee.Burner\BurnerConfigurationPane.cs" />
+    <Compile Include=".\Banshee.Burner\BurnerCore.cs" />
+    <Compile Include=".\Banshee.Burner\BurnerFormatList.cs" />
+    <Compile Include=".\Banshee.Burner\BurnerOptionsDialog.cs" />
+    <Compile Include=".\Banshee.Burner\BurnerSession.cs" />
+    <Compile Include=".\Banshee.Burner\BurnerSessionPreparer.cs" />
+    <Compile Include=".\Banshee.Burner\BurnerSessionRecorder.cs" />
+    <Compile Include=".\Banshee.Burner\BurnerSource.cs" />
+    <Compile Include=".\Banshee.Burner\BurnerUtilities.cs" />
+    <Compile Include=".\Banshee.Cdrom\DriveMediaType.cs" />
+    <Compile Include=".\Banshee.Cdrom\IDiscDuplicator.cs" />
+    <Compile Include=".\Banshee.Cdrom\IDrive.cs" />
+    <Compile Include=".\Banshee.Cdrom\IDriveFactory.cs" />
+    <Compile Include=".\Banshee.Cdrom\IRecorder.cs" />
+    <Compile Include=".\Banshee.Cdrom\RecorderAction.cs" />
+    <Compile Include=".\Banshee.Cdrom\RecorderResult.cs" />
+    <Compile Include=".\Banshee.Cdrom\RecorderTrack.cs" />
+    <Compile Include=".\Banshee.Cdrom.Gui\DriveComboBox.cs" />
+    <Compile Include=".\Banshee.Cdrom.Gui\RecorderSpeedComboBox.cs" />
+    <Compile Include=".\Banshee.Cdrom.Iso\IImageCreator.cs" />
+    <Compile Include=".\Banshee.Cdrom.Iso\ImageStatus.cs" />
+    <Compile Include=".\Banshee.Cdrom.Iso.Mkisofs\MkisofsImageCreator.cs" />
+    <Compile Include=".\Banshee.Cdrom.Iso.Mkisofs\MkisofsProcess.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include=".\Banshee.Cdrom.Nautilus\NautilusDiscDuplicator.cs" />
+    <Compile Include=".\Banshee.Cdrom.Nautilus\NautilusDrive.cs" />
+    <Compile Include=".\Banshee.Cdrom.Nautilus\NautilusDriveFactory.cs" />
+    <Compile Include=".\Banshee.Cdrom.Nautilus\NautilusRecorder.cs" />
+    <Compile Include=".\Banshee.Cdrom.Nautilus.Interop\BurnDrive.cs" />
+    <Compile Include=".\Banshee.Cdrom.Nautilus.Interop\BurnRecorder.cs" />
+    <Compile Include=".\Banshee.Cdrom.Nautilus.Interop\BurnRecorderHandlers.cs" />
+    <Compile Include=".\Banshee.Cdrom.Nautilus.Interop\BurnRecorderTrack.cs" />
+    <Compile Include=".\Banshee.Cdrom.Nautilus.Interop\NautilusEnums.cs" />
+    <Compile Include=".\Banshee.Configuration\ConfigurationClient.cs" />
+    <Compile Include=".\Banshee.Configuration\GConfConfigurationClient.cs" />
+    <Compile Include=".\Banshee.Configuration\IConfigurationClient.cs" />
+    <Compile Include=".\Banshee.Configuration\SchemaEntry.cs" />
+    <Compile Include=".\Banshee.Configuration.Schema\ImportSchema.cs" />
+    <Compile Include=".\Banshee.Configuration.Schema\LibrarySchema.cs" />
+    <Compile Include=".\Banshee.Configuration.Schema\PlayerWindowSchema.cs" />
+    <Compile Include=".\Banshee.Equalizer\EqualizerManager.cs" />
+    <Compile Include=".\Banshee.Equalizer\EqualizerSetting.cs" />
+    <Compile Include=".\Banshee.Equalizer.Gui\EqualizerBandScale.cs" />
+    <Compile Include=".\Banshee.Equalizer.Gui\EqualizerLevelsBox.cs" />
+    <Compile Include=".\Banshee.Equalizer.Gui\EqualizerPresetComboBox.cs" />
+    <Compile Include=".\Banshee.Equalizer.Gui\EqualizerView.cs" />
+    <Compile Include=".\Banshee.Equalizer.Gui\EqualizerWindow.cs" />
+    <Compile Include=".\Banshee.Gui.DragDrop\DragDropList.cs" />
+    <Compile Include=".\Banshee.Gui.DragDrop\DragDropTarget.cs" />
+    <Compile Include=".\Banshee.Gui.DragDrop\DragDropUtilities.cs" />
+    <Compile Include=".\Banshee.Kernel\IInstanceCriticalJob.cs" />
+    <Compile Include=".\Banshee.Kernel\IJob.cs" />
+    <Compile Include=".\Banshee.Kernel\IntervalHeap.cs" />
+    <Compile Include=".\Banshee.Kernel\Job.cs" />
+    <Compile Include=".\Banshee.Kernel\JobPriority.cs" />
+    <Compile Include=".\Banshee.Kernel\Scheduler.cs" />
+    <Compile Include=".\Banshee.Library\DatabaseWriteException.cs" />
+    <Compile Include=".\Banshee.Library\Import.cs" />
+    <Compile Include=".\Banshee.Metadata\IBasicTrackInfo.cs" />
+    <Compile Include=".\Banshee.Metadata\IMetadataLookupJob.cs" />
+    <Compile Include=".\Banshee.Metadata\IMetadataProvider.cs" />
+    <Compile Include=".\Banshee.Metadata\MetadataServiceJob.cs" />
+    <Compile Include=".\Banshee.Metadata\MetadataService.cs" />
+    <Compile Include=".\Banshee.Metadata.Rhapsody\RhapsodyMetadataProvider.cs" />
+    <Compile Include=".\Banshee.Metadata.Rhapsody\RhapsodyQueryJob.cs" />
+    <Compile Include=".\Banshee.PlayerMigration\AmarokPlayerImport.cs" />
+    <Compile Include=".\Banshee.PlayerMigration\PlayerImport.cs" />
+    <Compile Include=".\Banshee.PlayerMigration\RhythmboxPlayerImport.cs" />
+    <Compile Include=".\Banshee.Playlists\PlaylistFileUtil.cs" />
+    <Compile Include=".\Banshee.Playlists\IPlaylist.cs" />
+    <Compile Include=".\Banshee.Playlists.Formats\M3u.cs" />
+    <Compile Include=".\Banshee.Playlists.Formats\PlaylistFile.cs" />
+    <Compile Include=".\Banshee.Playlists.Formats\Pls.cs" />
+    <Compile Include=".\Banshee.Playlists.Formats.Xspf\LinkEntry.cs" />
+    <Compile Include=".\Banshee.Playlists.Formats.Xspf\MetaEntry.cs" />
+    <Compile Include=".\Banshee.Playlists.Formats.Xspf\Playlist.cs" />
+    <Compile Include=".\Banshee.Playlists.Formats.Xspf\Track.cs" />
+    <Compile Include=".\Banshee.Playlists.Formats.Xspf\W3CDateTime.cs" />
+    <Compile Include=".\Banshee.Playlists.Formats.Xspf\XmlUtil.cs" />
+    <Compile Include=".\Banshee.Playlists.Formats.Xspf\XspfBaseObject.cs" />
+    <Compile Include=".\Banshee.SmartPlaylist\Editor.cs" />
+    <Compile Include=".\Banshee.SmartPlaylist\QueryBuilder.cs" />
+    <Compile Include=".\Banshee.SmartPlaylist\QueryBuilderModel.cs" />
+    <Compile Include=".\Banshee.SmartPlaylist\SmartPlaylistCore.cs" />
+    <Compile Include=".\Banshee.SmartPlaylist\SmartPlaylistSource.cs" />
+    <Compile Include=".\Banshee.Web\Browser.cs" />
+    <Compile Include=".\Dap\Dap.cs" />
+    <Compile Include=".\Dap\DapCore.cs" />
+    <Compile Include=".\Dap\DapMisc.cs" />
+    <Compile Include=".\Dap\DapPropertiesDialog.cs" />
+    <Compile Include=".\Dap\DapTrackInfo.cs" />
+    <Compile Include=".\Gui\AboutDialog.cs" />
+    <Compile Include=".\Gui\CleanRoomStartup.cs" />
+    <Compile Include=".\Gui\ConfirmShutdownDialog.cs" />
+    <Compile Include=".\Gui\ErrorListDialog.cs" />
+    <Compile Include=".\Gui\ExceptionDialog.cs" />
+    <Compile Include=".\Gui\FileChooserDialog.cs" />
+    <Compile Include=".\Gui\GladeDialog.cs" />
+    <Compile Include=".\Gui\GladeWindow.cs" />
+    <Compile Include=".\Gui\ImageFileChooserDialog.cs" />
+    <Compile Include=".\Gui\ImportDialog.cs" />
+    <Compile Include=".\Gui\LogCoreDialog.cs" />
+    <Compile Include=".\Gui\OpenLocationDialog.cs" />
+    <Compile Include=".\Gui\PreferencesDialog.cs" />
+    <Compile Include=".\Gui\RatingRenderer.cs" />
+    <Compile Include=".\Gui\SeekDialog.cs" />
+    <Compile Include=".\Gui\SourceView.cs" />
+    <Compile Include=".\Gui\SplashScreen.cs" />
+    <Compile Include=".\Gui\ToggleStates.cs" />
+    <Compile Include=".\Gui\TrackEditor.cs" />
+    <Compile Include=".\Gui\UIManager.cs" />
+    <Compile Include=".\Gui\VersionInformationDialog.cs" />
+    <Compile Include=".\IO\GnomeVfs.cs" />
+    <Compile Include=".\IO\Interfaces.cs" />
+    <Compile Include=".\IO\IOProxy.cs" />
+    <Compile Include=".\IO\SystemIO.cs" />
+    <Compile Include=".\IO\Unix.cs" />
+    <Compile Include=".\IO\Utilities.cs" />
+    <Compile Include=".\MediaEngine\IEqualizer.cs" />
+    <Compile Include=".\MediaEngine\PlayerEngine.cs" />
+    <Compile Include=".\NetworkManager\Manager.cs" />
+    <Compile Include=".\Notifications\Notification.cs" />
+    <Compile Include=".\Notifications\Notifications.cs" />
+    <Compile Include=".\Plugins\IPlugin.cs" />
+    <Compile Include=".\Plugins\Plugin.cs" />
+    <Compile Include=".\Plugins\PluginCore.cs" />
+    <Compile Include=".\Plugins\PluginDialog.cs" />
+    <Compile Include=".\Plugins\PluginFactory.cs" />
+    <Compile Include=".\Sources\AbstractPlaylistSource.cs" />
+    <Compile Include=".\Sources\AudioCdSource.cs" />
+    <Compile Include=".\Sources\DapPlaylistSource.cs" />
+    <Compile Include=".\Sources\DapSource.cs" />
+    <Compile Include=".\Sources\IImportable.cs" />
+    <Compile Include=".\Sources\ImportErrorsSource.cs" />
+    <Compile Include=".\Sources\IPlaylistCapable.cs" />
+    <Compile Include=".\Sources\LibrarySource.cs" />
+    <Compile Include=".\Sources\LocalQueueSource.cs" />
+    <Compile Include=".\Sources\PlaylistSource.cs" />
+    <Compile Include=".\Sources\TestSource.cs" />
+    <Compile Include=".\ActionManager.cs" />
+    <Compile Include=".\ArgumentQueue.cs" />
+    <Compile Include=".\AudioCdRipper.cs" />
+    <Compile Include=".\BansheeBranding.cs" />
+    <Compile Include=".\BatchTranscoder.cs" />
+    <Compile Include=".\Branding.cs" />
+    <Compile Include=".\Catalog.cs" />
+    <Compile Include=".\ChildSource.cs" />
+    <Compile Include=".\ComponentInitializer.cs" />
+    <Compile Include=".\Database.cs" />
+    <Compile Include=".\DBusPlayer.cs" />
+    <Compile Include=".\DBusRemote.cs" />
+    <Compile Include=".\FileImportSource.cs" />
+    <Compile Include=".\FileNamePattern.cs" />
+    <Compile Include=".\FileTrackInfo.cs" />
+    <Compile Include=".\FolderImportSource.cs" />
+    <Compile Include=".\GenericCollectionController.cs" />
+    <Compile Include=".\Globals.cs" />
+    <Compile Include=".\GstMisc.cs" />
+    <Compile Include=".\GstTagger.cs" />
+    <Compile Include=".\GstTranscoder.cs" />
+    <Compile Include=".\HalCore.cs" />
+    <Compile Include=".\HomeDirectoryImportSource.cs" />
+    <Compile Include=".\IconThemeUtils.cs" />
+    <Compile Include=".\IImportSource.cs" />
+    <Compile Include=".\ImportManager.cs" />
+    <Compile Include=".\ImportSources.cs" />
+    <Compile Include=".\Library.cs" />
+    <Compile Include=".\LibraryTrackInfo.cs" />
+    <Compile Include=".\LogCore.cs" />
+    <Compile Include=".\NetworkDetect.cs" />
+    <Compile Include=".\PlayerEngineCore.cs" />
+    <Compile Include=".\PowerManagement.cs" />
+    <Compile Include=".\ProductInformation.cs" />
+    <Compile Include=".\QueuedOperationManager.cs" />
+    <Compile Include=".\QueuedSqliteDatabase.cs">
+    </Compile>
+    <Compile Include=".\SafeUri.cs" />
+    <Compile Include=".\SampleTrackInfo.cs" />
+    <Compile Include=".\Source.cs" />
+    <Compile Include=".\SourceManager.cs" />
+    <Compile Include=".\SpecialKeys.cs" />
+    <Compile Include=".\StreamTagger.cs" />
+    <Compile Include=".\StringUtil.cs" />
+    <Compile Include=".\TrackInfo.cs" />
+    <Compile Include=".\TrackInfoHeader.cs" />
+    <Compile Include=".\TrackInfoPopup.cs" />
+    <Compile Include=".\Transcoder.cs" />
+    <Compile Include=".\UnknownTrackInfo.cs" />
+    <Compile Include=".\UriList.cs" />
+    <Compile Include=".\Utilities.cs" />
+    <Compile Include=".\ConfigureDefines.cs" />
+    <Compile Include=".\Paths.cs" />
+    <Compile Include=".\Plugins\ScriptCore.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\ArithmeticFunctionSet.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\CastFunctionSet.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\CompareFunctionSet.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\Evaluator.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\FunctionNode.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\FunctionSet.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\Literals.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\LogicFunctionSet.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\Parser.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\StringFunctionSet.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\TreeNode.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\UtilityFunctionSet.cs" />
+    <Compile Include=".\Banshee.Metadata.MusicBrainz\MusicBrainzMetadataProvider.cs" />
+    <Compile Include=".\Banshee.Metadata.MusicBrainz\MusicBrainzQueryJob.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\ControlFunctionSet.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\FunctionFunctionSet.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\ListFunctionSet.cs" />
+    <Compile Include="..\..\..\ext\sexp-engine\src\SExpEngine\EvaluatorBase.cs" />
+    <Compile Include=".\Banshee.Metadata\BaseMetadataProvider.cs" />
+    <Compile Include=".\Banshee.Metadata.Embedded\EmbeddedMetadataProvider.cs" />
+    <Compile Include=".\Banshee.Metadata.Embedded\EmbeddedQueryJob.cs" />
+    <Compile Include=".\Localization.cs" />
+    <Compile Include=".\Banshee.AudioProfiles.Gui\TextViewLabel.cs" />
+    <Compile Include=".\Banshee.Metadata\MetadataSettings.cs" />
+    <Compile Include=".\GnomeMMKeys.cs" />
+    <Compile Include=".\TrackFilterType.cs" />
+    <Compile Include=".\Banshee.PlayerMigration\ItunesImport.cs" />
+    <Compile Include=".\Banshee.PlayerMigration\PlayerMigrationCore.cs" />
+    <Compile Include=".\Banshee.PlayerMigration\ItunesImportDialog.cs" />
+    <Compile Include=".\Banshee.PlayerMigration\ItunesSmartPlaylistParser.cs" />
+    <Compile Include=".\Banshee.Configuration\XmlConfigurationClient.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\data\banshee-dialogs.glade">
+      <LogicalName>banshee-dialogs.glade</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\contributors.xml">
+      <LogicalName>contributors.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\UIManagerLayout.xml">
+      <LogicalName>UIManagerLayout.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\COPYING">
+      <LogicalName>COPYING</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\banshee-logo.png">
+      <LogicalName>banshee-logo.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\editor-cover-album.png">
+      <LogicalName>editor-cover-album.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\media-playlist-continuous.png">
+      <LogicalName>media-playlist-continuous.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\media-playlist-shuffle.png">
+      <LogicalName>media-playlist-shuffle.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\media-repeat-all.png">
+      <LogicalName>media-repeat-all.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\media-repeat-none.png">
+      <LogicalName>media-repeat-none.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\media-repeat-single.png">
+      <LogicalName>media-repeat-single.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\rating-rated.png">
+      <LogicalName>rating-rated.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\rating-unrated.png">
+      <LogicalName>rating-unrated.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\source-playlist.png">
+      <LogicalName>source-playlist.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\source-smart-playlist.png">
+      <LogicalName>source-smart-playlist.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\splash.png">
+      <LogicalName>splash.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

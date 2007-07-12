@@ -1,0 +1,53 @@
+2007-03-22  Aaron Bockover  <abock@gnome.org>
+
+	* tests/let-set-resolve.lisp: Test for let, set, and ID resolution
+
+	* Narlie.Compiler/Narlie.Compiler/NarlieCompiler.cs: Show compiler errors
+	as a nice message not an exception dump
+
+	* Narlie.Compiler/Narlie.Compiler/CompilerException.cs: Added a params form
+
+	* Narlie.Compiler/Narlie.Compiler.CodeGen/AssemblyGenerator.cs: Only dump
+	the C#-esq generated code if verbose is on
+
+	* Narlie.Compiler/Narlie.Compiler.CodeGen/MCGenerator.cs: Emit code for
+	let, set, and resolve IDs back to CodeVariableReferences and push to the
+	expression stack
+
+	* Narlie.Compiler/Narlie.Compiler.CodeParser/Parser.cs: 
+
+	* Narlie.Compiler/Narlie.Compiler.Symbols/SymbolTable.cs: Reworked to store
+	CodeVariableReference internally along-side the AST node so the code
+	generator can leverage the symbol table to lookup generated references
+
+	* Narlie.Compiler.Narc/Narlie.Compiler.Narc/Narc.cs: Cleaning up front end
+
+	* Makefile: Updated
+
+2007-03-22  Aaron Bockover  <abock@gnome.org>
+
+	* Project: Made the Parser and Lexer reusable instances, added API to 
+	make them easier to consume; introduced a NarlieCompiler object that acts
+	as the top-level compiler that invokes all the stages of compilation
+	and handles errors, etc.; split the compiler into a library for embedding
+	into applications and into a front-end compiler executable
+
+2007-03-21  Aaron Bockover  <abock@gnome.org>
+
+	* Narlie.Compiler/Narlie.Compiler.CodeParser/Parser.cs:
+	* Narlie.Compiler/Narlie.Compiler.CodeParser/Lexer.cs: Lex and parse
+	the let and set[f] functions; register and pre-check variables in
+	symbol tables
+
+	* Narlie.Compiler/Narlie.Compiler.Symbols/SymbolTable.cs: Added a chained
+	dump method to show the contents from bottom up
+
+	* Narlie.Compiler/Narlie.Compiler.Symbols/IdNode.cs: Set Id
+
+	* Narlie.Compiler/Narlie.Compiler.Narc/CompilerException.cs: A new base
+	exception class for compiling stages
+
+2007-03-21  Aaron Bockover  <abock@gnome.org>
+
+	* ChangeLog: started a ChangeLog
+

@@ -1,0 +1,92 @@
+<Project name="Narlie.Compiler" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="../" assembly="Narlie.Compiler" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" win32Icon="./" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="./Narlie.Compiler.CodeParser/BooleanToken.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeParser/DefineToken.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeParser/IdToken.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeParser/IntegerToken.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeParser/Lexer.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeParser/LexerException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeParser/NilToken.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeParser/RealToken.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeParser/ScopeToken.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeParser/StringToken.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeParser/Token.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/BooleanNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/FunctionNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/IdNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/IntegerNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/ListNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/LiteralBaseNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/LiteralNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/NilNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/Node.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/RealNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/StringNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/SymbolTable.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeParser/Parser.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeGen" subtype="Directory" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeGen/AssemblyGenerator.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeParser/KeywordToken.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/ControlNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeAnd.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeArgumentReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeArithmeticOperation.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeArrayItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeArrayLength.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeAssignment.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeBinaryComparison.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeBlock.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeCast.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeClass.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeDecrement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeEquals.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeFieldReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeFor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeForeach.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeGenerationHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeIf.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeIncrement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeIs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeLiteral.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeMethod.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeMethodCall.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeNew.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeNewArray.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeNotEquals.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeOr.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodePropertyReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeReturn.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeSelect.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeUnaryOperation.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeValueReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeVariableDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeVariableReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeWhen.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeWhile.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/CodeWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/Exp.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.CodeGeneration/ILiteralObject.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeGen/MCGenerator.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/AssemblyCache.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/TypeCache.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.Symbols/NetMethodNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler.CodeParser/ParserException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler/CompilerException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Narlie.Compiler/NarlieCompiler.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Project" localcopy="True" refto="Narlie.Runtime" />
+  </References>
+</Project>

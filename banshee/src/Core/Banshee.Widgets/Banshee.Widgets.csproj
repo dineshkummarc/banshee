@@ -1,0 +1,81 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{B89B7A12-9FC2-4337-8ED6-1F0A6873329C}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputType>Library</OutputType>
+    <AssemblyName>Banshee.Widgets</AssemblyName>
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>
+    </DefineConstants>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Cairo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Mono.Cairo.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Mono.Posix.dll</HintPath>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include=".\ActionButton.cs" />
+    <Compile Include=".\ActiveUserEvent.cs" />
+    <Compile Include=".\ActiveUserEventsManager.cs" />
+    <Compile Include=".\AltProgressBar.cs" />
+    <Compile Include=".\CoverArtThumbnail.cs" />
+    <Compile Include=".\DateButton.cs" />
+    <Compile Include=".\DictionaryComboBox.cs" />
+    <Compile Include=".\DiscUsageDisplay.cs" />
+    <Compile Include=".\DrawingUtilities.cs" />
+    <Compile Include=".\EllipsizeLabel.cs" />
+    <Compile Include=".\HighlightMessageArea.cs" />
+    <Compile Include=".\HigMessageDialog.cs" />
+    <Compile Include=".\ImageAnimation.cs" />
+    <Compile Include=".\LinearProgress.cs" />
+    <Compile Include=".\LinkLabel.cs" />
+    <Compile Include=".\MessagePane.cs" />
+    <Compile Include=".\MultiStateToggleButton.cs" />
+    <Compile Include=".\PropertyTable.cs" />
+    <Compile Include=".\RadialProgress.cs" />
+    <Compile Include=".\RatingEntry.cs" />
+    <Compile Include=".\SearchEntry.cs" />
+    <Compile Include=".\SeekSlider.cs" />
+    <Compile Include=".\ShadowContainer.cs" />
+    <Compile Include=".\SimpleNotebook.cs" />
+    <Compile Include=".\StreamPositionLabel.cs" />
+    <Compile Include=".\Tile.cs" />
+    <Compile Include=".\TileView.cs" />
+    <Compile Include=".\ToggleState.cs" />
+    <Compile Include=".\FadingAlignment.cs" />
+    <Compile Include=".\VolumeButton.cs" />
+    <Compile Include=".\CoverArtView.cs" />
+    <Compile Include=".\RatingMenuItem.cs" />
+    <Compile Include=".\ComplexMenuItem.cs" />
+    <Compile Include=".\HoverImageButton.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\data\images\rating-rated.png">
+      <LogicalName>rating-rated.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\rating-unrated.png">
+      <LogicalName>rating-unrated.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>
