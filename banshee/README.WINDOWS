@@ -1,4 +1,6 @@
 To build Banshee on Widows, you need Microsoft Visual Studio 2005.
+More instructions to come when porting is done. If you have questions
+in the meantime, contact Scott Peterson <lunchtimemama@gmail.com>.
 
 Banshee is a music management and playback application for GNOME.
 
