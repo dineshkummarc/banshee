@@ -209,7 +209,7 @@ namespace Banshee.PlayerMigration
         const int TIMEMULTIPLEOFFSET = 76;// begin the int with the multiple of time - Relative offset from FIELDOFFSET
         const int TIMEVALUEOFFSET = 68;   // begin the inverse int with the value of time - Relative offset from FIELDOFFSET
 
-        const int INTLENGTH = 64;       // The length on a int criteria starting at the first int
+        const int INTLENGTH = 64;         // The length on a int criteria starting at the first int
         static DateTime STARTOFTIME = new DateTime(1904, 1, 1); // Dates are recorded as seconds since Jan 1, 1904
 
         bool or, again;

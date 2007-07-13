@@ -78,16 +78,16 @@ namespace Banshee.PlayerMigration
 
         public override void Import()
         {
+            data = new ItunesImportData();
+            if (!PromptUser()) {
+                data = null;
+                return;
+            }
+
             CreateUserEvent();
             user_event.CancelRequested += delegate {
                 canceled = true;
             };
-
-            data = new ItunesImportData();
-            if (!PromptUser()) {
-                Done();
-                return;
-            }
 
             ThreadAssist.Spawn(delegate {
                 DoImport();
@@ -97,6 +97,7 @@ namespace Banshee.PlayerMigration
 
         protected override void DoImport()
         {
+            canceled = false;
             CheckDatabase();
 
             // TODO check version
@@ -214,6 +215,7 @@ namespace Banshee.PlayerMigration
         private void Done()
         {
             user_event.Dispose();
+            user_event = null;
         }
 
         private bool PromptUser()
@@ -302,7 +304,6 @@ namespace Banshee.PlayerMigration
                 return;
             }
 
-            // Translate iTunes URI into local URI
             location = ConvertToLocalUriFormat(location);
 
             string local_uri = null;
@@ -356,8 +357,9 @@ namespace Banshee.PlayerMigration
             bool update = track_id != 0;
             TrackInfo track_info = null;
             try {
-                track_info = update ? Globals.Library.GetTrack(track_id) :
-                    new LibraryTrackInfo(safe_uri.AbsoluteUri);
+                track_info = update
+                    ? Globals.Library.GetTrack(track_id)
+                    : new LibraryTrackInfo(safe_uri.AbsoluteUri);
             } catch (Exception e) {
                 Banshee.Sources.ImportErrorsSource.Instance.AddError(local_uri, e.Message, e);
                 return;

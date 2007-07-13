@@ -1,3 +1,12 @@
+2007-07-13 Scott Peterson <scottp@gnome.org>
+
+* Banshee.Base/Banshee.PlayerMigration/ItunesImport.cs: Minor improvements to importer.
+
+* Banshee.Base/Banshee.PlayerMigration/ItunesSmartPlaylistParser.cs: Cosmetic changes.
+
+* Banshee.Base/Gui/SourceView.cs: Changed a while loop to a do-while loop to
+  eliminate an unnecessary comparison.
+
 2007-07-12 Scott Peterson <scottp@gnome.org>
 	
 	The code is now buildable/runable. Lots of little changes all over the place to make it work on Windows.
