@@ -47,10 +47,15 @@ public static class PluginModuleEntry
 
 namespace Banshee.MediaEngine.Gstreamer
 {
+    [UnmanagedFunctionPointer (CallingConvention.Cdecl)]
     internal delegate void GstPlaybackEosCallback(IntPtr engine);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void GstPlaybackErrorCallback(IntPtr engine, uint domain, int code, IntPtr error, IntPtr debug);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void GstPlaybackStateChangedCallback(IntPtr engine, int old_state, int new_state, int pending_state);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void GstPlaybackIterateCallback(IntPtr engine);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void GstPlaybackBufferingCallback(IntPtr engine, int buffering_progress);
 
     internal enum GstCoreError {
@@ -172,7 +177,11 @@ namespace Banshee.MediaEngine.Gstreamer
         
         protected override void OpenUri(SafeUri uri)
         {
-            IntPtr uri_ptr = GLib.Marshaller.StringToPtrGStrdup(uri.AbsoluteUri);
+            string path = uri.AbsoluteUri;
+            if(Environment.OSVersion.Platform != PlatformID.Unix && uri.IsLocalPath) {
+                path = "file://" + uri.LocalPath;
+            }
+            IntPtr uri_ptr = GLib.Marshaller.StringToPtrGStrdup(path);
             gst_playback_open(handle, uri_ptr);
             GLib.Marshaller.Free(uri_ptr);
         }

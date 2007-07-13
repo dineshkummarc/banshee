@@ -28,7 +28,11 @@
  
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef WIN32
+#include "unistd.h"
+#else
 #include <unistd.h>
+#endif
 #include <string.h>
 #include <glib.h>
 #include <glib/gstdio.h>
@@ -150,7 +154,9 @@ gst_tagger_new_decoded_pad(GstElement *decodebin, GstPad *pad,
 static void
 gst_tagger_typefind(GstElement *typefind, guint probability, GstCaps *caps, GstTagger *tagger)
 {
-    gint i;
+    const gchar *mime = gst_structure_get_name(gst_caps_get_structure(caps, 0));
+	GValue *type_value = g_new0(GValue, 1);
+	gint i;
     gboolean allowed = FALSE;
     
     g_return_if_fail(tagger != NULL);
@@ -164,8 +170,6 @@ gst_tagger_typefind(GstElement *typefind, guint probability, GstCaps *caps, GstT
     if(!tagger->processing_stream ||  caps == NULL || gst_caps_get_size(caps) <= 0) {
         return;
     }
-    
-    const gchar *mime = gst_structure_get_name(gst_caps_get_structure(caps, 0));
 
     // match against the whitelist
     for(i = 0; mimetype_whitelist[i] != NULL; i++) {
@@ -187,8 +191,6 @@ gst_tagger_typefind(GstElement *typefind, guint probability, GstCaps *caps, GstT
     if(tagger->tag_found_cb == NULL) {
         return;
     }
-    
-    GValue *type_value = g_new0(GValue, 1);
     
     g_value_init(type_value, G_TYPE_STRING);
     g_value_set_string(type_value, mime);

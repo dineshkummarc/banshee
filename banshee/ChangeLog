@@ -1,5 +1,9 @@
 2007-07-12 Scott Peterson <scottp@gnome.org>
 	
+	The code is now buildable/runable. Lots of little changes all over the place to make it work on Windows.
+
+2007-07-12 Scott Peterson <scottp@gnome.org>
+	
 	Added the Visual Studio project files and some code modifications (note: this is not in building condition).
 
 	* Banshee.Base/Banshee.Configuration/XmlConfigurationClient.cs: Adds an

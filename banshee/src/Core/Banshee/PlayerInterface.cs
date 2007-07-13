@@ -1675,7 +1675,7 @@ namespace Banshee
             DragDataReceivedArgs args)
         {
             TreePath destPath;
-            TreeIter destIter;
+            TreeIter destIter = TreeIter.Zero;
             TreeViewDropPosition pos;
             bool haveDropPosition;
             

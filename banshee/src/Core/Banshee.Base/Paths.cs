@@ -90,7 +90,7 @@ namespace Banshee.Base
         }
         
         public static string SystemApplicationData {
-            get { return ConfigureDefines.SystemDataDir; }
+            get { return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); }
         }
         
         public static string CoverArtDirectory {
@@ -108,7 +108,7 @@ namespace Banshee.Base
         
         public static string SystemPluginDirectory {
             get {
-                return Path.Combine(ConfigureDefines.InstallDir, "Banshee.Plugins") + Path.DirectorySeparatorChar;
+                return Path.Combine(InstallDir, "Banshee.Plugins") + Path.DirectorySeparatorChar;
             }
         }
         
@@ -148,6 +148,14 @@ namespace Banshee.Base
                 Directory.CreateDirectory(dir);
                 return dir;
             }
+        }
+
+        public static string LocalDir {
+            get { return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData); }
+        }
+
+        public static string InstallDir {
+            get { return Environment.CurrentDirectory; }
         }
     }
 }

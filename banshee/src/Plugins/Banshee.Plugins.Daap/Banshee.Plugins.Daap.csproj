@@ -7,7 +7,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputType>Library</OutputType>
     <AssemblyName>Banshee.Plugins.Daap</AssemblyName>
-    <OutputPath>.\</OutputPath>
+    <OutputPath>..\..\..\bin\Debug\Banshee.Plugins\</OutputPath>
     <DebugSymbols>True</DebugSymbols>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <Optimize>True</Optimize>

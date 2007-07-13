@@ -148,16 +148,18 @@ namespace Banshee.Gui.Dialogs
 				AssemblyName name = asm.GetName();
                 msg.Append(name.Name + " (" + name.Version.ToString() + ")\n");
 			}
+
+            if (Environment.OSVersion.Platform == PlatformID.Unix) {
+                msg.Append("\nPlatform Information: " + BuildPlatformString());
+
+                msg.Append("\n\nDisribution Information:\n\n");
             
-            msg.Append("\nPlatform Information: " + BuildPlatformString());
-            
-            msg.Append("\n\nDisribution Information:\n\n");
-            
-            Hashtable lsb = LsbVersionInfo.Harvest;
-            
-            foreach(string lsbfile in lsb.Keys) {
-                msg.Append("[" + lsbfile + "]\n");
-                msg.Append(lsb[lsbfile] + "\n");
+                Hashtable lsb = LsbVersionInfo.Harvest;
+                
+                foreach(string lsbfile in lsb.Keys) {
+                    msg.Append("[" + lsbfile + "]\n");
+                    msg.Append(lsb[lsbfile] + "\n");
+                }
             }
             
             return msg.ToString();

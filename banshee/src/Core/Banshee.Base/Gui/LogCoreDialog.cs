@@ -99,7 +99,7 @@ namespace Banshee.Gui.Dialogs
                 } catch(Exception) {
                     (cell as CellRendererText).Text = "";
                 }
-            } as TreeCellDataFunc);
+            });
             date_column.SortColumnId = 1;
             
             log_tree.AppendColumn(date_column);

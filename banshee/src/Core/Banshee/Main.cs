@@ -51,7 +51,9 @@ namespace Banshee
 
         private static void Startup(string [] args)
         {
-            banshee_dbus_compat_thread_init();
+            if(Environment.OSVersion.Platform == PlatformID.Unix) {
+                banshee_dbus_compat_thread_init();
+            }
         
             try {
                 Utilities.SetProcessName("banshee");

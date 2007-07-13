@@ -75,7 +75,7 @@ namespace Banshee.Dap
             if(Environment.GetEnvironmentVariable("BANSHEE_DAP_PATH") != null) {
                 plugin_factory.AddScanDirectoryFromEnvironmentVariable("BANSHEE_DAP_PATH");
             } else {
-                plugin_factory.AddScanDirectory(ConfigureDefines.InstallDir + "Banshee.Dap");
+                plugin_factory.AddScanDirectory(Paths.InstallDir + "Banshee.Dap");
             }
             
             plugin_factory.IncludeMask = "*Dap*.dll";

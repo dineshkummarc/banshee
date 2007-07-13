@@ -258,7 +258,7 @@ gst_playback_construct(GstPlayback *engine)
     engine->playbin = gst_element_factory_make("playbin", "playbin");
     g_return_val_if_fail(engine->playbin != NULL, FALSE);
 
-    audiosink = gst_element_factory_make("gconfaudiosink", "audiosink");
+    audiosink = gst_element_factory_make("autoaudiosink", "audiosink"); // WINDOWS TODO programatically choose between gconfaudiosink and autoaudiosink
     g_return_val_if_fail(audiosink != NULL, FALSE);
         
     /* Set the profile to "music and movies" (gst-plugins-good 0.10.3) */

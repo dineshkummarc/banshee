@@ -7,7 +7,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputType>Library</OutputType>
     <AssemblyName>Banshee.Plugins.Recommendation</AssemblyName>
-    <OutputPath>.\</OutputPath>
+    <OutputPath>..\..\..\bin\Debug\Banshee.Plugins\</OutputPath>
     <DebugSymbols>True</DebugSymbols>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <Optimize>True</Optimize>
@@ -39,10 +39,12 @@
     <ProjectReference Include="..\..\Core\Banshee.Widgets\Banshee.Widgets.csproj">
       <Project>{B89B7A12-9FC2-4337-8ED6-1F0A6873329C}</Project>
       <Name>Banshee.Widgets</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Banshee.Base\Banshee.Base.csproj">
       <Project>{CD011A51-B1BA-414A-8BFD-CB36F4469856}</Project>
       <Name>Banshee.Base</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

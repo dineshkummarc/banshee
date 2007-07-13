@@ -17,7 +17,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\bin\Debug"
+			OutputDirectory="$(SolutionDir)bin\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
@@ -27,6 +27,7 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
+				Outputs="&quot;$(OutDir)\libmusicbrainz.dll&quot;;&quot;$(OutDir)\libglib-2.0-0.dll&quot;;&quot;$(OutDir)\libgobject-2.0-0.dll&quot;"
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -93,7 +94,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy /y &quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\lib\libmusicbrainz.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libglib-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libgobject-2.0-0.dll&quot; &quot;$(OutDir)&quot;"
+				CommandLine="copy /y &quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\lib\libmusicbrainz.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libglib-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libgobject-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration

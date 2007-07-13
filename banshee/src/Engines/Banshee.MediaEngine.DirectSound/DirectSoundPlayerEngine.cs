@@ -11,14 +11,14 @@ public static class PluginModuleEntry
     public static Type[] GetTypes()
     {
         return new Type[] {
-            typeof(Banshee.MediaEngine.Direct.DirectPlayerEngine)
+            typeof(Banshee.MediaEngine.DirectSound.DirectSoundPlayerEngine)
         };
     }
 }
 
 namespace Banshee.MediaEngine.DirectSound
 {
-    class DirectSoundEngine : PlayerEngine
+    class DirectSoundPlayerEngine : PlayerEngine
     {
         private Audio audio;
         private Timer timer;
@@ -86,6 +86,7 @@ namespace Banshee.MediaEngine.DirectSound
         {
             // -10000 is silent and 0 is full volume. Go figure.
             // Volume is also logarithmic and there doens't seem to be a linear option.
+            // TODO convert logarithmic scale to linear
             get {
                 if(audio == null) {
                     return 0;

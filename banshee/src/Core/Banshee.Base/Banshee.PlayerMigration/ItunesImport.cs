@@ -340,8 +340,8 @@ namespace Banshee.PlayerMigration
             try {
                 safe_uri = new SafeUri(local_uri);
             } catch {
-                Banshee.Sources.ImportErrorsSource.Instance.AddError(location,
-                    "Unable to map iTunes URI to local URI", null);
+                Banshee.Sources.ImportErrorsSource.Instance.AddError(local_uri,
+                    "URI is not a local file path", null);
                 return;
             }
             

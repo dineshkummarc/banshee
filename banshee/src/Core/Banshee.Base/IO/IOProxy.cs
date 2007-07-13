@@ -62,12 +62,12 @@ namespace Banshee.IO
         
         public static TagLib.File OpenFile(string file, string mimetype, TagLib.ReadStyle readStyle)
         {
-            return TagLib.File.Create(TagLibVfsCreator (file), mimetype, readStyle);
+            return TagLib.File.Create(file, mimetype, readStyle);
         }
         
         public static TagLib.File OpenFile(string file)
         {
-            return TagLib.File.Create(TagLibVfsCreator (file));
+            return TagLib.File.Create(file);
         }
         
         private static TagLib.File.IFileAbstraction TagLibVfsCreator(string file)
@@ -99,14 +99,17 @@ namespace Banshee.IO
             get { return file; }
         }
         
-        public static string DetectMimeType(SafeUri uri)
-        {
+        public static string DetectMimeType(SafeUri uri) {
             return config.DetectMimeType(uri);
+        }
+        
+        private static string default_io_backend {
+            get { return Environment.OSVersion.Platform == PlatformID.Unix ? "unix" : "systemio"; }
         }
         
         public static readonly SchemaEntry<string> IOBackendSchema = new SchemaEntry<string>(
             "core", "io_backend",
-            "unix",
+            default_io_backend,
             "Set the IO backend in Banshee",
             "Can be either \"systemio\" (.NET System.IO), \"unix\" (Native Unix), or " + 
                 "\"gnomevfs\" (GNOME VFS); takes effect on Banshee start (restart necessary)"

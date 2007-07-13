@@ -208,7 +208,7 @@ namespace Banshee.Gui
             
             if(source is ChildSource) {
                 ChildSource child = source as ChildSource;
-                if(child.Parent.AutoExpand) {
+                if (child != null && child.Parent.AutoExpand.HasValue && child.Parent.AutoExpand.Value) {
                     Expand(FindSource(child.Parent));
                 }
             }

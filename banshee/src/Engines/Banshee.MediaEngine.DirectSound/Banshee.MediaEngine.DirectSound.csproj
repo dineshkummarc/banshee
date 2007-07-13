@@ -14,7 +14,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\bin\Debug\Banshee.MediaEngine\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -41,6 +41,7 @@
     <ProjectReference Include="..\..\Core\Banshee.Base\Banshee.Base.csproj">
       <Project>{CD011A51-B1BA-414A-8BFD-CB36F4469856}</Project>
       <Name>Banshee.Base</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

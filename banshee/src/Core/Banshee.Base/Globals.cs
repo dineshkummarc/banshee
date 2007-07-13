@@ -75,7 +75,7 @@ namespace Banshee.Base
         
         public static void Initialize(ComponentInitializerHandler interfaceStartupHandler)
         {
-            Mono.Unix.Catalog.Init(ConfigureDefines.GETTEXT_PACKAGE, ConfigureDefines.LOCALE_DIR);
+            Mono.Unix.Catalog.Init(ConfigureDefines.GETTEXT_PACKAGE, Paths.LocalDir);
         
             ui_manager = new Banshee.Gui.UIManager();
             
@@ -185,21 +185,28 @@ namespace Banshee.Base
             if(interfaceStartupHandler != null) {
                 startup.Register(Catalog.GetString("Loading user interface"), interfaceStartupHandler);
             }
-            
-            // We must get a reference to the JIT's SEGV handler because 
-            // GStreamer will set its own and not restore the previous, which
-            // will cause what should be NullReferenceExceptions to be unhandled
-            // segfaults for the duration of the instance, as the JIT is powerless!
-            // FIXME: http://bugzilla.gnome.org/show_bug.cgi?id=391777
-            IntPtr mono_jit_segv_handler = System.Runtime.InteropServices.Marshal.AllocHGlobal(512);
-            sigaction(Mono.Unix.Native.Signum.SIGSEGV, IntPtr.Zero, mono_jit_segv_handler);
+
+            bool mono_jit_segv_handled = false;
+            IntPtr mono_jit_segv_handler = IntPtr.Zero;
+            if (Environment.OSVersion.Platform == PlatformID.Unix && Type.GetType("Mono.Runtime") != null) {
+                // We must get a reference to the JIT's SEGV handler because 
+                // GStreamer will set its own and not restore the previous, which
+                // will cause what should be NullReferenceExceptions to be unhandled
+                // segfaults for the duration of the instance, as the JIT is powerless!
+                // FIXME: http://bugzilla.gnome.org/show_bug.cgi?id=391777
+                mono_jit_segv_handler = System.Runtime.InteropServices.Marshal.AllocHGlobal(512);
+                sigaction(Mono.Unix.Native.Signum.SIGSEGV, IntPtr.Zero, mono_jit_segv_handler);
+                mono_jit_segv_handled = true;
+            }
 
             // Begin the Banshee boot process
             startup.Run();
-            
-            // Reset the SEGV handle to that of the JIT again (SIGH!)
-            sigaction(Mono.Unix.Native.Signum.SIGSEGV, mono_jit_segv_handler, IntPtr.Zero);
-            System.Runtime.InteropServices.Marshal.FreeHGlobal(mono_jit_segv_handler);
+
+            if (mono_jit_segv_handled) {
+                // Reset the SEGV handle to that of the JIT again (SIGH!)
+                sigaction(Mono.Unix.Native.Signum.SIGSEGV, mono_jit_segv_handler, IntPtr.Zero);
+                System.Runtime.InteropServices.Marshal.FreeHGlobal(mono_jit_segv_handler);
+            }
         }
         
         public static void Shutdown()

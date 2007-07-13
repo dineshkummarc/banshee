@@ -33,7 +33,11 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#ifdef WIN32
+#include "unistd.h"
+#else
 #include <unistd.h>
+#endif
 #include <string.h>
 
 #include <gst/gst.h>
@@ -70,7 +74,9 @@ void gstreamer_initialize()
     }
 
     gst_init(NULL, NULL);
+#ifndef WIN32 //FIXME kludgy
     _gst_plugin_register_static(&gst_mbtrm_plugin_desc);
+#endif
 
     gstreamer_initialized = TRUE;
 }
@@ -89,4 +95,3 @@ gstreamer_test_pipeline(gchar *pipeline)
     
     return error == NULL;
 }
-

@@ -37,10 +37,16 @@
     <Reference Include="Mono.Data.SqliteClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Mono.Data.SqliteClient.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Mono.Posix.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\mono\Mono-1.2.4\lib\mono\2.0\Mono.Security.dll</HintPath>
     </Reference>
     <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -167,11 +173,17 @@
     <EmbeddedResource Include="..\..\..\data\images\source-localqueue.png">
       <LogicalName>source-localqueue.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\data\images\source-playlist.png">
-      <LogicalName>source-playlist.png</LogicalName>
+    <EmbeddedResource Include="..\..\..\data\images\source-playlist-16.png">
+      <LogicalName>source-playlist-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\data\images\source-smart-playlist.png">
-      <LogicalName>source-smart-playlist.png</LogicalName>
+    <EmbeddedResource Include="..\..\..\data\images\source-playlist-22.png">
+      <LogicalName>source-playlist-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\source-smart-playlist-16.png">
+      <LogicalName>source-smart-playlist-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\source-smart-playlist-22.png">
+      <LogicalName>source-smart-playlist-22.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\data\images\sync-needed.png">
       <LogicalName>sync-needed.png</LogicalName>

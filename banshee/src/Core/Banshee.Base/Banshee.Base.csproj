@@ -373,11 +373,17 @@
     <EmbeddedResource Include="..\..\..\data\images\rating-unrated.png">
       <LogicalName>rating-unrated.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\data\images\source-playlist.png">
-      <LogicalName>source-playlist.png</LogicalName>
+    <EmbeddedResource Include="..\..\..\data\images\source-playlist-16.png">
+      <LogicalName>source-playlist-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\data\images\source-smart-playlist.png">
-      <LogicalName>source-smart-playlist.png</LogicalName>
+    <EmbeddedResource Include="..\..\..\data\images\source-playlist-22.png">
+      <LogicalName>source-playlist-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\source-smart-playlist-16.png">
+      <LogicalName>source-smart-playlist-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\images\source-smart-playlist-22.png">
+      <LogicalName>source-smart-playlist-22.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\data\images\splash.png">
       <LogicalName>splash.png</LogicalName>

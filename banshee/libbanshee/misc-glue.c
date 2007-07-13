@@ -1,5 +1,7 @@
 #include <gtk/gtk.h>
+#ifndef WIN32 // FIXME this is kinda hacky
 #include <dbus/dbus-glib.h>
+#endif
 
 typedef gboolean (* activate_handler)(GtkCellRenderer *cell,
 	GdkEvent *event, 
@@ -17,6 +19,8 @@ void gtksharp_cell_renderer_activatable_configure(GtkCellRenderer *renderer, act
 
 void banshee_dbus_compat_thread_init()
 {
+#ifndef WIN32
 	dbus_g_thread_init();
+#endif
 }
 
