@@ -29,7 +29,7 @@ namespace Banshee.PlayerMigration
     internal struct ItunesSmartPlaylist
     {
         public string Query, Ignore, OrderBy, Name, Output;
-        public ulong LimitNumber;
+        public uint LimitNumber;
         public byte LimitMethod;
     }
 
@@ -265,7 +265,7 @@ namespace Banshee.PlayerMigration
             result.Query = query;
             result.Ignore = ignore;
             if(info[LIMITBOOLOFFSET] == 1) {
-                ulong limit = BytesToUInt(info, LIMITINTOFFSET);
+                uint limit = BytesToUInt(info, LIMITINTOFFSET);
                 result.LimitNumber = (info[LIMITMETHODOFFSET] == (byte)LimitMethods.GB) ? limit * 1024 : limit;
                 if(output.Length > 0) {
                       output += "\n";
@@ -616,20 +616,20 @@ namespace Banshee.PlayerMigration
         /// <param name="byteArray">A byte array</param>
         /// <param name="offset">Should be the byte of the uint with the 0th-power position</param>
         /// <returns></returns>
-        private static ulong BytesToUInt(byte[] byteArray, int offset)
+        private static uint BytesToUInt(byte[] byteArray, int offset)
         {
-            ulong output = 0;
-            for (byte i = 0; i <= 4; i++) {
-                output += (ulong)(byteArray[offset - i] * Math.Pow(2, (8 * i)));
+            uint output = 0;
+            for (byte i = 0; i < 4; i++) {
+                output += (uint)(byteArray[offset - i] * Math.Pow(2, (8 * i)));
             }
             return output;
         }
 
-        private static ulong InverseBytesToUInt(byte[] byteArray, int offset)
+        private static uint InverseBytesToUInt(byte[] byteArray, int offset)
         {
-            ulong output = 0;
+            uint output = 0;
             for (byte i = 0; i <= 4; i++) {
-                output += (ulong)((255 - (ulong)(byteArray[offset - i])) * Math.Pow(2, (8 * i)));
+                output += (uint)((255 - (uint)(byteArray[offset - i])) * Math.Pow(2, (8 * i)));
             }
             return ++output;
         }

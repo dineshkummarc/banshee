@@ -180,10 +180,10 @@ namespace Banshee.Database
     public class QueuedSqliteCommand : SqliteCommand
     {
         private CommandType command_type;
-        private object result;
-        private int insert_id;
-        private Exception execution_exception;
-        private bool finished = false;
+        private volatile object result;
+        private volatile int insert_id;
+        private volatile Exception execution_exception;
+        private volatile bool finished = false;
         
         public QueuedSqliteCommand(string command) : base(command)
         {

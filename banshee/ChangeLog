@@ -1,11 +1,19 @@
+2007-07-14 Scott Peterson <scottp@gnome.org>
+	
+	* ItunesImport.cs: Minor fixes
+
+	* ItunesSmartPlaylistParser.cs: Arthimatic overflow error fix.
+
+	* QueuedSqliteDatabase.cs: Made cross-thread variables volatile.
+
 2007-07-13 Scott Peterson <scottp@gnome.org>
 
-* Banshee.Base/Banshee.PlayerMigration/ItunesImport.cs: Minor improvements to importer.
+	* Banshee.Base/Banshee.PlayerMigration/ItunesImport.cs: Minor improvements to importer.
 
-* Banshee.Base/Banshee.PlayerMigration/ItunesSmartPlaylistParser.cs: Cosmetic changes.
-
-* Banshee.Base/Gui/SourceView.cs: Changed a while loop to a do-while loop to
-  eliminate an unnecessary comparison.
+	* Banshee.Base/Banshee.PlayerMigration/ItunesSmartPlaylistParser.cs: Cosmetic changes.
+	
+	* Banshee.Base/Gui/SourceView.cs: Changed a while loop to a do-while loop to
+	  eliminate an unnecessary comparison.
 
 2007-07-12 Scott Peterson <scottp@gnome.org>
 	

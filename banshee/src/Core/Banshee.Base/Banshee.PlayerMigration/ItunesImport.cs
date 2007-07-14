@@ -91,7 +91,8 @@ namespace Banshee.PlayerMigration
 
             ThreadAssist.Spawn(delegate {
                 DoImport();
-                Done();
+                user_event.Dispose();
+                user_event = null;
             });
         }
 
@@ -212,12 +213,6 @@ namespace Banshee.PlayerMigration
             }
         }
 
-        private void Done()
-        {
-            user_event.Dispose();
-            user_event = null;
-        }
-
         private bool PromptUser()
         {
             ItunesImportDialog import_dialog = new ItunesImportDialog();
@@ -271,7 +266,6 @@ namespace Banshee.PlayerMigration
             byte rating = 0;
             uint play_count = 0;
             DateTime last_played = new DateTime();
-            bool match = false;
 
             foreach(XmlNode key in keys) {
                 if(key.Name != "key") {
@@ -283,15 +277,12 @@ namespace Banshee.PlayerMigration
                     break;
                 case "Play Count":
                     play_count = uint.Parse(key.NextSibling.InnerText);
-                    match = true;
                     break;
                 case "Play Date UTC":
                     last_played = DateTime.Parse(key.NextSibling.InnerText);
-                    match = true;
                     break;
                 case "Rating":
                     rating = byte.Parse(key.NextSibling.InnerText);
-                    match = true;
                     break;
                 case "Location":
                     location = key.NextSibling.InnerText;
