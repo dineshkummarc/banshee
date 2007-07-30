@@ -45,7 +45,7 @@ namespace Banshee.Widgets
             HasSeparator = false;
             BorderWidth = 5;
             Resizable = false;
-            Title = "";
+            Title = string.Empty;
             SkipTaskbarHint = true;
 
             VBox.Spacing = 12;

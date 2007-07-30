@@ -69,7 +69,7 @@ namespace Banshee.Cdrom.Iso.Mkisofs
             MkisofsProcess process = new MkisofsProcess();
             process.StartInfo.Arguments = String.Format(
                 "-r {0} -q -graft-points -print-size {1}",
-                use_utf8 ? "-input-charset utf8" : "",
+                use_utf8 ? "-input-charset utf8" : string.Empty,
                 graft_paths);
                 
             process.StartWait();
@@ -92,7 +92,7 @@ namespace Banshee.Cdrom.Iso.Mkisofs
             MkisofsProcess process = new MkisofsProcess();
             process.StartInfo.Arguments = String.Format(
                 "-r {0} -q -graft-points -o \"{1}\" {2}",
-                use_utf8 ? "-input-charset utf8" : "",
+                use_utf8 ? "-input-charset utf8" : string.Empty,
                 imagePath,
                 graft_paths);
 

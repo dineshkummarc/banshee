@@ -53,8 +53,7 @@ namespace Banshee.Plugins.Podcast
         {
             title = StringUtils.StripHTML (FeedUtil.GetXmlNodeText (xml_doc, "/rss/channel/title")).Trim ();
 
-            if (title == "")
-            {
+            if (title.Length == 0) {
                 throw new ApplicationException (Catalog.GetString("Feed has no title"));
             }
 

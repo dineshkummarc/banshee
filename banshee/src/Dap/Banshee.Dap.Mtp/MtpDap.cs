@@ -91,12 +91,12 @@ namespace Banshee.Dap.Mtp
                 product_id, vendor_id, type, device_name));
             
             if (type != "mtp") {
-                LogCore.Instance.PushDebug("MTP: passed device's portable_audio_player.type IS NOT mtp", "");
+                LogCore.Instance.PushDebug("MTP: passed device's portable_audio_player.type IS NOT mtp", string.Empty);
                 return InitializeResult.Invalid;
             }
 
             if (!halDevice.GetPropertyBoolean("camera.libgphoto2.support")) {
-                LogCore.Instance.PushDebug("MTP: got passed a device that has camera.libgphoto2.support = false", "");
+                LogCore.Instance.PushDebug("MTP: got passed a device that has camera.libgphoto2.support = false", string.Empty);
                 return InitializeResult.Invalid;
             }
 
@@ -128,11 +128,11 @@ namespace Banshee.Dap.Mtp
             
             if (found > 1) {
                 LogCore.Instance.PushDebug (String.Format("MTP: Found more than one matching device. " +
-                    "Something could be seriously wrong.  GPhotoDeviceID == {0}, # found = {1}", GPhotoDeviceID, found), "");
+                    "Something could be seriously wrong.  GPhotoDeviceID == {0}, # found = {1}", GPhotoDeviceID, found), string.Empty);
             }
             if (found == 0 || GPhotoDeviceID == -1) {
                 LogCore.Instance.PushDebug (String.Format("MTP: device was found in database, but libgphoto2 failed to detect it. " +
-                    "Waiting for it to come alive.  GPhotoDeviceID == {0}, # found = {1}", GPhotoDeviceID, found), "");
+                    "Waiting for it to come alive.  GPhotoDeviceID == {0}, # found = {1}", GPhotoDeviceID, found), string.Empty);
                 /** FIXME: if the usb block device for libusb has no permissions,
                   * you'll end up in this case.  Really, we need to sleep for a
                   * few hundred ms and wait for udev/hotplug/whatever.
@@ -172,7 +172,7 @@ namespace Banshee.Dap.Mtp
                 dev.InitializeCamera();
             } catch (Exception e){
                 Console.WriteLine("MTP: initialization failed with exception: {0}", e);
-                LogCore.Instance.PushWarning(String.Format("Initialization of your {0} failed.  Run banshee from a terminal, and copy the debug output and file a new bug report on bugzilla.gnome.org", device_name), "");
+                LogCore.Instance.PushWarning(String.Format("Initialization of your {0} failed.  Run banshee from a terminal, and copy the debug output and file a new bug report on bugzilla.gnome.org", device_name), string.Empty);
                 userEvent.Dispose();
                 Dispose();
             }
@@ -228,8 +228,8 @@ namespace Banshee.Dap.Mtp
         {
         try {
             int remove_total = remove_queue.Count;
-            
-            UpdateSaveProgress(Catalog.GetString("Synchronizing Device"), "", 0);
+
+            UpdateSaveProgress(Catalog.GetString("Synchronizing Device"), string.Empty, 0);
 
             while (remove_queue.Count > 0) {
                 MtpDapTrackInfo track = remove_queue.Dequeue() as MtpDapTrackInfo;
@@ -299,7 +299,7 @@ namespace Banshee.Dap.Mtp
 
 	public void Import(IEnumerable<TrackInfo> tracks, PlaylistSource playlist)
 	{
-            LogCore.Instance.PushDebug("MTP: importing tracks", "");
+        LogCore.Instance.PushDebug("MTP: importing tracks", string.Empty);
             ArrayList temp_files = new ArrayList();
             
             if (playlist != null && playlist.Count == 0) {
@@ -322,7 +322,7 @@ namespace Banshee.Dap.Mtp
             }
             
             foreach(TrackInfo track in tracks) {
-                LogCore.Instance.PushDebug(String.Format("MTP: copying {1} to /tmp for importing", track.Title), "");
+                LogCore.Instance.PushDebug(String.Format("MTP: copying {1} to /tmp for importing", track.Title), string.Empty);
                 (track as MtpDapTrackInfo).MakeFileUri();
                 /*if(!track.Uri.IsLocalPath) {
                     tracks.Remove(track);
@@ -334,7 +334,7 @@ namespace Banshee.Dap.Mtp
             foreach (TrackInfo track in tracks) {
                 if (playlist == null) {
                     if (track.Uri.IsLocalPath){
-                        LogCore.Instance.PushDebug(String.Format("MTP: adding {1} to the import queue", track.Title), "");
+                        LogCore.Instance.PushDebug(String.Format("MTP: adding {1} to the import queue", track.Title), string.Empty);
                         import_manager.Enqueue(track);
                         temp_files.Add(track.Uri.LocalPath);
                     }

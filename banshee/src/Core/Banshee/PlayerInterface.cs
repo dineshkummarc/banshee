@@ -632,7 +632,7 @@ namespace Banshee
             
             WindowPlayer.Title = track.DisplayTitle + ((track.Artist != null && track.Artist != String.Empty) 
                 ? (" (" + track.DisplayArtist + ")")
-                : "");
+                : string.Empty);
             
             try {
                 trackInfoHeader.Cover.FileName = track.CoverArtFileName;
@@ -2178,7 +2178,7 @@ namespace Banshee
                     dapSource.Device.GenericName) + (dapSource.Device.GenericName.ToLower() == "ipod" ?
                     ("\n\n" + 
                     Catalog.GetString("<b>Warning:</b> Actions will alter or erase existing iPod contents and " +
-                    "may cause incompatibility with iTunes!")) : ""),
+                    "may cause incompatibility with iTunes!")) : string.Empty),
                 Catalog.GetString("Synchronize Library"));
             
             md.AddButton(Catalog.GetString("Save Manual Changes"), Gtk.ResponseType.Apply, true);

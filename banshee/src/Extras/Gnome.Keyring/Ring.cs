@@ -57,7 +57,7 @@ namespace Gnome.Keyring {
 			}
 
 			set {
-				if (value == null || value == "")
+				if (value == null || value.Length == 0)
 					throw new ArgumentException ("Cannot be null or empty", "value");
 
 				appname = value;
@@ -78,7 +78,7 @@ namespace Gnome.Keyring {
 		static Socket Connect ()
 		{
 			string filename = Environment.GetEnvironmentVariable ("GNOME_KEYRING_SOCKET");
-			if (filename == null || filename == "")
+			if (filename == null || filename.Length == 0)
 				return null;
 
 			EndPoint ep = new UnixEndPoint (filename);

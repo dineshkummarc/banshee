@@ -71,7 +71,7 @@ namespace Banshee.Dap.Mtp
                 temp_file.Close();
                 uri = new SafeUri("file://" + temp_file.Name);
             } catch (Exception e) {
-                LogCore.Instance.PushDebug (String.Format("MTP DAP: Failed to copy track {0} locally for importing.  Exception: {1}", title, e.ToString()), "");
+                LogCore.Instance.PushDebug(String.Format("MTP DAP: Failed to copy track {0} locally for importing.  Exception: {1}", title, e.ToString()), string.Empty);
             }
         }
         

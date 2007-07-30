@@ -30,52 +30,184 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+using Banshee.Base;
+using Banshee.Sources;
+
 namespace Banshee.Cdrom
 {
-    public interface IDriveFactory : IEnumerable<IDrive>
-    {
-        event DriveHandler DriveAdded;
-        event DriveHandler DriveRemoved;
-        event MediaHandler MediaAdded;
-        event MediaHandler MediaRemoved;
-        
-        int DriveCount {
-            get;
-        }
-        
-        int RecorderCount {
-            get;
-        }
-    }
-    
     public delegate void DriveHandler(object o, DriveArgs args);
     public delegate void MediaHandler(object o, MediaArgs args);
-    
+
     public class DriveArgs : EventArgs
     {
         private IDrive recorder;
-        
+
         public DriveArgs(IDrive recorder)
         {
             this.recorder = recorder;
         }
-        
-        public IDrive Drive {
+
+        public IDrive Drive
+        {
             get { return recorder; }
         }
     }
-    
+
     public sealed class MediaArgs : DriveArgs
     {
         private bool available;
-        
-        public MediaArgs(IDrive recorder, bool available) : base(recorder)
+
+        public MediaArgs(IDrive recorder, bool available)
+            : base(recorder)
         {
             this.available = available;
         }
-        
-        public bool Available {
+
+        public bool Available
+        {
             get { return available; }
+        }
+    }
+    
+    public delegate void AudioCdDiskAddedHandler(object o, AudioCdDiskAddedArgs args);
+    public delegate void AudioCdDiskRemovedHandler(object o, AudioCdDiskRemovedArgs args);
+
+    public class AudioCdDiskRemovedArgs : EventArgs
+    {
+        public string Udi;
+    }
+
+    public class AudioCdDiskAddedArgs : EventArgs
+    {
+        public AudioCdDisk Disk;
+    }
+    
+    public abstract class DriveFactory : IEnumerable<IDrive>
+    {
+        public event DriveHandler DriveAdded;
+        public event DriveHandler DriveRemoved;
+        public event MediaHandler MediaAdded;
+        public event MediaHandler MediaRemoved;
+        public event EventHandler Updated;
+        public event AudioCdDiskAddedHandler AudioCdDiskAdded;
+        public event AudioCdDiskRemovedHandler AudioCdDiskRemoved;
+
+        protected Dictionary<string, IDrive> drives;
+        protected Dictionary<string, AudioCdDisk> disks = new Dictionary<string, AudioCdDisk>();
+
+        protected DriveFactory()
+        {
+        }
+        
+        protected virtual void OnAudioCdDiskUpdated(object o, EventArgs args)
+        {
+            HandleUpdated();
+        }
+        
+        protected virtual void HandleUpdated()
+        {
+            EventHandler handler = Updated;
+            if(handler != null) {
+                handler(this, new EventArgs());
+            }
+        }
+
+        protected virtual void OnDriveAdded(IDrive drive)
+        {
+            DriveHandler handler = DriveAdded;
+            if(handler != null) {
+                handler(this, new DriveArgs(drive));
+            }
+        }
+
+        protected virtual void OnDriveRemoved(IDrive drive)
+        {
+            DriveHandler handler = DriveRemoved;
+            if(handler != null) {
+                handler(this, new DriveArgs(drive));
+            }
+        }
+
+        protected virtual void OnMediaAdded(object o, MediaArgs args)
+        {
+            MediaHandler handler = MediaAdded;
+            if(handler != null) {
+                handler(o, args);
+            }
+        }
+
+        protected virtual void OnMediaRemoved(object o, MediaArgs args)
+        {
+            MediaHandler handler = MediaRemoved;
+            if(handler != null) {
+                handler(o, args);
+            }
+        }
+
+        protected virtual void OnAudioCdDiskAdded(object o, AudioCdDisk disk)
+        {
+            AudioCdDiskAddedHandler handler = AudioCdDiskAdded;
+            if(handler != null) {
+                AudioCdDiskAddedArgs args = new AudioCdDiskAddedArgs();
+                args.Disk = disk;
+                handler(o, args);
+            }
+
+            SourceManager.AddSource(new AudioCdSource(disk));
+        }
+
+        protected virtual void OnAudioCdDiskRemoved(object o, string udi)
+        {
+            AudioCdDiskRemovedHandler handler = AudioCdDiskRemoved;
+            if(handler != null) {
+                AudioCdDiskRemovedArgs args = new AudioCdDiskRemovedArgs();
+                args.Udi = udi;
+                handler(o, args);
+            }
+
+            foreach(Source source in SourceManager.Sources) {
+                AudioCdSource audio_cd_source = source as AudioCdSource;
+                if(audio_cd_source != null && audio_cd_source.Disk.Udi == udi) {
+                    SourceManager.RemoveSource(source);
+                    break;
+                }
+            }
+        }
+
+        public virtual IEnumerator<IDrive> GetEnumerator()
+        {
+            return drives.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return drives.Values.GetEnumerator();
+        }
+
+        public virtual ICollection<AudioCdDisk> Disks
+        {
+            get { return disks.Values; }
+        }
+
+        public virtual int DriveCount
+        {
+            get { return drives.Count; }
+        }
+
+        public virtual int RecorderCount
+        {
+            get
+            {
+                int count = 0;
+
+                foreach(IDrive drive in drives.Values) {
+                    if(drive is IRecorder) {
+                        count++;
+                    }
+                }
+
+                return count;
+            }
         }
     }
 }

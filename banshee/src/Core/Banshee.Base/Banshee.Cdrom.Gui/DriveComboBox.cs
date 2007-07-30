@@ -35,15 +35,15 @@ namespace Banshee.Cdrom.Gui
 {
     public class DriveComboBox : ComboBox
     {
-        private IDriveFactory factory;
+        private DriveFactory factory;
         private ListStore list;
         private bool recorders_only;
         
-        public DriveComboBox(IDriveFactory factory) : this(factory, true)
+        public DriveComboBox(DriveFactory factory) : this(factory, true)
         {
         }
         
-        public DriveComboBox(IDriveFactory factory, bool recordersOnly)
+        public DriveComboBox(DriveFactory factory, bool recordersOnly)
         {
             this.factory = factory;
             this.recorders_only = recordersOnly;
@@ -118,7 +118,7 @@ namespace Banshee.Cdrom.Gui
             }   
         }
         
-        public IDriveFactory Factory {
+        public DriveFactory Factory {
             get { return factory; }
         }
     }

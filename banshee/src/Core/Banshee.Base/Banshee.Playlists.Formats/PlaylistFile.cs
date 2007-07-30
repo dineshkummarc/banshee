@@ -30,7 +30,7 @@ namespace Banshee.Playlists.Formats
             string title = ti.Title;
             
             if (title == null) {
-                title = "";
+                title = string.Empty;
             } else {
                 title = title.Trim();
             }

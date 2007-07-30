@@ -45,6 +45,7 @@ namespace Banshee.MediaEngine.DirectSound
         {
             if (audio != null) {
                 audio.Stop();
+                audio.Dispose();
                 timer.Stop();
             }
             base.Close();
@@ -66,6 +67,7 @@ namespace Banshee.MediaEngine.DirectSound
         {
             try {
                 audio = new Audio(uri.AbsolutePath, false);
+                audio.Ending += new EventHandler(audio_Ending);
                 if(timer == null) {
                     timer = new Timer(500);
                     timer.AutoReset = true;
@@ -77,7 +79,13 @@ namespace Banshee.MediaEngine.DirectSound
             }
         }
 
-        void timer_Elapsed(object sender, ElapsedEventArgs e)
+        private void audio_Ending(object sender, EventArgs e)
+        {
+            Close();
+            OnEventChanged(PlayerEngineEvent.EndOfStream);
+        }
+
+        private void timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             OnEventChanged(PlayerEngineEvent.Iterate);
         }

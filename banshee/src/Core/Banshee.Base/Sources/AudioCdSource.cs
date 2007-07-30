@@ -146,9 +146,9 @@ namespace Banshee.Sources
                 new Gtk.ActionEntry("DuplicateDiscAction", null, 
                     Catalog.GetString("Copy CD"), null, null, 
                     delegate { 
-                        foreach(Banshee.Cdrom.IDrive drive in Banshee.Burner.BurnerCore.DriveFactory) {
+                        foreach(Banshee.Cdrom.IDrive drive in Banshee.Cdrom.CdromCore.DriveFactory) {
                             if(drive.Device == disk.DeviceNode) {
-                                Banshee.Burner.BurnerCore.DiscDuplicator.Duplicate(drive);
+                                Banshee.Cdrom.CdromCore.DiscDuplicator.Duplicate(drive);
                                 return;
                             }
                         }

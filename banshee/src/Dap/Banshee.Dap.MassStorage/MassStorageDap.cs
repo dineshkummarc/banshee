@@ -191,7 +191,7 @@ namespace Banshee.Dap.MassStorage
                 InstallProperty(Catalog.GetString("Vendor"), player_device["info.vendor"]);
             }
 
-            if(AudioFolders.Length > 1 || AudioFolders[0] != "") {
+            if(AudioFolders.Length > 1 || AudioFolders[0].Length != 0) {
                 InstallProperty(String.Format(
                     Catalog.GetPluralString("Audio Folder", "Audio Folders", AudioFolders.Length), AudioFolders.Length),
                     System.String.Join("\n", AudioFolders)
@@ -476,7 +476,7 @@ namespace Banshee.Dap.MassStorage
         public override Gdk.Pixbuf GetIcon(int size)
         {
             string prefix = "multimedia-player";
-            Gdk.Pixbuf icon = IconThemeUtils.LoadIcon(prefix + ((IconId == null) ? "" : "-" + IconId), size);
+            Gdk.Pixbuf icon = IconThemeUtils.LoadIcon(prefix + ((IconId == null) ? string.Empty : "-" + IconId), size);
             return icon == null ? base.GetIcon(size) : icon;
         }
 
@@ -675,7 +675,7 @@ namespace Banshee.Dap.MassStorage
                     if(player_device.PropertyExists("portable_audio_player.audio_folders")) {
                         audio_folders = player_device.GetPropertyStringList("portable_audio_player.audio_folders");
                     } else {
-                        audio_folders = new string [] {""};
+                        audio_folders = new string[] { string.Empty };
                     }
                 }
 

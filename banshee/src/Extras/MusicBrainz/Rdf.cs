@@ -79,7 +79,7 @@ namespace MusicBrainz
             MBE_ArtistGetArtistSortName =
              "http://musicbrainz.org/mm/mm-2.1#sortName",
             MBE_ArtistGetArtistId =
-             "",
+             string.Empty,
             MBE_ArtistGetAlbumName =
              "http://musicbrainz.org/mm/mm-2.1#albumList [] http://purl.org/dc/elements/1.1/title",
             MBE_ArtistGetAlbumId =
@@ -87,7 +87,7 @@ namespace MusicBrainz
             MBE_AlbumGetAlbumName =
              "http://purl.org/dc/elements/1.1/title",
             MBE_AlbumGetAlbumId =
-             "",
+             string.Empty,
             MBE_AlbumGetAlbumStatus =
              "http://musicbrainz.org/mm/mm-2.1#releaseStatus",
             MBE_AlbumGetAlbumType =
@@ -123,7 +123,7 @@ namespace MusicBrainz
             MBE_TrackGetTrackName =
              "http://purl.org/dc/elements/1.1/title",
             MBE_TrackGetTrackId =
-             "",
+             string.Empty,
             MBE_TrackGetTrackNum =
              "http://musicbrainz.org/mm/mm-2.1#trackNum",
             MBE_TrackGetTrackDuration =

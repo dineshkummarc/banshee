@@ -70,9 +70,9 @@ namespace Banshee.Base
                 }
                 
                 if(prepend_empty) {
-                    xml_langs.Insert(0, "");
+                    xml_langs.Insert(0, string.Empty);
                 } else {
-                    xml_langs.Add("");
+                    xml_langs.Add(string.Empty);
                 }
                 
                 instance_xml_languages = xml_langs.ToArray();

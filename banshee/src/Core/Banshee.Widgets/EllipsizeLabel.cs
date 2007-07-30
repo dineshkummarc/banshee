@@ -45,7 +45,7 @@ namespace Banshee.Widgets
 		[DllImport("libgobject-2.0-0.dll")]
 		static extern void g_object_set(IntPtr obj, string property, int value, IntPtr nullarg);
 
-		public EllipsizeLabel() : base ("")
+		public EllipsizeLabel() : base (string.Empty)
 		{
 			GType gtype = (GType)typeof(Label);
 			IntPtr klass = g_type_class_peek(gtype.Val);

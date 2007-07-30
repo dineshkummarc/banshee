@@ -141,9 +141,7 @@ namespace Banshee.Plugins.Audioscrobbler {
                 XmlNodeList nodes = doc.SelectNodes (query);
 
                 foreach (XmlNode node in nodes) {
-                    string artist = "";    
-                    string album = "";
-                    string title = "";
+                    string artist, album, title = string.Empty;
                     int duration = 0;
                     DateTime start_time = new DateTime (0);
 
@@ -184,7 +182,7 @@ namespace Banshee.Plugins.Audioscrobbler {
                          HttpUtility.UrlEncode (track.Artist),
                          HttpUtility.UrlEncode (track.Title),
                          HttpUtility.UrlEncode (track.Album),
-                         "" /* musicbrainz id */,
+                         string.Empty /* musicbrainz id */,
                          track.Duration.ToString (),
                          HttpUtility.UrlEncode (track.StartTime.ToString ("yyyy-MM-dd HH:mm:ss")),
                          i);

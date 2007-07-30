@@ -55,14 +55,14 @@ namespace Banshee.Burner
         public BurnerOptionsDialog(BurnerSource burnerSource) : base("BurnerOptionsDialog")
         {
             source = burnerSource;
-            
-            BurnerCore.DriveFactory.DriveAdded += OnDriveEvent;
-            BurnerCore.DriveFactory.DriveRemoved += OnDriveEvent;
-            
-            drive_combo = new DriveComboBox(BurnerCore.DriveFactory);
+
+            CdromCore.DriveFactory.DriveAdded += OnDriveEvent;
+            CdromCore.DriveFactory.DriveRemoved += OnDriveEvent;
+
+            drive_combo = new DriveComboBox(CdromCore.DriveFactory);
             
             if(source.Session.Recorder == null) {
-                foreach(IDrive drive in BurnerCore.DriveFactory) {
+                foreach (IDrive drive in CdromCore.DriveFactory) {
                     if(drive is IRecorder) {
                         source.Session.Recorder = drive as IRecorder;
                         break;
@@ -134,7 +134,7 @@ namespace Banshee.Burner
         
         private void OnDriveEvent(object o, EventArgs args)
         {
-            bool show_selector = BurnerCore.DriveFactory.RecorderCount > 1;
+            bool show_selector = CdromCore.DriveFactory.RecorderCount > 1;
             disc_drive_label.Visible = show_selector;
             drive_combo.Visible = show_selector;
         }

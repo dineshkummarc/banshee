@@ -1,3 +1,33 @@
+2007-07-29 Scott Peterson <scottp@gnome.org>
+	Major rework of the CD audio playback architecture and a Windows CD implementation.
+	Significant memory improvement to iTunes importing. Other various improvements.
+	
+    * AudioCd/AudioCdCore.cs: Removed (some functionality moved to CdromCore.cs)
+    
+    * AudioCd/AudioCdDisk.cs: Changed to NautilusAudioCdDisk.cs.
+    
+    * AudioCd/AudioCdTrackInfo.cs: Moved to Banshee.Cdrom/AudioCdTrackInfo.cs
+    
+    * IAudioCdDisk.cs: Added as an abstraction of AudioCdDisk. Implemented by NautilusAudioCdDisk
+	  and WindowsAudioCdDisk.
+    
+    * AudioCdRipper.cs, BurnerCore.cs, BurnerOptionsDialog.cs, BurnerSource.cs,
+      DriveComboBox.cs, RecorderSpeedComboBox.cs, MkisofsImageCreator.cs: Update to reference
+      new architecture.
+    
+    * NautilusDriveFactory.cs: Reworked to implement new architecture.
+    
+    * Banshee.Cdrom.Windows/*, Banshee.Cdrom.Windows.Interop/*: Added windows CD rom implementation.
+    
+    * CdromCore.cs: Added
+    
+    * IDriveFactory.cs: Modified to implement new architecture.
+    
+    * Banshee.Playmigration/ItunesImporter, Banshee.Playmigration/SmartPlaylistParser: Changed to
+      use XmlTextReader rather than XmlDocument. Big memory savings.
+      
+    * Everything else: Minor improvements (e.g. using string.Empty instead of "")
+
 2007-07-14 Scott Peterson <scottp@gnome.org>
 	
 	* ItunesImport.cs: Minor fixes

@@ -475,14 +475,14 @@ namespace Banshee.Plugins.Radio
 
         public static readonly SchemaEntry<string> LastUpdatedSchema = new SchemaEntry<string>(
             "plugins.radio", "last_updated",
-            "",
+            string.Empty,
             "Time of the last radio update",
             "Last time XSPF stations were updated from radio.banshee-project.org"
         );
 
         public static readonly SchemaEntry<string> LastUpdateCheckSchema = new SchemaEntry<string>(
             "plugins.radio", "last_update_check",
-            "",
+            string.Empty,
             "Time of the last radio update check",
             "Last time the master station list was checked for updates"
         );

@@ -178,7 +178,7 @@ namespace Banshee.Widgets
                 LeaveNotifyEvent += OnLeaveNotifyEvent;
                
                 image = new Gtk.Image();
-                label = new Label("");
+                label = new Label(string.Empty);
                 label.CanFocus = false;
                 
                 label.ModifyBg(StateType.Normal, new Color(0, 0, 0));

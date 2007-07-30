@@ -97,7 +97,7 @@ namespace Banshee.Gui.Dialogs
                     DateTime time = (DateTime)log_store.GetValue(iter, 1);
                     (cell as CellRendererText).Text = time.ToString();
                 } catch(Exception) {
-                    (cell as CellRendererText).Text = "";
+                    (cell as CellRendererText).Text = string.Empty;
                 }
             });
             date_column.SortColumnId = 1;

@@ -534,7 +534,7 @@ namespace Banshee.Dap
             get {
                 string filter = String.Empty;
                 for(int i = 0, n = SupportedExtensions.Length; i < n; i++) {
-                    filter += String.Format("{0}{1}", SupportedExtensions[i], (i < n - 1) ? "," : "");
+                    filter += String.Format("{0}{1}", SupportedExtensions[i], (i < n - 1) ? "," : string.Empty);
                 }
                 return filter;
             }

@@ -115,7 +115,7 @@ public class AltProgressBar : Widget
 				barX, barY, barWidth, barHeight);
 				
 			Gtk.Style.PaintShadow(this.Style, GdkWindow, StateType.Selected,
-				ShadowType.Out, expose.Area, this, "",
+				ShadowType.Out, expose.Area, this, string.Empty,
 				barX, barY, barWidth, barHeight);
 		}
                 

@@ -96,9 +96,9 @@ namespace Banshee.Plugins.Audioscrobbler
             table = new PropertyTable();
             table.RowSpacing = 5;
             table.Sensitive = toggle_enable_button.Active;
-            
-            user_entry = table.AddEntry(Catalog.GetString("Last.fm Username"), "", false);
-            pass_entry = table.AddEntry(Catalog.GetString("Last.fm Password"), "", false);
+
+            user_entry = table.AddEntry(Catalog.GetString("Last.fm Username"), string.Empty, false);
+            pass_entry = table.AddEntry(Catalog.GetString("Last.fm Password"), string.Empty, false);
             pass_entry.Visibility = false;
             user_entry.Text = plugin.Username;
             pass_entry.Text = plugin.Password;

@@ -113,7 +113,7 @@ namespace Banshee.Dap
                 }
              }
 
-            LogCore.Instance.PushWarning("Unknown DAP mimetype " + mimeType, "", false);
+             LogCore.Instance.PushWarning("Unknown DAP mimetype " + mimeType, string.Empty, false);
             return null;
         } 
 

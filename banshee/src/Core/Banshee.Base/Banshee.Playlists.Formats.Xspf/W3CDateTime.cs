@@ -149,7 +149,7 @@ namespace Banshee.Playlists.Formats.Xspf
         {
             switch(format) {
                 case "X":
-                    return datetime.ToString(@"ddd, dd MMM yyyy HH\:mm\:ss ") + FormatOffset(offset, "");
+                    return datetime.ToString(@"ddd, dd MMM yyyy HH\:mm\:ss ") + FormatOffset(offset, string.Empty);
                 case "W":
                     return datetime.ToString(@"yyyy-\MM\-ddTHH\:mm\:ss") + FormatOffset(offset, ":");
                 default:

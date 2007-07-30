@@ -298,9 +298,9 @@ namespace Banshee.SmartPlaylist
 
         private void Update()
         {
-            if (name_entry.Text == "") {
+            if (name_entry.Text.Length == 0) {
                 ok_button.Sensitive = false;
-                //already_in_use_label.Markup = "";
+                //already_in_use_label.Markup = string.Empty;
             } else {
                 object res = Globals.Library.Db.QuerySingle(new DbCommand(
                     "SELECT Name FROM SmartPlaylists WHERE lower(Name) = lower(:name)",
@@ -312,7 +312,7 @@ namespace Banshee.SmartPlaylist
                     //already_in_use_label.Markup = "<small>" + Catalog.GetString ("This name is already in use") + "</small>";
                 } else {
                     ok_button.Sensitive = true;
-                    //already_in_use_label.Markup = "";
+                    //already_in_use_label.Markup = string.Empty;
                 }
             }
         }
@@ -361,7 +361,7 @@ namespace Banshee.SmartPlaylist
             }
             
             set {
-                if (value != null && value != "" && value != "0") {
+                if (value != null && value.Length != 0 && value != "0") {
                     builder.Limit = true;
                     builder.LimitNumber = value;
                 }

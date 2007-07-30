@@ -128,7 +128,7 @@ namespace Banshee
                 /*Process current_process = Process.GetCurrentProcess();
                 foreach(Process process in Process.GetProcesses()) {
                     if(process.ProcessName == current_process.ProcessName && process.Id != current_process.Id) {
-                        Console.WriteLine(Catalog.GetString(""));
+                        Console.WriteLine(Catalog.GetString(string.Empty));
                         Console.WriteLine(Catalog.GetString("Banshee is already running. If you were trying " + 
                             "to control the already running instance of Banshee, D-Bus must be enabled. " +
                             "Banshee could not connect to your D-Bus Session Bus."));
@@ -338,7 +338,7 @@ namespace Banshee
                         : "<" + layout.ValueKind + ">", layout.Description);
             }
 
-            Console.WriteLine("");
+            Console.WriteLine(string.Empty);
             
             System.Environment.Exit(0);
         }

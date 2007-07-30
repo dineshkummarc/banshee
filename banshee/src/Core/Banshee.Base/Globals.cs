@@ -58,7 +58,6 @@ namespace Banshee.Base
         private static ActionManager action_manager;
         private static Library library;
         private static ArgumentQueue argument_queue;
-        private static AudioCdCore audio_cd_core;
         private static Random random;
         private static DBusRemote dbus_remote;
         private static DBusPlayer dbus_player;
@@ -166,8 +165,8 @@ namespace Banshee.Base
             
             startup.Register(Catalog.GetString("Initializing audio engine"), PlayerEngineCore.Initialize);
             
-            startup.Register(Catalog.GetString("Initializing audio CD support"), true, 
-                Catalog.GetString("Audio CD support will be disabled for this instance"), delegate { audio_cd_core = new AudioCdCore(); });
+            /*startup.Register(Catalog.GetString("Initializing audio CD support"), true, 
+                Catalog.GetString("Audio CD support will be disabled for this instance"), delegate { audio_cd_core = new AudioCdCore(); });*/
                 
             startup.Register(Catalog.GetString("Initializing digital audio player support"), true, 
                 Catalog.GetString("DAP support will be disabled for this instance"), Banshee.Dap.DapCore.Initialize);
@@ -299,10 +298,6 @@ namespace Banshee.Base
         public static ArgumentQueue ArgumentQueue {
             set { argument_queue = value; }
             get { return argument_queue; }
-        }
-        
-        public static AudioCdCore AudioCdCore {
-            get { return audio_cd_core; }
         }
         
         public static Random Random {

@@ -103,8 +103,8 @@ namespace Banshee.Plugins.Radio
             if(station == null) {
                 return null;
             }
-            
-            return System.Text.RegularExpressions.Regex.Replace(station, @"[^A-Za-z0-9]*", "").ToLower();
+
+            return System.Text.RegularExpressions.Regex.Replace(station, @"[^A-Za-z0-9]*", string.Empty).ToLower();
         }
         
         private void SaveExpansion(TreeIter iter, bool value)

@@ -42,8 +42,6 @@ namespace Banshee.Burner
     public static class BurnerCore
     {
         private static bool initialized = false;
-        private static IDriveFactory drive_factory;
-        private static IDiscDuplicator disc_duplicator;
         private static List<BurnerSource> burners = new List<BurnerSource>();
     
         public static void Initialize()
@@ -68,10 +66,7 @@ namespace Banshee.Burner
                 }
             };
             
-            drive_factory = new Banshee.Cdrom.Nautilus.NautilusDriveFactory();
-            disc_duplicator = new Banshee.Cdrom.Nautilus.NautilusDiscDuplicator();
-            
-            foreach(IDrive drive in drive_factory) {
+            foreach(IDrive drive in CdromCore.DriveFactory) {
                 if(!(drive is IRecorder)) {
                     continue;
                    }
@@ -80,8 +75,8 @@ namespace Banshee.Burner
                     CreateSource(drive as IRecorder);
                 }
             }
-            
-            drive_factory.MediaAdded += delegate(object o, MediaArgs args) {
+
+            CdromCore.DriveFactory.MediaAdded += delegate(object o, MediaArgs args) {
                 if(!(args.Drive is IRecorder)) {
                     return;
                 }
@@ -106,8 +101,8 @@ namespace Banshee.Burner
                     }
                 }
             };
-            
-            drive_factory.MediaRemoved += delegate(object o, MediaArgs args) {
+
+            CdromCore.DriveFactory.MediaRemoved += delegate(object o, MediaArgs args) {
                 BurnerSource source = FindSourceForDrive(args.Drive, false);
                 if(source != null && source.Count <= 0) {
                     source.Unmap();
@@ -160,7 +155,7 @@ namespace Banshee.Burner
         
         private static BurnerSource CreateSource(IRecorder recorder)
         {
-            if(drive_factory == null || drive_factory.RecorderCount <= 0) {
+            if (CdromCore.DriveFactory.RecorderCount <= 0) {
                 LogCore.Instance.PushWarning(
                     Catalog.GetString("Problem creating CD"),
                     Catalog.GetString("No CD recording hardware was found."));
@@ -184,14 +179,6 @@ namespace Banshee.Burner
             if(source != null) {
                 SourceManager.SetActiveSource(source);
             }
-        }
-        
-        public static IDriveFactory DriveFactory {
-            get { return drive_factory; }
-        }
-        
-        public static IDiscDuplicator DiscDuplicator {
-            get { return disc_duplicator; }
         }
     }
 }

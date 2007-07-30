@@ -72,7 +72,7 @@ namespace Banshee.Base
             } 
         }
         
-        public string Device { 
+        public string DeviceNode { 
             get { return disk.DeviceNode; } 
         }
         

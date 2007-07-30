@@ -138,7 +138,7 @@ namespace Mono.Zeroconf
         
         public override string ToString()
         {
-            string ret = String.Empty;
+            string ret = string.Empty;
             int i = 0;
             int count = Count;
             

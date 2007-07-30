@@ -55,7 +55,7 @@ namespace Banshee.SmartPlaylist
             if (text)
                 return String.Format (format, "'", column, value1, value2);
             else
-                return String.Format (format, "", column, value1, value2);
+                return String.Format(format, string.Empty, column, value1, value2);
         }
 
         public bool MatchesCondition (string condition, out string column, out string value1, out string value2) {

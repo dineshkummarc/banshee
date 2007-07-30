@@ -48,15 +48,15 @@ namespace Banshee.Gui.Dialogs
             foreach(ProductAuthor author in ProductInformation.Authors) {
                 authors.Add(String.Format("    {0} ({1})", author.Name, author.Role));
             }
-            
-            authors.Add("");
+
+            authors.Add(string.Empty);
             authors.Add(Catalog.GetString("Contributors"));
             
             foreach(string author in ProductInformation.Contributors) {
                 authors.Add(String.Format("    {0}", author));
             }
-            
-            authors.Add("");
+
+            authors.Add(string.Empty);
             
             // build translators page
             StringBuilder translation_credits = new StringBuilder();

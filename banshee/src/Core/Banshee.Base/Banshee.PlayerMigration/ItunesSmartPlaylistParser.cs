@@ -226,9 +226,7 @@ namespace Banshee.PlayerMigration
             criteria = c;
             ItunesSmartPlaylist result = new ItunesSmartPlaylist();
             offset = FIELDOFFSET;
-            output = "";
-            query = "";
-            ignore = "";
+            output = query = ignore = string.Empty;
 
             if(info[MATCHBOOLOFFSET] == 1) {
                 or = (criteria[LOGICTYPEOFFSET] == 1) ? true : false;
@@ -391,7 +389,7 @@ namespace Banshee.PlayerMigration
             }
             working_output += "\"";
             byte[] character = new byte[1];
-            string content = "";
+            string content = String.Empty;
             bool onByte = true;
             for(int i = (string_offset); i < criteria.Length; i++) {
                 // Off bytes are 0
@@ -418,7 +416,7 @@ namespace Banshee.PlayerMigration
                working_output += "\" ";
                bool failed = false;
                if(criteria[offset] == (byte)StringFields.Kind) {
-                   working_query = "";
+                   working_query = string.Empty;
                 foreach(Kind kind in Kinds) {
                     if(KindEval(kind, content)) {
                         if(working_query.Length > 0) {

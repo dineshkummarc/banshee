@@ -106,8 +106,8 @@ namespace Banshee
                 } else {
                     // icon wasn't available in the theme, try to load it as stock from a resource file
                     Pixbuf default_pixbuf = null;
-                
-                    foreach(string postfix in new string [] { "", "-16", "-24", "-48" }) {
+
+                    foreach (string postfix in new string[] { string.Empty, "-16", "-24", "-48" }) {
                         string resource_name = item.StockId + postfix + ".png";
                         if(entry_asm.GetManifestResourceInfo(resource_name) == null) {
                             continue;

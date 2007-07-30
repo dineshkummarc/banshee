@@ -27,6 +27,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using Mono.Unix;
+using Gtk;
 
 using Banshee.Base;
 using Banshee.IO;
@@ -46,16 +47,16 @@ namespace Banshee.PlayerMigration
             public bool get_ratings, get_stats, get_playlists, get_smart_playlists, local_library;
             public uint total_songs, total_processed, total_count, ratings_count, stats_count, playlists_count, smart_playlists_count;
             public List<ItunesSmartPlaylist> partial_smart_playlists, failed_smart_playlists;
+            public volatile bool canceled;
                 
         }
+
         private static ItunesImport instance;
-        public static PlayerImport Instance
-        {
+        public static PlayerImport Instance {
             get {
                 if(instance == null) {
                     instance = new ItunesImport();
                 }
-                
                 return instance;
             }
         }
@@ -64,16 +65,14 @@ namespace Banshee.PlayerMigration
         {
         }
         
-        public override string Name
-        {
+        public override string Name {
             get { return Catalog.GetString ("iTunes"); }
         }
-        public static bool CanImport
-        {
+
+        public static bool CanImport {
             get { return true; }
         }
-        
-        private volatile bool canceled;
+
         private ItunesImportData data;
 
         public override void Import()
@@ -86,137 +85,21 @@ namespace Banshee.PlayerMigration
 
             CreateUserEvent();
             user_event.CancelRequested += delegate {
-                canceled = true;
+                data.canceled = true;
             };
 
             ThreadAssist.Spawn(delegate {
                 DoImport();
                 user_event.Dispose();
                 user_event = null;
+                data = null;
             });
-        }
-
-        protected override void DoImport()
-        {
-            canceled = false;
-            CheckDatabase();
-
-            // TODO check version
-            XmlDocument xml_document = new XmlDocument();
-            xml_document.Load(data.library_uri);
-            XmlNode node = xml_document.FirstChild.NextSibling.NextSibling.FirstChild.FirstChild;
-            while (node.Name != "dict")
-            {
-                switch (node.InnerText) {
-                    case "Major Version":
-                        goto case "Version";
-                    case "Minor Version":
-                        goto case "Version";
-                    case "Version":
-                        if (node.NextSibling.InnerText != "1") {
-                            // TODO prompt user to continue anyway
-                            Banshee.Sources.ImportErrorsSource.Instance.AddError(data.library_uri,
-                                "Unsupported version", null);
-                            return;
-                        }
-                        break;
-                    case "Music Folder":
-                        if(data.local_library) {
-                            break;
-                        }
-                        string[] itunes_music_uri_parts = ConvertToLocalUriFormat(node.NextSibling.InnerText).
-                            Split(Path.DirectorySeparatorChar);
-                        string[] library_uri_parts = Path.GetDirectoryName(data.library_uri).Split(Path.DirectorySeparatorChar);
-
-                        string itunes_dir_name = library_uri_parts[library_uri_parts.Length - 1];
-                        int i = 0;
-                        bool found = false;
-                        for (i = itunes_music_uri_parts.Length - 1; i >= 0; i--) {
-                            if (itunes_music_uri_parts[i] == itunes_dir_name) {
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found) {
-                            Banshee.Sources.ImportErrorsSource.Instance.AddError(data.library_uri,
-                              "Unable to locate iTunes directory from iTunes URI", null);
-                            return;
-                        }
-
-                        string[] local_prefix_parts = new string[library_uri_parts.Length + (itunes_music_uri_parts.Length - i) - 1];
-                        for (int j = 0; j < library_uri_parts.Length - 1; j++) {
-                            local_prefix_parts[j] = library_uri_parts[j];
-                        }
-                        for (int j = i; j < itunes_music_uri_parts.Length; j++) {
-                            local_prefix_parts[local_prefix_parts.Length - (itunes_music_uri_parts.Length - j)] = itunes_music_uri_parts[j];
-                        }
-
-                        string[] tmp_query_dirs = new string[itunes_music_uri_parts.Length];
-                        string upstream_uri;
-                        string tmp_upstream_uri = null;
-                        int step = 0;
-                        do {
-                            upstream_uri = tmp_upstream_uri;
-                            tmp_upstream_uri = Path.GetPathRoot(data.library_uri);
-                            for (int j = 0; j < library_uri_parts.Length - step - 1; j++) {
-                                tmp_upstream_uri = Path.Combine(tmp_upstream_uri, library_uri_parts[j]);
-                            }
-                            tmp_upstream_uri = Path.Combine(tmp_upstream_uri, itunes_music_uri_parts[i - step]);
-                            data.fallback_dir = tmp_query_dirs[step] = itunes_music_uri_parts[i - step];
-                            step++;
-                        }
-                        while (IOProxy.Directory.Exists(tmp_upstream_uri));
-                        if (upstream_uri == null) {
-                            Banshee.Sources.ImportErrorsSource.Instance.AddError(data.library_uri,
-                              "Unable to reslove iTunes URIs to local URIs", null);
-                            return;
-                        }
-                        data.query_dirs = new string[step - 2];
-                        data.default_query = "";
-
-                        for (int j = step - 2; j >= 0; j--) {
-                            if (j > 0) {
-                                data.query_dirs[j - 1] = tmp_query_dirs[j];
-                            }
-                            data.default_query += tmp_query_dirs[j] + Path.DirectorySeparatorChar;
-
-                        }
-
-                        data.local_prefix = "";
-                        for (int j = 0; j < step; j++) {
-                            data.local_prefix += local_prefix_parts[j] + Path.DirectorySeparatorChar;
-                        }
-                        break;
-                }
-                node = node.NextSibling;
-            }
-            data.total_songs = (uint)node.ChildNodes.Count / 2;
-            foreach (XmlNode dict in node.ChildNodes) {
-                if (dict.Name == "dict") {
-                    ProcessSong(dict.ChildNodes);
-                    if (canceled) {
-                        return;
-                    }
-                }
-            }
-            user_event.Header = Catalog.GetString("Importing Playlists");
-            user_event.Progress = 0;
-            if (data.get_playlists || data.get_smart_playlists) {
-                XmlNode playlist_array = node.NextSibling.NextSibling;
-                XmlNodeList playlist_dicts = playlist_array.ChildNodes;
-                for (int i = 1; i < playlist_dicts.Count; i++) {
-                    ProcessPlaylist(playlist_dicts[i]);
-                    if (canceled) {
-                        return;
-                    }
-                }
-            }
         }
 
         private bool PromptUser()
         {
             ItunesImportDialog import_dialog = new ItunesImportDialog();
-            if(import_dialog.Run() == (int)Gtk.ResponseType.Ok) {
+            if(import_dialog.Run() == (int)ResponseType.Ok) {
                 data.library_uri = import_dialog.LibraryUri;
                 data.get_ratings = import_dialog.Ratings;
                 data.get_stats = import_dialog.Stats;
@@ -225,10 +108,48 @@ namespace Banshee.PlayerMigration
                 data.local_library = import_dialog.LocalLibrary;
             }
             import_dialog.Destroy();
+            import_dialog.Dispose();
 
             if(data.library_uri == null || data.library_uri.Length == 0) {
                 return false;
             }
+
+            // Make sure the library version is supported (version 1.1)
+            string message = null;
+            bool prompt = false;
+            XmlReader xml_reader = new XmlTextReader(data.library_uri);
+            xml_reader.ReadToFollowing("key");
+            do {
+                xml_reader.Read();
+                string key = xml_reader.ReadContentAsString();
+                if(key == "Major Version" || key == "Minor Version") {
+                    xml_reader.Read();
+                    xml_reader.Read();
+                    if(xml_reader.ReadContentAsString() != "1") {
+                        message = Catalog.GetString("Banshee is not familiar with this version of the iTunes library format." +
+                            " Importing may or may not work as expected, or at all. Would you like to attempt to import anyway?");
+                        prompt = true;
+                        break;
+                    }
+                }
+            } while(xml_reader.ReadToNextSibling("key"));
+            xml_reader.Close();
+
+            if(prompt) {
+                bool proceed = false;
+                using(MessageDialog dialog = new MessageDialog(null, 0, MessageType.Question, ButtonsType.YesNo, message)) {
+                    if(dialog.Run() == (int)ResponseType.Yes) {
+                        proceed = true;
+                    }
+                    dialog.Destroy();
+                }
+                if(!proceed) {
+                    Banshee.Sources.ImportErrorsSource.Instance.AddError(data.library_uri,
+                        "Unsupported version", null);
+                    return false;
+                }
+            }
+
             if(data.get_smart_playlists) {
                 data.partial_smart_playlists = new List<ItunesSmartPlaylist>();
                 data.failed_smart_playlists = new List<ItunesSmartPlaylist>();
@@ -236,21 +157,32 @@ namespace Banshee.PlayerMigration
             return true;
         }
 
+        protected override void DoImport()
+        {
+            data.canceled = false;
+            CheckDatabase();
+            CountSongs();
+            XmlReader xml_reader = new XmlTextReader(data.library_uri);
+            ProcessLibraryXml(xml_reader);
+            xml_reader.Close();
+        }
+
         private void CheckDatabase()
         {
             try {
                 Globals.Library.Db.Execute("SELECT ItunesSynced FROM Tracks");
             } catch(Exception e) {
-                if (e.Message != "no such column: ItunesSynced") {
+                if(e.Message != "no such column: ItunesSynced") {
                     throw e;
                 }
                 Globals.Library.Db.Execute("ALTER TABLE Tracks ADD ItunesSynced INTEGER");
                 Globals.Library.Db.Execute("UPDATE Tracks SET ItunesSynced = 0");
             }
+
             try {
                 Globals.Library.Db.Execute("SELECT ItunesID FROM Tracks");
             } catch(Exception e) {
-                if (e.Message != "no such column: ItunesID") {
+                if(e.Message != "no such column: ItunesID") {
                     throw e;
                 }
                 Globals.Library.Db.Execute("ALTER TABLE Tracks ADD ItunesID INTEGER");
@@ -258,8 +190,131 @@ namespace Banshee.PlayerMigration
                 Globals.Library.Db.Execute("UPDATE Tracks SET ItunesID = 0");
             }
         }
-            
-        private void ProcessSong(XmlNodeList keys)
+
+        private void CountSongs()
+        {
+            XmlTextReader xml_reader = new XmlTextReader(data.library_uri);
+            xml_reader.ReadToDescendant("dict");
+            xml_reader.ReadToDescendant("dict");
+            xml_reader.ReadToDescendant("dict");
+            do {
+                data.total_songs++;
+            } while(xml_reader.ReadToNextSibling("dict"));
+            xml_reader.Close();
+        }
+        
+        private void ProcessLibraryXml(XmlReader xml_reader)
+        {
+            while(xml_reader.ReadToFollowing("key") && !data.canceled) {
+                xml_reader.Read();
+                string key = xml_reader.ReadContentAsString();
+                xml_reader.Read();
+                xml_reader.Read();
+
+                switch(key) {
+                case "Music Folder":
+                    if(!data.local_library && !ProcessMusicFolderPath(xml_reader.ReadContentAsString())) {
+                        return;
+                    }
+                    break;
+                case "Tracks":
+                    ProcessSongs(xml_reader.ReadSubtree());
+                    break;
+                case "Playlists":
+                    if(data.get_playlists || data.get_smart_playlists) {
+                        ProcessPlaylists(xml_reader.ReadSubtree());
+                    }
+                    break;
+                }
+            }
+        }
+
+        private bool ProcessMusicFolderPath(string path)
+        {
+            string[] itunes_music_uri_parts = ConvertToLocalUriFormat(path).Split(Path.DirectorySeparatorChar);
+            string[] library_uri_parts = Path.GetDirectoryName(data.library_uri).Split(Path.DirectorySeparatorChar);
+
+            string itunes_dir_name = library_uri_parts[library_uri_parts.Length - 1];
+            int i = 0;
+            bool found = false;
+            for(i = itunes_music_uri_parts.Length - 1; i >= 0; i--) {
+                if(itunes_music_uri_parts[i] == itunes_dir_name) {
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) {
+                Banshee.Sources.ImportErrorsSource.Instance.AddError(data.library_uri,
+                  "Unable to locate iTunes directory from iTunes URI", null);
+                return false;
+            }
+
+            string[] local_prefix_parts = new string[library_uri_parts.Length + (itunes_music_uri_parts.Length - i) - 1];
+            for(int j = 0; j < library_uri_parts.Length - 1; j++) {
+                local_prefix_parts[j] = library_uri_parts[j];
+            }
+            for(int j = i; j < itunes_music_uri_parts.Length; j++) {
+                local_prefix_parts[local_prefix_parts.Length - (itunes_music_uri_parts.Length - j)] = itunes_music_uri_parts[j];
+            }
+
+            string[] tmp_query_dirs = new string[itunes_music_uri_parts.Length];
+            string upstream_uri;
+            string tmp_upstream_uri = null;
+            int step = 0;
+            do {
+                upstream_uri = tmp_upstream_uri;
+                tmp_upstream_uri = Path.GetPathRoot(data.library_uri);
+                for(int j = 0; j < library_uri_parts.Length - step - 1; j++) {
+                    tmp_upstream_uri = Path.Combine(tmp_upstream_uri, library_uri_parts[j]);
+                }
+                tmp_upstream_uri = Path.Combine(tmp_upstream_uri, itunes_music_uri_parts[i - step]);
+                data.fallback_dir = tmp_query_dirs[step] = itunes_music_uri_parts[i - step];
+                step++;
+            } while(IOProxy.Directory.Exists(tmp_upstream_uri));
+            if(upstream_uri == null) {
+                Banshee.Sources.ImportErrorsSource.Instance.AddError(data.library_uri,
+                  "Unable to reslove iTunes URIs to local URIs", null);
+                return false;
+            }
+            data.query_dirs = new string[step - 2];
+            data.default_query = string.Empty;
+
+            for(int j = step - 2; j >= 0; j--) {
+                if(j > 0) {
+                    data.query_dirs[j - 1] = tmp_query_dirs[j];
+                }
+                data.default_query += tmp_query_dirs[j] + Path.DirectorySeparatorChar;
+
+            }
+
+            data.local_prefix = string.Empty;
+            for(int j = 0; j < step; j++) {
+                data.local_prefix += local_prefix_parts[j] + Path.DirectorySeparatorChar;
+            }
+
+            return true;
+        }
+
+        private void ProcessSongs(XmlReader xml_reader)
+        {
+            xml_reader.ReadToFollowing("dict");
+            while(xml_reader.ReadToFollowing("dict") && !data.canceled) {
+                ProcessSong(xml_reader.ReadSubtree());
+            }
+            xml_reader.Close();
+        }
+
+        private void ProcessPlaylists(XmlReader xml_reader)
+        {
+            user_event.Header = Catalog.GetString("Importing Playlists");
+            user_event.Progress = 0;
+            while(xml_reader.ReadToFollowing("dict") && !data.canceled) {
+                ProcessPlaylist(xml_reader.ReadSubtree());
+            }
+            xml_reader.Close();
+        }
+
+        private void ProcessSong(XmlReader xml_reader)
         {
             string location = null;
             int itunes_id = 0;
@@ -267,28 +322,31 @@ namespace Banshee.PlayerMigration
             uint play_count = 0;
             DateTime last_played = new DateTime();
 
-            foreach(XmlNode key in keys) {
-                if(key.Name != "key") {
-                    continue;
-                }
-                switch(key.InnerText) {
+            while(xml_reader.ReadToFollowing("key")) {
+                xml_reader.Read();
+                string key = xml_reader.ReadContentAsString();
+                xml_reader.Read();
+                xml_reader.Read();
+
+                switch (key) {
                 case "Track ID":
-                    itunes_id = int.Parse(key.NextSibling.InnerText);
+                    itunes_id = int.Parse(xml_reader.ReadContentAsString());
                     break;
                 case "Play Count":
-                    play_count = uint.Parse(key.NextSibling.InnerText);
+                    play_count = uint.Parse(xml_reader.ReadContentAsString());
                     break;
                 case "Play Date UTC":
-                    last_played = DateTime.Parse(key.NextSibling.InnerText);
+                    last_played = DateTime.Parse(xml_reader.ReadContentAsString());
                     break;
                 case "Rating":
-                    rating = byte.Parse(key.NextSibling.InnerText);
+                    rating = byte.Parse(xml_reader.ReadContentAsString());
                     break;
                 case "Location":
-                    location = key.NextSibling.InnerText;
+                    location = xml_reader.ReadContentAsString();
                     break;
                 }
             }
+            xml_reader.Close();
 
             data.total_processed++;
             if(location == null) {
@@ -402,60 +460,91 @@ namespace Banshee.PlayerMigration
             data.total_count++;
             UpdateUserEvent((int)data.total_processed, (int)data.total_songs, track_info.Artist, track_info.Title);
         }
-            
-        private void ProcessPlaylist(XmlNode node)
+
+        private void ProcessPlaylist(XmlReader xml_reader)
         {
-            string name = "";
+            string name = string.Empty;
             bool skip = false;
+            bool processed = false;
             byte[] smart_info = null;
             byte[] smart_criteria = null;
-            XmlNode array = null;
 
-            foreach(XmlNode key in node.ChildNodes) {
-                if(key.Name=="key") {
-                    switch(key.InnerText) {
-                    case "Name":
-                       name = key.NextSibling.InnerText;
-                       //if(name == "Music Videos")
-                           //skip = true;
-                       break;
-                    case "Smart Info":
-                       smart_info = Convert.FromBase64String(key.NextSibling.InnerText);
-                       break;
-                    case "Smart Criteria":
-                        smart_criteria = Convert.FromBase64String(key.NextSibling.InnerText);
-                        break;
-                    default:
-                        if (key.InnerText == "Audiobooks" ||
-                            key.InnerText == "Music" ||
-                            key.InnerText == "Movies" ||
-                            key.InnerText == "Party Shuffle" ||
-                            key.InnerText == "Podcasts" ||
-                            key.InnerText == "Purchased Music" ||
-                            key.InnerText == "TV Shows") {
-                            skip = true;
-                        }
-                        break;
+            while(xml_reader.ReadToFollowing("key")) {
+                xml_reader.Read();
+                string key = xml_reader.ReadContentAsString();
+                xml_reader.Read();
+
+                switch (key) {
+                case "Name":
+                    xml_reader.Read();
+                    name = xml_reader.ReadContentAsString();
+                    if(name == "Library") {
+                        skip = true;
                     }
-                    if(skip) {
-                        break;
+                    //if(name == "Music Videos")
+                    //skip = true;
+                    break;
+                case "Audiobooks":
+                    goto case "skip";
+                case "Music":
+                    goto case "skip";
+                case "Movies":
+                    goto case "skip";
+                case "Party Shuffle":
+                    goto case "skip";
+                case "Podcasts":
+                    goto case "skip";
+                case "Purchased Music":
+                    goto case "skip";
+                case "TV Shows":
+                    goto case "skip";
+                case "skip":
+                    if(xml_reader.Name == "true") {
+                        skip = true;
                     }
-                } else if(key.Name == "array") {
-                    array = key;
+                    break;
+                case "Smart Info":
+                    xml_reader.Read();
+                    xml_reader.Read();
+                    smart_info = Convert.FromBase64String(xml_reader.ReadContentAsString());
+                    break;
+                case "Smart Criteria":
+                    xml_reader.Read();
+                    xml_reader.Read();
+                    smart_criteria = Convert.FromBase64String(xml_reader.ReadContentAsString());
+                    break;
+                case "Playlist Items":
+                    xml_reader.Read();
+                    if(!skip) {
+                        ProcessPlaylist(name, smart_info, smart_criteria, xml_reader.ReadSubtree());
+                        processed = true;
+                    }
+                    break;
                 }
             }
-            if(skip || array == null) {
-                return;
-            } else if(data.get_playlists && smart_info == null) {
-                user_event.Header = Catalog.GetString("Importing Playlist") + " " + name;
-                ProcessRegularPlaylist(name, array);
-            } else if(data.get_smart_playlists && smart_info != null && smart_criteria != null) {
-                user_event.Header = Catalog.GetString("Importing Playlist") + " " + name;
-                ProcessSmartPlaylist(name, smart_info, smart_criteria, array);
+            xml_reader.Close();
+
+            // Empty playlist
+            if(!processed && !skip) {
+                ProcessPlaylist(name, smart_info, smart_criteria, null);
             }
         }
 
-        private void ProcessRegularPlaylist(string name, XmlNode array)
+        private void ProcessPlaylist(string name, byte[] smart_info, byte[] smart_criteria, XmlReader xml_reader)
+        {
+            user_event.Header = Catalog.GetString("Importing Playlist ") + name;
+
+            if(data.get_playlists && smart_info == null) {
+                ProcessRegularPlaylist(name, xml_reader);
+            } else if(data.get_smart_playlists && smart_info != null && smart_criteria != null) {
+                ProcessSmartPlaylist(name, smart_info, smart_criteria, xml_reader);
+            }
+            if(xml_reader != null) {
+                xml_reader.Close();
+            }
+        }
+
+        private void ProcessRegularPlaylist(string name, XmlReader xml_reader)
         {
             // Should we do this?
             /*foreach(PlaylistSource playlist in PlaylistSource.Playlists) {
@@ -470,37 +559,35 @@ namespace Banshee.PlayerMigration
             LibrarySource.Instance.AddChildSource(playlist_source);
 
             // Get the songs in the playlists
-            uint total_songs = (uint)array.ChildNodes.Count;
-            uint processed_songs = 0;
-            foreach(XmlNode dict in array.ChildNodes) {
-               if(canceled) {
-                    break;
+            if(xml_reader != null) {
+                while(xml_reader.ReadToFollowing("integer") && !data.canceled) {
+                    xml_reader.Read();
+                    int itunes_id = int.Parse(xml_reader.ReadContentAsString());
+                    TrackInfo track;
+                    try {
+                        int track_id = (int)Globals.Library.Db.QuerySingle(String.Format(
+                            "SELECT TrackID FROM Tracks WHERE ItunesID = {0}", itunes_id));
+                        track = Globals.Library.GetTrack(track_id);
+                    }
+                    catch {
+                        continue;
+                    }
+                    playlist_source.AddTrack(track);
+                    user_event.Message = String.Format("{0} - {1}", track.Artist, track.Title);
                 }
-                user_event.Progress = (double)++processed_songs / (double)total_songs;
-                int itunes_id = int.Parse(dict.ChildNodes[1].InnerText);
-                int track_id;
-                TrackInfo track;
-                try {
-                    track_id = (int)Globals.Library.Db.QuerySingle(String.Format(
-                        "SELECT TrackID FROM Tracks WHERE ItunesID = {0}", itunes_id));
-                    track = Globals.Library.GetTrack(track_id);
-                } catch {
-                   continue;
-                }
-                playlist_source.AddTrack(track);
-                user_event.Message = String.Format("{0} - {1}", track.Artist, track.Title);
             }
-            user_event.Message = "";
-            user_event.Progress = 0;
+            user_event.Message = string.Empty;
             playlist_source.Commit();
             data.playlists_count++;
         }
 
-        private void ProcessSmartPlaylist(string name, byte[] info, byte[] criteria, XmlNode array)
+        private void ProcessSmartPlaylist(string name, byte[] info, byte[] criteria, XmlReader xml_reader)
         {
             ItunesSmartPlaylist smart_playlist = new SmartPlaylistParser().Parse(info, criteria);
             smart_playlist.Name = name;
-            if(!(smart_playlist.Query == "" && smart_playlist.Ignore != "") || smart_playlist.LimitNumber != 0) {
+
+            if(!(smart_playlist.Query.Length == 0 && smart_playlist.Ignore.Length != 0) || smart_playlist.LimitNumber != 0) {
+                
                 // Is there a collection of Smart Playlists?
                 /*ChildSource[] temp_array = new ChildSource[LibrarySource.Instance.Children.Count];
                 LibrarySource.Instance.Children.CopyTo(temp_array, 0);
@@ -512,34 +599,37 @@ namespace Banshee.PlayerMigration
                         break;
                     }
                 }*/
+
                 SmartPlaylistSource smart_playlist_source = new SmartPlaylistSource(
                     name,
-                    (smart_playlist.Query == "") ? null : " " + smart_playlist.Query,
+                    (smart_playlist.Query.Length == 0) ? null : " " + smart_playlist.Query,
                     smart_playlist.OrderBy,
                     smart_playlist.LimitNumber.ToString(),
                     smart_playlist.LimitMethod
                 );
+
                 if(!SourceManager.ContainsSource(smart_playlist_source) &&
                     SourceManager.ContainsSource(LibrarySource.Instance)) {
                     LibrarySource.Instance.AddChildSource(smart_playlist_source);
                 }
             }
-            if (smart_playlist.Ignore != "") {
-                if (smart_playlist.Query != "") {
+
+            if (smart_playlist.Ignore.Length != 0) {
+                if (smart_playlist.Query.Length != 0) {
                     data.partial_smart_playlists.Add(smart_playlist);
                 } else {
                     data.failed_smart_playlists.Add(smart_playlist);
                 }
-                ProcessRegularPlaylist(name, array);
+                ProcessRegularPlaylist(name, xml_reader);
             } else {
                 data.smart_playlists_count++;
             }
         }
-            
+
+        // URIs are UTF-8 percent-encoded. Deconding with System.Web.HttpServerUtility
+        // involves too much overhead, so we do it cheap here.
         private static string ConvertToLocalUriFormat(string input)
         {
-            // URIs are UTF-8 percent-encoded. Deconding with System.Web.HttpServerUtility
-            // involves too much overhead, so we do it cheap here.
             StringBuilder builder = new StringBuilder(input.Length);
             byte [] buffer = new byte [2];
             bool using_buffer = false;

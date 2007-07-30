@@ -351,8 +351,8 @@ namespace Banshee.Base
         private static string CreateArtistAlbumIDPart(string part)
         {
             return part == null || part == String.Empty 
-                ? null 
-                : Regex.Replace(part, @"[^A-Za-z0-9]*", "").ToLower();
+                ? null
+                : Regex.Replace(part, @"[^A-Za-z0-9]*", string.Empty).ToLower();
         }
     }    
 }

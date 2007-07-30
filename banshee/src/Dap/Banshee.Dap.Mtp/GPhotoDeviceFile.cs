@@ -104,13 +104,13 @@ public class GPhotoDeviceFile
     }        
 
     private string GetValidName(string input) {
-        string output = "";
+        string output = string.Empty;
 
         for (int i = 0; i < input.Length; i++) {
             if (input[i] == '/' || input[i] == '\\' || input[i] == ':' || input[i] == '?') {
                 output = output + '_';
             } else {
-                if (output == "")
+                if (output.Length == 0)
                     output = input[i].ToString().ToUpper();
                 else
                     output = output + input[i];
@@ -144,7 +144,7 @@ public class GPhotoDeviceFile
         if (loc_start <= 0 || loc_end <= 0){
             if (isNumeric)
                 return "0000";
-            return "";
+            return string.Empty;
         }
         int start = loc_start + 1 + tag.Length + 1;
         string metaValue = meta.Substring(start, loc_end - start);
@@ -156,9 +156,9 @@ public class GPhotoDeviceFile
     public string Metadata {
         get {
             return(String.Format("<Duration>{0}</Duration>\n", Duration) +
-                String.Format("<Artist>{0}</Artist>\n", (Artist == "" || Artist == null) ? "Unknown" : Artist) + 
-                String.Format("<AlbumName>{0}</AlbumName>\n", (AlbumName == null)   ? "" : AlbumName) +
-                String.Format("<Name>{0}</Name>\n", (Name == "" || Name == null)     ? "Unknown" : Name) + 
+                String.Format("<Artist>{0}</Artist>\n", (Artist == null || Artist.Length == 0) ? "Unknown" : Artist) + 
+                String.Format("<AlbumName>{0}</AlbumName>\n", (AlbumName == null)   ? string.Empty : AlbumName) +
+                String.Format("<Name>{0}</Name>\n", (Name == null || Name.Length == 0)     ? "Unknown" : Name) + 
                 String.Format("<Track>{0}</Track>\n", Track) + 
                 String.Format("<Genre>{0}</Genre>\n", Genre) + 
                 String.Format("<UseCount>{0}</UseCount>\n", UseCount) + 

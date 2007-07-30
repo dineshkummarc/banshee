@@ -37,8 +37,7 @@ namespace Banshee.Plugins.Podcast
         // -- Adapted from Monopod
         public static bool KnownType (string type)
         {
-/*          switch (type)
-            {
+            /*switch (type) {
               case "audio/mpeg":
                 case "x-audio/mp3":
                 case "audio/ogg":
@@ -47,12 +46,12 @@ namespace Banshee.Plugins.Podcast
                 case "application/ogg":
                 case "audio/x-wav":
 
-                case "":
+                case string.Empty:
                     return true;
                 default:
                     return true;
             }
-*/
+            */
             // Don't like this one bit.
             return true;            
         }

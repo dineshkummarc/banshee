@@ -193,7 +193,7 @@ public class GPhotoDevice
         string path_build = path_base; // the path_build variable is basically the "working directory" (aka cwd) here as we search for and if necessary create directories.
 
         for (int i = 2; i < path_split.GetLength(0); i++) {
-            if (path_split[i].Trim() == "") {
+            if (path_split[i].Trim().Length == 0) {
                 Console.WriteLine("Blank parameter found at {0}, skipping...", i);
                 continue;
             }

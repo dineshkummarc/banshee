@@ -35,17 +35,26 @@ using Hal;
 using Banshee.Base;
 using Banshee.Cdrom;
 using Banshee.Cdrom.Nautilus.Interop;
+using Banshee.Sources;
+using Mono.Unix;
 
 namespace Banshee.Cdrom.Nautilus
 {
-    public class NautilusDriveFactory : IDriveFactory
+    public class NautilusDriveFactory : DriveFactory
     {
-        private Dictionary<string, IDrive> drive_table = new Dictionary<string, IDrive>(); 
-        
-        public event DriveHandler DriveAdded;
-        public event DriveHandler DriveRemoved;
-        public event MediaHandler MediaAdded;
-        public event MediaHandler MediaRemoved;
+        private class DiskInfo
+        {
+            public string Udi;
+            public string DeviceNode;
+            public string VolumeName;
+
+            public DiskInfo(string udi, string deviceNode, string volumeName)
+            {
+                Udi = udi;
+                DeviceNode = deviceNode;
+                VolumeName = volumeName;
+            }
+        }
         
         public NautilusDriveFactory()
         {
@@ -59,7 +68,78 @@ namespace Banshee.Cdrom.Nautilus
         
             HalCore.Manager.DeviceAdded += OnHalDeviceAdded;
             HalCore.Manager.DeviceRemoved += OnHalDeviceRemoved;
+
+            BuildInitialList();
         }
+
+        private void BuildInitialList()
+        {
+            foreach(DiskInfo hal_disk in GetHalDisks()) {
+                AudioCdDisk disk = CreateDisk(hal_disk);
+                if(disk != null) {
+                    OnAudioCdDiskAdded(this, disk);
+                }
+            }
+
+            HandleUpdated();
+        }
+
+        private IList<DiskInfo> GetHalDisks()
+        {
+            List<DiskInfo> list = new List<DiskInfo>();
+
+            foreach (string udi in HalCore.Manager.FindDeviceByStringMatch("storage.drive_type", "cdrom")) {
+                try {
+                    DiskInfo disk = CreateHalDisk(new Device(udi));
+                    if (disk != null) {
+                        list.Add(disk);
+                    }
+                }
+                catch {
+                }
+            }
+
+            return list;
+        }
+
+        private DiskInfo CreateHalDisk(Device device)
+        {
+            string[] volumes = HalCore.Manager.FindDeviceByStringMatch("info.parent", device.Udi);
+
+            if (volumes == null || volumes.Length < 1) {
+                return null;
+            }
+
+            Device volume = new Device(volumes[0]);
+
+            if (!volume.GetPropertyBoolean("volume.disc.has_audio")) {
+                return null;
+            }
+
+            return new DiskInfo(volume.Udi, volume["block.device"] as string,
+                volume["info.product"] as string);
+        }
+
+        private NautilusAudioCdDisk CreateDisk(DiskInfo hal_disk)
+        {
+            try {
+                NautilusAudioCdDisk disk = new NautilusAudioCdDisk(hal_disk.Udi, hal_disk.DeviceNode, hal_disk.VolumeName);
+                disk.Updated += OnAudioCdDiskUpdated;
+                if (disk.Valid && !disks.ContainsKey(disk.Udi)) {
+                    disks.Add(disk.Udi, disk);
+                }
+                return disk;
+            }
+            catch (Exception e) {
+                Exception temp_e = e; // work around mcs #76642
+                LogCore.Instance.PushError(Catalog.GetString("Could not Read Audio CD"),
+                    temp_e.Message);
+            }
+
+            return null;
+        }
+
+        
         
         private void OnHalDeviceAdded(object o, DeviceAddedArgs args)
         {
@@ -69,23 +149,60 @@ namespace Banshee.Cdrom.Nautilus
                     OnDriveAdded(drive);
                 }
             }
+
+            string udi = args.Udi;
+
+            if (udi == null || disks.ContainsKey(udi)) {
+                return;
+            }
+
+            foreach (DiskInfo hal_disk in GetHalDisks()) {
+                if (hal_disk.Udi != udi) {
+                    continue;
+                }
+
+                NautilusAudioCdDisk disk = CreateDisk(hal_disk);
+                if (disk == null) {
+                    continue;
+                }
+
+                OnAudioCdDiskAdded(this, disk);
+
+                HandleUpdated();
+
+                break;
+            }
         }
         
         private void OnHalDeviceRemoved(object o, DeviceRemovedArgs args)
         {
-            if(drive_table.ContainsKey(args.Udi)) {
-                IDrive drive = drive_table[args.Udi];
+            if(drives.ContainsKey(args.Udi)) {
+                IDrive drive = drives[args.Udi];
                 drive.MediaAdded -= OnMediaAdded;
                 drive.MediaRemoved -= OnMediaRemoved;
-                drive_table.Remove(args.Udi);
+                drives.Remove(args.Udi);
                 OnDriveRemoved(drive);
             }
+
+            string udi = args.Udi;
+
+            if (udi == null) {
+                return;
+            }
+
+            if (disks.ContainsKey(udi)) {
+                disks.Remove(udi);
+            }
+
+            OnAudioCdDiskRemoved(this, udi);
+
+            HandleUpdated();
         }
         
         private NautilusDrive AddDrive(Device device)
         {
-            if(drive_table.ContainsKey(device.Udi)) {
-                return drive_table[device.Udi] as NautilusDrive;
+            if(drives.ContainsKey(device.Udi)) {
+                return drives[device.Udi] as NautilusDrive;
             }
             
             BurnDrive nautilus_drive = FindDriveByDeviceNode(device["block.device"]);
@@ -99,73 +216,13 @@ namespace Banshee.Cdrom.Nautilus
             
             drive.MediaAdded += OnMediaAdded;
             drive.MediaRemoved += OnMediaRemoved;
-            drive_table.Add(device.Udi, drive);
+            drives.Add(device.Udi, drive);
             return drive;
         }
         
         private BurnDrive FindDriveByDeviceNode(string deviceNode)
         {
             return new BurnDrive(deviceNode);
-        }
-        
-        protected virtual void OnDriveAdded(IDrive drive)
-        {
-            DriveHandler handler = DriveAdded;
-            if(handler != null) {
-                handler(this, new DriveArgs(drive));
-            }
-        }
-        
-        protected virtual void OnDriveRemoved(IDrive drive)
-        {
-            DriveHandler handler = DriveRemoved;
-            if(handler != null) {
-                handler(this, new DriveArgs(drive));
-            }
-        }
-        
-        protected virtual void OnMediaAdded(object o, MediaArgs args)
-        {
-            MediaHandler handler = MediaAdded;
-            if(handler != null) {
-                handler(o, args);
-            }
-        }
-        
-        protected virtual void OnMediaRemoved(object o, MediaArgs args)
-        {
-            MediaHandler handler = MediaRemoved;
-            if(handler != null) {
-                handler(o, args);
-            }
-        }
-        
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return drive_table.Values.GetEnumerator();
-        }
-        
-        public IEnumerator<IDrive> GetEnumerator()
-        {
-            return drive_table.Values.GetEnumerator();
-        }
-        
-        public int DriveCount {
-            get { return drive_table.Count; }
-        }
-        
-        public int RecorderCount {
-            get {
-                int count = 0;
-                
-                foreach(IDrive drive in drive_table.Values) {
-                    if(drive is IRecorder) {
-                        count++;
-                    }
-                }
-                
-                return count;
-            }
         }
     }
 }

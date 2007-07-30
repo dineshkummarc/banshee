@@ -429,7 +429,7 @@ namespace Banshee.SmartPlaylist
             try {
                 Globals.Library.Db.QuerySingle(String.Format("SELECT {0} FROM {1} LIMIT 1", new_name, table));
             } catch {
-                LogCore.Instance.PushDebug(String.Format("Renaming column {0} in {1}", old_name, table), "");
+                LogCore.Instance.PushDebug(String.Format("Renaming column {0} in {1}", old_name, table), string.Empty);
                 Globals.Library.Db.Execute(String.Format("ALTER TABLE {0} RENAME TO {0}_tmp", table));
                 CreateTable(table);
                 Globals.Library.Db.Execute(String.Format("INSERT INTO {0} SELECT {1} as {2}, {3} FROM {0}_tmp", table, old_name, new_name, other_columns));
@@ -456,7 +456,7 @@ namespace Banshee.SmartPlaylist
         public Timer (string name, string details)
         {
             /*this.name = name;
-            this.details = (details == null) ? "" : " (" + details + ")";
+            this.details = (details == null) ? string.Empty : " (" + details + ")";
 
             if (!running_totals.ContainsKey(name)) {
                 running_totals.Add(name, 0);

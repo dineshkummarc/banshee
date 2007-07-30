@@ -127,7 +127,7 @@ namespace Banshee.Plugins.Audioscrobbler {
 
         public void SetUserPassword (string username, string pass)
         {
-            if (username == "" || pass == "")
+            if (username.Length = 0 || pass.Length == 0)
                 return;
 
             this.username = username;
@@ -350,7 +350,7 @@ namespace Banshee.Plugins.Audioscrobbler {
             else if (line.StartsWith ("OK")) {
                 /* if we've previously logged failures, be nice and log the successful upload. */
                 if (last_upload_failed_logged != DateTime.MinValue) {
-                    LogCore.Instance.PushInformation ("Audioscrobbler upload succeeded", "", false);
+                    LogCore.Instance.PushInformation("Audioscrobbler upload succeeded", string.Empty, false);
                     last_upload_failed_logged = DateTime.MinValue;
                 }
                 /* we succeeded, pop the elements off our queue */

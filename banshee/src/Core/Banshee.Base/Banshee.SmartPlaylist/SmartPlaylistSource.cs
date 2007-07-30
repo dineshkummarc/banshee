@@ -24,7 +24,7 @@ namespace Banshee.SmartPlaylist
 
         private string OrderAndLimit {
             get {
-                if (OrderBy == null || OrderBy == "")
+                if (OrderBy == null || OrderBy.Length == 0)
                     return null;
 
                 if (LimitCriterion == 0)
