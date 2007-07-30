@@ -34,7 +34,9 @@
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
 
+//#ifndef WIN32
 #include <libgnomevfs/gnome-vfs.h>
+//#endif
 
 #include "gst-misc.h"
 

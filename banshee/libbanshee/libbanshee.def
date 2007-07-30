@@ -12,6 +12,11 @@ EXPORTS
 	gst_tagger_set_error_callback
 	gst_tagger_set_finished_callback
 	
+	gst_transcoder_new
+	gst_transcoder_free
+	gst_transcoder_cancel
+	gst_transcoder_transcode
+	
 	gst_playback_new
 	gst_playback_free
 	gst_playback_set_eos_callback

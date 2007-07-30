@@ -34,7 +34,7 @@ namespace Banshee.Cdrom
     {
         event MediaHandler MediaAdded;
         event MediaHandler MediaRemoved;
-        
+
         string Name { get; }
         string Device { get; }
         bool HaveMedia { get; }

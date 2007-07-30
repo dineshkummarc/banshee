@@ -36,14 +36,14 @@ namespace Banshee.Cdrom
         event ProgressChangedHandler ProgressChanged;
         event InsertMediaRequestHandler InsertMediaRequest;
         event EventHandler WarnDataLoss;
-        
+
         void ClearTracks();
         void AddTrack(RecorderTrack track);
         void RemoveTrack(RecorderTrack track);
-        
+
         RecorderResult WriteTracks(int speed, bool eject);
         bool CancelWrite(bool skipIfDangerous);
-        
+
         bool IsWriting { get; }
     }
     

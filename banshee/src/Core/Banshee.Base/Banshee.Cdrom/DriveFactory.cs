@@ -194,10 +194,9 @@ namespace Banshee.Cdrom
             get { return drives.Count; }
         }
 
-        public virtual int RecorderCount
+        public int RecorderCount
         {
-            get
-            {
+            get {
                 int count = 0;
 
                 foreach(IDrive drive in drives.Values) {

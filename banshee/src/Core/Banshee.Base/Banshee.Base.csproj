@@ -96,7 +96,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Banshee.Cdrom.Nautilus\NautilusAudioCdDisk.cs" />
-    <Compile Include="Banshee.Cdrom.Windwos\WindowsAudioCdDisk.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\DiscMaster.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\DiscMasterProgressEvents.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\DiscRecorder.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\DiscRecorderProperties.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\DiscRecorders.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\EventArgClasses.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\IMAPIException.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\IMAPIInterop.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\IStreamOnFileStream.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\IStreamOnStream.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\JolietDiscMaster.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\JolietDiscMasterProperties.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\JolietDiscMasterStorage.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\JolietIEnumStatStg.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\JolietIStorage.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\MediaDetails.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\PinnedByteBuffer.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\Property.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\PropertyStorage.cs" />
+    <Compile Include="Banshee.Cdrom.Windows.Interop\RedbookDiscMaster.cs" />
+    <Compile Include="Banshee.Cdrom.Windows\WindowsAudioCdDisk.cs" />
     <Compile Include="Banshee.Cdrom\AudioCdTrackInfo.cs" />
     <Compile Include=".\Banshee.AudioProfiles\GConfProfileConfiguration.cs" />
     <Compile Include=".\Banshee.AudioProfiles\Pipeline.cs" />
@@ -120,7 +140,7 @@
     <Compile Include=".\Banshee.Cdrom\DriveMediaType.cs" />
     <Compile Include=".\Banshee.Cdrom\IDiscDuplicator.cs" />
     <Compile Include=".\Banshee.Cdrom\IDrive.cs" />
-    <Compile Include=".\Banshee.Cdrom\IDriveFactory.cs" />
+    <Compile Include="Banshee.Cdrom\DriveFactory.cs" />
     <Compile Include=".\Banshee.Cdrom\IRecorder.cs" />
     <Compile Include=".\Banshee.Cdrom\RecorderAction.cs" />
     <Compile Include=".\Banshee.Cdrom\RecorderResult.cs" />
@@ -336,12 +356,12 @@
     <Compile Include="Banshee.Cdrom.Windows.Interop\CDDrive.cs" />
     <Compile Include="Banshee.Cdrom.Windows.Interop\CDDriveEvents.cs" />
     <Compile Include="Banshee.Cdrom.Windows.Interop\Win32Functions.cs" />
-    <Compile Include="Banshee.Cdrom.Windwos\WindowsDiscDuplicator.cs" />
-    <Compile Include="Banshee.Cdrom.Windwos\WindowsDrive.cs" />
-    <Compile Include="Banshee.Cdrom.Windwos\WindowsDriveFactory.cs" />
-    <Compile Include="Banshee.Cdrom.Windwos\WindowsRecorder.cs" />
+    <Compile Include="Banshee.Cdrom.Windows\WindowsDiscDuplicator.cs" />
+    <Compile Include="Banshee.Cdrom.Windows\WindowsDrive.cs" />
+    <Compile Include="Banshee.Cdrom.Windows\WindowsDriveFactory.cs" />
+    <Compile Include="Banshee.Cdrom.Windows\WindowsRecorder.cs" />
     <Compile Include="Banshee.Cdrom\CdromCore.cs" />
-    <Compile Include="Banshee.Cdrom\IAudioCdDisk.cs" />
+    <Compile Include="Banshee.Cdrom\AudioCdDisk.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\..\..\data\banshee-dialogs.glade">

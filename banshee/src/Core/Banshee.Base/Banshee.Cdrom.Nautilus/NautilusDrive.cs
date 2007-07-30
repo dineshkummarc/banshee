@@ -38,12 +38,12 @@ namespace Banshee.Cdrom.Nautilus
 {
     public class NautilusDrive : IDrive
     {
+        public event MediaHandler MediaAdded;
+        public event MediaHandler MediaRemoved;
+        
         private BurnDrive drive;
         private Device hal_drive_device;
         private Device hal_disc_device;
-        
-        public event MediaHandler MediaAdded;
-        public event MediaHandler MediaRemoved;
         
         private NautilusDrive()
         {
@@ -99,7 +99,7 @@ namespace Banshee.Cdrom.Nautilus
             
             return false;
         }
-                
+
         protected virtual void OnMediaAdded()
         {
             MediaHandler handler = MediaAdded;
@@ -107,7 +107,7 @@ namespace Banshee.Cdrom.Nautilus
                 handler(this, new MediaArgs(this, true));
             }
         }
-        
+
         protected virtual void OnMediaRemoved()
         {
             MediaHandler handler = MediaRemoved;

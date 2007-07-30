@@ -11,7 +11,6 @@ namespace Banshee.Cdrom.Windows
 	{
         public event MediaHandler MediaAdded;
         public event MediaHandler MediaRemoved;
-
         public event EventHandler Updated;
         
         private CDDrive drive;
@@ -65,27 +64,27 @@ namespace Banshee.Cdrom.Windows
             get { return drive_letter.ToString() + @":\"; }
         }
 
-        public bool HaveMedia
+        public virtual bool HaveMedia
         {
             get { return drive.IsCDReady(); }
         }
 
-        public int MaxReadSpeed
+        public virtual int MaxReadSpeed
         {
             get { throw new Exception("The method or operation is not implemented."); }
         }
 
-        public int MaxWriteSpeed
+        public virtual int MaxWriteSpeed
         {
             get { throw new Exception("The method or operation is not implemented."); }
         }
 
-        public int MinWriteSpeed
+        public virtual int MinWriteSpeed
         {
             get { throw new Exception("The method or operation is not implemented."); }
         }
 
-        public long MediaCapacity
+        public virtual long MediaCapacity
         {
             get { throw new Exception("The method or operation is not implemented."); }
         }
@@ -93,6 +92,11 @@ namespace Banshee.Cdrom.Windows
         public CDDrive Drive
         {
             get { return drive; }
+        }
+
+        protected char DriveLetter
+        {
+            get { return drive_letter; }
         }
     }
 }

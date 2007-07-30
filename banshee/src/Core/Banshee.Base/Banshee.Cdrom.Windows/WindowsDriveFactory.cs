@@ -12,10 +12,26 @@ namespace Banshee.Cdrom.Windows
 	{
         public WindowsDriveFactory()
         {
-            char [] drive_letters = CDDrive.GetCDDriveLetters();
+            char[] drive_letters = CDDrive.GetCDDriveLetters();
             drives = new Dictionary<string, IDrive>(drive_letters.Length);
+
+            char[] recorder_letters;
+            using(DiscMaster disc_master = new DiscMaster()) {
+                recorder_letters = new char[disc_master.DiscRecorders.Count];
+                for(int i = 0; i < disc_master.DiscRecorders.Count; i++) {
+                    recorder_letters[i] = disc_master.DiscRecorders[i].DriveLetter[0];
+                }
+            }
+
             foreach (char c in drive_letters) {
-                WindowsDrive drive = new WindowsDrive(c);
+                bool recorder = false;
+                foreach(char r in recorder_letters) {
+                    if(r == c) {
+                        recorder = true;
+                        break;
+                    }
+                }
+                WindowsDrive drive = recorder ? new WindowsRecorder(c) : new WindowsDrive(c);
                 drive.MediaAdded += new MediaHandler(drive_MediaAdded);
                 drive.MediaRemoved += new MediaHandler(drive_MediaRemoved);
                 drives.Add(drive.Device, drive);
@@ -64,11 +80,6 @@ namespace Banshee.Cdrom.Windows
             }
 
             HandleUpdated();
-        }
-
-        public override int RecorderCount
-        {
-            get { return 0; } //FIXME wire this up
         }
     }
 }
