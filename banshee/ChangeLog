@@ -1,4 +1,35 @@
-2007-08-28 Scott Peterson <scottp@gnome.org>
+2007-08-03 Scott Peterson <scottp@gnome.org>
+	Adapted NotificationAreaIcon plugin to work with the Windows system tray. Various other.
+
+	* Banshee.Plugins.NotificationAreaIcon/Properties/*,
+	  Banshee.Plugins.NotificationAreaIcon/Resources/*: added banshee_icon.ico resource
+
+	* Banshee.Plugins.NotificationAreaIcon/NotificationAreaIconPlugin.cs: Made to with SystemTray
+
+	* Banshee.Plugins.NotificationAreaIcon/SystemTray.cs: Added SystemTray class to interface
+	  with the Windows system tray.
+
+	* FileNamePattern.cs: Removed underscore from string of escape characters (.NET does not
+	  recognize "/_" as a regex escape sequence. Go figure.) This may be temporary.
+
+	* Localization.cs: Added reference to libglib-2.0.0.dll
+
+	* Utilities.cs: Changed IsVirtualMethodImplemented slightly. It wasn't working on .NET.
+
+	* GstTranscoder.cs: Added workaround for SafeUri.AbsoluteUri. This is lame and needs to be addressed.
+
+	* BurnerSessionPreparer.cs: Changed a '/' to a Path.DirectorySeperatorCharcter
+
+	* SExpEngine/Parser.cs: Added a check in Parse() to avoid arethmatic overflow. I guess .NET
+	  stream readers behave a little different.
+
+	* libbanshee.def: Added some transcode definitions.
+
+	* gst-transcode-0.10.c: Added some TEMPORARY workarounds so things will function for the time being.
+
+	* gst-misc-0.10.c: Added some TEMPORARY workarounds so things will function for the time being.
+
+2007-07-28 Scott Peterson <scottp@gnome.org>
 	Started work on CD burning. Managed code is begun nicely, holding on native gstreamer transcode stuff :(
 
 	* libbanshee.def: Added transcode methods
