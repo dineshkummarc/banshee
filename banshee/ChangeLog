@@ -1,4 +1,7 @@
 2007-08-03 Scott Peterson <scottp@gnome.org>
+	Updated and moved icon resource
+
+2007-08-03 Scott Peterson <scottp@gnome.org>
 	Adapted NotificationAreaIcon plugin to work with the Windows system tray. Various other.
 
 	* Banshee.Plugins.NotificationAreaIcon/Properties/*,
