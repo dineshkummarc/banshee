@@ -41,7 +41,7 @@ namespace Banshee.Base
         public delegate string ExpandTokenHandler(TrackInfo track, object replace);
         public delegate string FilterHandler(string path);
         
-        private static string invalid_path_characters = "\"\\:'~`!@#$%^&*_-+|?/><[]";
+        private static string invalid_path_characters = "\"\\:'~`!@#$%^&*-+|?/><[]"; // WINTODO add _ back between * and -
         private static Regex invalid_path_regex;
         
         public static FilterHandler Filter;

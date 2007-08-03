@@ -2,6 +2,7 @@ LIBRARY	"libbanshee"
 
 EXPORTS
 	gstreamer_initialize
+	gstreamer_test_pipeline
 	gtksharp_cell_renderer_activatable_configure
 	banshee_dbus_compat_thread_init
 	
@@ -16,6 +17,10 @@ EXPORTS
 	gst_transcoder_free
 	gst_transcoder_cancel
 	gst_transcoder_transcode
+	gst_transcoder_set_progress_callback
+	gst_transcoder_set_finished_callback
+	gst_transcoder_set_error_callback
+	gst_transcoder_get_is_transcoding
 	
 	gst_playback_new
 	gst_playback_free

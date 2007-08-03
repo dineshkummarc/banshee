@@ -253,7 +253,7 @@ namespace Banshee.Burner
                 if(Path.GetExtension(track.Uri.LocalPath) == "." + profile.OutputFileExtension) {
                     output_file = track.Uri.LocalPath;
                 } else {
-                    output_file = Paths.TempDir + "/"  +
+                    output_file = Paths.TempDir + Path.DirectorySeparatorChar  +
                         Path.GetFileNameWithoutExtension(track.Uri.LocalPath) + "." + 
                         profile.OutputFileExtension;
                 }

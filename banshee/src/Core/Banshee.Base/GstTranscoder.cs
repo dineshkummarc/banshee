@@ -33,7 +33,7 @@ using Mono.Unix;
 using Banshee.AudioProfiles;
 
 namespace Banshee.Base
-{    
+{
     internal delegate void GstTranscoderProgressCallback(IntPtr transcoder, double progress);
     internal delegate void GstTranscoderFinishedCallback(IntPtr transcoder);
     internal delegate void GstTranscoderErrorCallback(IntPtr transcoder, IntPtr error, IntPtr debug);
@@ -103,9 +103,20 @@ namespace Banshee.Base
             if(IsTranscoding) {
                 throw new ApplicationException("Transcoder is busy");
             }
-        
-            IntPtr input_uri = GLib.Marshaller.StringToPtrGStrdup(inputUri.AbsoluteUri);
-            IntPtr output_uri = GLib.Marshaller.StringToPtrGStrdup(outputUri.AbsoluteUri);
+
+            // WINDOWS FIXME this is LAME, but seamingly nessisary
+            string input = string.Empty;
+            string output = string.Empty;
+            if(Environment.OSVersion.Platform == PlatformID.Unix) {
+                input = inputUri.AbsoluteUri;
+                output = outputUri.AbsoluteUri;
+            } else {
+                input = "file://" + inputUri.LocalPath;
+                output = "file://" + outputUri.LocalPath;
+            }
+            
+            IntPtr input_uri = GLib.Marshaller.StringToPtrGStrdup(input);
+            IntPtr output_uri = GLib.Marshaller.StringToPtrGStrdup(output);
             
             error_message = null;
             

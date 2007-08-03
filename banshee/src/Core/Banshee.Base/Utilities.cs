@@ -166,7 +166,7 @@ namespace Banshee.Base
                 return false;
             }
             
-            return methodInfo.IsVirtual ? methodInfo != methodInfo.GetBaseDefinition() : true;
+            return methodInfo.IsVirtual ? methodInfo.DeclaringType == type : true;
         }
         
         public static object InvokeMethod(Assembly assembly, string typeName, string methodName)

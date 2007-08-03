@@ -123,9 +123,13 @@ namespace Banshee.Base
         [DllImport("libglib-2.0.so.0")]
         private static extern IntPtr g_get_language_names();
 
+        [DllImport("libglib-2.0-0.dll", EntryPoint = "g_get_language_names")]
+        private static extern IntPtr g_get_language_names_win();
+
         private static string [] GetLanguageNames()
         {
-            IntPtr languages = g_get_language_names();
+            IntPtr languages = Environment.OSVersion.Platform == PlatformID.Unix
+                ? g_get_language_names() : g_get_language_names_win();
             if(languages == IntPtr.Zero) {
                 return default_languages;
             }

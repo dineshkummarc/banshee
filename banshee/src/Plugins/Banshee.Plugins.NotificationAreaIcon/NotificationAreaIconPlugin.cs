@@ -30,6 +30,7 @@
  */
 
 using System;
+using win = System.Windows.Forms;
 using Gtk;
 using GLib;
 using Mono.Unix;
@@ -70,7 +71,8 @@ namespace Banshee.Plugins.NotificationAreaIcon
                     "Sebastian Dr\u00f6ge",
                     "Aaron Bockover",
                     "Ruben Vermeersch",
-                    "Gabriel Burt"
+                    "Gabriel Burt",
+                    "Scott Peterson"
                 };
             }
         }
@@ -82,6 +84,10 @@ namespace Banshee.Plugins.NotificationAreaIcon
 		private RatingMenuItem rating_menu_item;
         private ActionGroup actions;
         private uint ui_manager_id;
+        private const int notification_duration = 4500;
+
+        private SystemTray system_tray;
+        private win.ContextMenu context_menu;
 
         private TrackInfoPopup popup;
         private bool can_show_popup = false;
@@ -152,6 +158,12 @@ namespace Banshee.Plugins.NotificationAreaIcon
                 event_box = null;
                 notif_area = null;
             }
+
+            if(system_tray != null) {
+                system_tray.Dispose();
+                system_tray = null;
+                context_menu = null;
+            }
             
             InterfaceElements.PrimaryWindowClose = null;
             
@@ -168,6 +180,19 @@ namespace Banshee.Plugins.NotificationAreaIcon
         
         private void Init() 
         {
+            if(Environment.OSVersion.Platform == PlatformID.Unix) {
+                InitUnix();
+            } else {
+                InitWindows();
+            }
+            
+            if(!QuitOnCloseSchema.Get()) {
+                RegisterCloseHandler();
+            }
+        }
+
+        private void InitUnix()
+        {
             notif_area = new NotificationArea(Catalog.GetString("Banshee"));
             notif_area.DestroyEvent += OnDestroyEvent;
 
@@ -176,14 +201,70 @@ namespace Banshee.Plugins.NotificationAreaIcon
             event_box.EnterNotifyEvent += OnEnterNotifyEvent;
             event_box.LeaveNotifyEvent += OnLeaveNotifyEvent;
             event_box.ScrollEvent += OnMouseScroll;
-            
+
             event_box.Add(new Gtk.Image(IconThemeUtils.LoadIcon(22, "music-player-banshee", "tray-icon")));
 
             notif_area.Add(event_box);
             notif_area.ShowAll();
+        }
+
+        private string play_string, pause_string;
+        private void InitWindows()
+        {
+            play_string = Catalog.GetString("Play");
+            pause_string = Catalog.GetString("Pause");
+
+            win.MenuItem show_notification_menu_item = new System.Windows.Forms.MenuItem(
+                Catalog.GetString("Show Notifications"));
+            show_notification_menu_item.Checked = ShowNotifications;
+            show_notification_menu_item.Click += delegate {
+                show_notification_menu_item.Checked = !show_notification_menu_item.Checked;
+                ShowNotifications = show_notification_menu_item.Checked;
+            };
             
-            if(!QuitOnCloseSchema.Get()) {
-                RegisterCloseHandler();
+            win.MenuItem[] menu_items = {
+                new win.MenuItem(play_string, OnPlayPause),
+                new win.MenuItem(Catalog.GetString("Next"), OnNext),
+                new win.MenuItem(Catalog.GetString("Previous"), OnPrevious),
+                new win.MenuItem("-"),
+                show_notification_menu_item,
+                new win.MenuItem(Catalog.GetString("Quit"), OnQuit)
+
+            };
+            context_menu = new win.ContextMenu(menu_items);
+
+            PlayerEngineCore.StateChanged += OnPlayerEngineCoreStateChanged;
+
+            system_tray = new SystemTray(Branding.ApplicationName, context_menu);
+            system_tray.DoubleClick += new EventHandler(system_tray_DoubleClick);
+        }
+
+        void system_tray_DoubleClick(object sender, EventArgs e)
+        {
+            ShowHideMainWindow();
+        }
+        private void OnPlayPause(object o, EventArgs args)
+        {
+            Globals.ActionManager["PlayPauseAction"].Activate();
+        }
+        private void OnNext(object o, EventArgs args)
+        {
+            Globals.ActionManager["NextAction"].Activate();
+        }
+        private void OnPrevious(object o, EventArgs args)
+        {
+            Globals.ActionManager["PreviousAction"].Activate();
+        }
+        private void OnQuit(object o, EventArgs args)
+        {
+            Globals.ActionManager["QuitAction"].Activate();
+        }
+        private void OnPlayerEngineCoreStateChanged(object o, PlayerEngineStateArgs args)
+        {
+            if(args.State == PlayerEngineState.Playing) {
+                context_menu.MenuItems[0].Text = pause_string;
+            } else {
+                context_menu.MenuItems[0].Text = play_string;
             }
         }
         
@@ -216,15 +297,24 @@ namespace Banshee.Plugins.NotificationAreaIcon
         {
             try {
                 if(NotifyOnCloseSchema.Get()) {
-                    Gdk.Pixbuf image = Branding.ApplicationLogo.ScaleSimple(42, 42, Gdk.InterpType.Bilinear);
-                    Notification nf = new Notification(
-                        Catalog.GetString("Still Running"), 
-                        Catalog.GetString("Banshee was closed to the notification area. " + 
-                            "Use the <i>Quit</i> option to end your session."),
-                        image, event_box);
-                    nf.Urgency = Urgency.Low;
-                    nf.Timeout = 4500;
-                    nf.Show();
+                    if(Environment.OSVersion.Platform == PlatformID.Unix) {
+                        Gdk.Pixbuf image = Branding.ApplicationLogo.ScaleSimple(42, 42, Gdk.InterpType.Bilinear);
+                        Notification nf = new Notification(
+                            Catalog.GetString("Still Running"), 
+                            Catalog.GetString("Banshee was closed to the notification area. " + 
+                                "Use the <i>Quit</i> option to end your session."),
+                            image, event_box);
+                        nf.Urgency = Urgency.Low;
+                        nf.Timeout = notification_duration;
+                        nf.Show();
+                    } else {
+                        system_tray.ShowBalloonTip(
+                            notification_duration,
+                            Catalog.GetString("Still Running"),
+                            Catalog.GetString("Banshee was closed to the notification area. " +
+                                "Use the Quit option to end your session."),
+                                win.ToolTipIcon.Info);
+                    }
                     
                     NotifyOnCloseSchema.Set(false);
                 }
@@ -241,7 +331,7 @@ namespace Banshee.Plugins.NotificationAreaIcon
 
         private void ShowHideMainWindow()
         {
-            if (InterfaceElements.MainWindow.IsActive) {
+            if (InterfaceElements.MainWindow.Visible) {
                 SaveWindowSizePosition();
                 InterfaceElements.MainWindow.Visible = false;
             } else {
@@ -264,34 +354,55 @@ namespace Banshee.Plugins.NotificationAreaIcon
             if(cursor_over_trayicon || !show_notifications || InterfaceElements.MainWindow.HasToplevelFocus) {
                 return;
             }
-            
-            string message = String.Format("{0}\n<i>{1}</i>", 
+
+            if(Environment.OSVersion.Platform == PlatformID.Unix) {
+                ShowNotificationUnix();
+            } else {
+                ShowNotificationWindows();
+            }
+        }
+
+        private void ShowNotificationUnix()
+        {
+            string message = String.Format("{0}\n<i>{1}</i>",
                 GLib.Markup.EscapeText(current_track.DisplayTitle),
                 GLib.Markup.EscapeText(current_track.DisplayArtist));
-            
+
             Gdk.Pixbuf image = null;
-            
+
             try {
                 if(current_track.CoverArtFileName != null) {
                     image = new Gdk.Pixbuf(current_track.CoverArtFileName);
-                } 
+                }
             } catch {
             }
-            
+
             if(image == null) {
                 image = Branding.DefaultCoverArt;
             }
-            
+
             image = image.ScaleSimple(42, 42, Gdk.InterpType.Bilinear);
-            
+
             try {
                 Notification nf = new Notification(Catalog.GetString("Now Playing"), message, image, event_box);
                 nf.Urgency = Urgency.Low;
-                nf.Timeout = 4500;
+                nf.Timeout = notification_duration;
                 nf.Show();
             } catch(Exception e) {
                 LogCore.Instance.PushError(Catalog.GetString("Cannot show notification"), e.Message, false);
             }
+        }
+
+        private void ShowNotificationWindows()
+        {
+            string message = String.Format("{0}\n\r{1}",
+                current_track.DisplayTitle, current_track.DisplayArtist);
+
+            system_tray.ShowBalloonTip(
+                notification_duration,
+                Catalog.GetString("Now Playing"),
+                message,
+                win.ToolTipIcon.None);
         }
 
         [GLib.ConnectBefore]
@@ -427,6 +538,9 @@ namespace Banshee.Plugins.NotificationAreaIcon
         
         private void PositionPopup() 
         {
+            if(event_box == null) {
+                return;
+            }
             int x, y;
             Gtk.Requisition event_box_req = event_box.SizeRequest();
             Gtk.Requisition popup_req = popup.SizeRequest();

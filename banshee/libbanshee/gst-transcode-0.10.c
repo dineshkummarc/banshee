@@ -34,9 +34,9 @@
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
 
-//#ifndef WIN32
+#ifndef WIN32
 #include <libgnomevfs/gnome-vfs.h>
-//#endif
+#endif
 
 #include "gst-misc.h"
 
@@ -126,7 +126,7 @@ gst_transcoder_stop_iterate_timeout(GstTranscoder *transcoder)
 static gboolean
 gst_transcoder_bus_callback(GstBus *bus, GstMessage *message, gpointer data)
 {
-    GnomeVFSFileInfo fileinfo;
+    //GnomeVFSFileInfo fileinfo;
     GstTranscoder *transcoder = (GstTranscoder *)data;
 
     g_return_val_if_fail(transcoder != NULL, FALSE);
@@ -155,7 +155,7 @@ gst_transcoder_bus_callback(GstBus *bus, GstMessage *message, gpointer data)
             transcoder->is_transcoding = FALSE;
             gst_transcoder_stop_iterate_timeout(transcoder);
 
-            if(gnome_vfs_get_file_info(transcoder->output_uri, &fileinfo, 
+            /*if(gnome_vfs_get_file_info(transcoder->output_uri, &fileinfo, 
                 GNOME_VFS_FILE_INFO_DEFAULT) == GNOME_VFS_OK) {
                 if(fileinfo.size < 100) {
                     gst_transcoder_raise_error(transcoder, 
@@ -166,7 +166,7 @@ gst_transcoder_bus_callback(GstBus *bus, GstMessage *message, gpointer data)
             } else {
                 gst_transcoder_raise_error(transcoder, _("Could not stat encoded file"), NULL);
                 break;
-            }
+            }*/
             
             if(transcoder->finished_cb != NULL) {
                 transcoder->finished_cb(transcoder);
@@ -255,7 +255,7 @@ gst_transcoder_create_pipeline(GstTranscoder *transcoder,
     
     transcoder->pipeline = gst_pipeline_new("pipeline");
 
-    source_elem = gst_element_factory_make("gnomevfssrc", "source");
+    source_elem = gst_element_factory_make("filesrc", "source"); // WINOWS TODO programatically use gnomevfssrc
     if(source_elem == NULL) {
         gst_transcoder_raise_error(transcoder, _("Could not create 'gnomevfssrc' plugin"), NULL);
         return FALSE;
@@ -267,7 +267,7 @@ gst_transcoder_create_pipeline(GstTranscoder *transcoder,
         return FALSE;
     }
     
-    sink_elem = gst_element_factory_make("gnomevfssink", "sink");
+    sink_elem = gst_element_factory_make("filesink", "sink"); // WINOWS TODO programatically use gnomevfssink
     if(sink_elem == NULL) {
         gst_transcoder_raise_error(transcoder, _("Could not create 'gnomevfssink' plugin"), NULL);
         return FALSE;

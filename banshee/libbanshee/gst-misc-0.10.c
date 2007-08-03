@@ -74,9 +74,9 @@ void gstreamer_initialize()
     }
 
     gst_init(NULL, NULL);
-//#ifndef WIN32 //FIXME kludgy
+#ifndef WIN32 //FIXME kludgy
     _gst_plugin_register_static(&gst_mbtrm_plugin_desc);
-//#endif
+#endif
 
     gstreamer_initialized = TRUE;
 }
