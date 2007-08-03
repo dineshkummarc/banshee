@@ -3,6 +3,7 @@
     <ProjectGuid>{624EE2B8-E4A7-4E0B-AFB1-83E2299EC0DB}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <RootNamespace>Banshee.Plugins.NotificationAreaIcon</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputType>Library</OutputType>
@@ -56,22 +57,15 @@
     <Compile Include=".\NotificationArea.cs" />
     <Compile Include=".\NotificationAreaIconConfigPage.cs" />
     <Compile Include=".\NotificationAreaIconPlugin.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="SystemTray.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include=".\NotificationAreaIconMenu.xml">
       <LogicalName>NotificationAreaIconMenu.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\data\images\banshee_icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

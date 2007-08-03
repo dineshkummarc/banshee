@@ -55,7 +55,7 @@ namespace Banshee.Plugins.NotificationAreaIcon
                 notify_icon.Visible = true;
                 notify_icon.Text = name;
                 notify_icon.ContextMenu = context_menu;
-                notify_icon.Icon = global::Properties.Resources.banshee_icon;
+                notify_icon.Icon = new System.Drawing.Icon(GetType(), "banshee_icon.ico");
 
                 ShowInTaskbar = false;
                 TopMost = false;
