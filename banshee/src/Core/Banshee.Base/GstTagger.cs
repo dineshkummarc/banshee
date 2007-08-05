@@ -35,6 +35,7 @@ using Banshee.Base;
 
 namespace Banshee.Gstreamer
 {
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void GstTaggerTagFoundCallback(string tagName, ref GLib.Value value, IntPtr userData);
     
     public class GstTagger : IDisposable

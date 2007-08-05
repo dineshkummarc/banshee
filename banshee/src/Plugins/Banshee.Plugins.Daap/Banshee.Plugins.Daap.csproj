@@ -35,7 +35,7 @@
       <HintPath>..\..\lib\Mono.Posix.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=2.84.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
-      <HintPath>..\..\lib\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>C:\mono\Mono-1.2.4\lib\mono\2.0\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

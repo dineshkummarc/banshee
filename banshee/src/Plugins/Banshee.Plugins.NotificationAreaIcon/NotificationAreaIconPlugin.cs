@@ -193,7 +193,7 @@ namespace Banshee.Plugins.NotificationAreaIcon
 
         private void InitUnix()
         {
-            notif_area = new NotificationArea(Catalog.GetString("Banshee"));
+            notif_area = new NotificationArea(Catalog.GetString(Branding.ApplicationName));
             notif_area.DestroyEvent += OnDestroyEvent;
 
             event_box = new EventBox();
@@ -301,8 +301,10 @@ namespace Banshee.Plugins.NotificationAreaIcon
                         Gdk.Pixbuf image = Branding.ApplicationLogo.ScaleSimple(42, 42, Gdk.InterpType.Bilinear);
                         Notification nf = new Notification(
                             Catalog.GetString("Still Running"), 
-                            Catalog.GetString("Banshee was closed to the notification area. " + 
-                                "Use the <i>Quit</i> option to end your session."),
+                            Catalog.GetString(String.Format(
+                                "{0} was closed to the notification area. " + 
+                                "Use the <i>Quit</i> option to end your session.",
+                                Branding.ApplicationName)),
                             image, event_box);
                         nf.Urgency = Urgency.Low;
                         nf.Timeout = notification_duration;
@@ -311,9 +313,11 @@ namespace Banshee.Plugins.NotificationAreaIcon
                         system_tray.ShowBalloonTip(
                             notification_duration,
                             Catalog.GetString("Still Running"),
-                            Catalog.GetString("Banshee was closed to the notification area. " +
-                                "Use the Quit option to end your session."),
-                                win.ToolTipIcon.Info);
+                            Catalog.GetString(String.Format(
+                                "{0} was closed to the system tray. " +
+                                "Use the Quit option to end your session.",
+                                Branding.ApplicationName)),
+                            win.ToolTipIcon.Info);
                     }
                     
                     NotifyOnCloseSchema.Set(false);
@@ -350,6 +354,17 @@ namespace Banshee.Plugins.NotificationAreaIcon
             
             notify_last_title = current_track.DisplayTitle;
             notify_last_artist = current_track.DisplayArtist;
+
+            if(system_tray != null) {
+                string text = Branding.ApplicationName + "\r\n" +
+                    current_track.DisplayTitle + "\r\n" +
+                    current_track.DisplayArtist + "\r\n" +
+                    current_track.DisplayAlbum;
+                while(text.Length >= 64) {
+                    text = text.Substring(0, text.LastIndexOf('\r'));
+                }
+                system_tray.Text = text;
+            }
 
             if(cursor_over_trayicon || !show_notifications || InterfaceElements.MainWindow.HasToplevelFocus) {
                 return;
@@ -602,6 +617,7 @@ namespace Banshee.Plugins.NotificationAreaIcon
                     ShowNotification();
                     break;
                 case PlayerEngineEvent.EndOfStream:
+                    system_tray.Text = Branding.ApplicationName;    
                     // only hide the popup when we don't play again after 250ms
                     GLib.Timeout.Add(250, delegate {
                         if (PlayerEngineCore.CurrentState != PlayerEngineState.Playing) {

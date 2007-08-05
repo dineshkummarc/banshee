@@ -34,8 +34,11 @@ using Banshee.AudioProfiles;
 
 namespace Banshee.Base
 {
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void GstTranscoderProgressCallback(IntPtr transcoder, double progress);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void GstTranscoderFinishedCallback(IntPtr transcoder);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void GstTranscoderErrorCallback(IntPtr transcoder, IntPtr error, IntPtr debug);
 
     public class GstTranscoder : Transcoder
@@ -67,6 +70,9 @@ namespace Banshee.Base
             
         [DllImport("libbanshee")]
         private static extern bool gst_transcoder_get_is_transcoding(HandleRef handle);
+
+        [DllImport("libglib-2.0-0.dll")]
+        private static extern IntPtr g_filename_from_uri(IntPtr filename, IntPtr hostname, IntPtr error);
 
         private HandleRef handle;
         private GstTranscoderProgressCallback ProgressCallback;
@@ -104,23 +110,12 @@ namespace Banshee.Base
                 throw new ApplicationException("Transcoder is busy");
             }
 
-            // WINDOWS FIXME this is LAME, but seamingly nessisary
-            string input = string.Empty;
-            string output = string.Empty;
-            if(Environment.OSVersion.Platform == PlatformID.Unix) {
-                input = inputUri.AbsoluteUri;
-                output = outputUri.AbsoluteUri;
-            } else {
-                input = "file://" + inputUri.LocalPath;
-                output = "file://" + outputUri.LocalPath;
-            }
-            
-            IntPtr input_uri = GLib.Marshaller.StringToPtrGStrdup(input);
-            IntPtr output_uri = GLib.Marshaller.StringToPtrGStrdup(output);
+            IntPtr input_uri = GLib.Marshaller.StringToPtrGStrdup(inputUri.AbsoluteUri);
+            IntPtr output_uri = GLib.Marshaller.StringToPtrGStrdup(outputUri.AbsoluteUri);
             
             error_message = null;
-            
-            gst_transcoder_transcode(handle, input_uri, output_uri, profile.Pipeline.GetProcessById("gstreamer"));
+
+            gst_transcoder_transcode(handle, input_uri, output_uri, "cdwavenc"/*profile.Pipeline.GetProcessById("gstreamer")*/);
             
             GLib.Marshaller.Free(input_uri);
             GLib.Marshaller.Free(output_uri);

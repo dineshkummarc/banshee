@@ -63,8 +63,6 @@
     <EmbeddedResource Include=".\NotificationAreaIconMenu.xml">
       <LogicalName>NotificationAreaIconMenu.xml</LogicalName>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="..\..\..\data\images\banshee_icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

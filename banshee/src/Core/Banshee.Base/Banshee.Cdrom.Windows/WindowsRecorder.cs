@@ -22,8 +22,6 @@ namespace Banshee.Cdrom.Windows
         private object burner_mutex = new object();
         private DiscMaster disc_master;
         private bool is_writing;
-        private volatile bool burn_complete;
-
         private int max_write_speed, min_write_speed;
         
         internal WindowsRecorder(char c) : base (c)
@@ -87,29 +85,27 @@ namespace Banshee.Cdrom.Windows
                 return DiscRecorderClosure<RecorderResult>(delegate(DiscRecorder disc_recorder) {
                     disc_master.DiscRecorders.ActiveDiscRecorder = disc_recorder;
                     using(RedbookDiscMaster redbook = disc_master.RedbookDiscMaster()) {
+                        OnActionChanged(RecorderAction.PreparingWrite);
                         foreach(RecorderTrack track in tracks) {
                             if(track.Type == RecorderTrackType.Audio) {
                                 redbook.AddAudioTrackFromStream(new FileStream(track.FileName, FileMode.Open));
                             }
                         }
 
-                        bool simulate = false;
-                        if(Environment.GetEnvironmentVariable("BURNER_SIMULATE") != null) {
-                            simulate = true;
+                        bool simulate = Environment.GetEnvironmentVariable("BURNER_SIMULATE") != null;
+                        if(simulate) {
                             Console.Error.WriteLine("** Simulating CD Record **");
                         }
 
+                        disc_master.BlockProgress += disc_master_BlockProgress;
+                        disc_master.ClosingDisc += delegate {
+                            OnActionChanged(RecorderAction.Fixating);
+                            OnProgressChanged(0.0);
+                        };
+                        
                         is_writing = true;
-                        burn_complete = false;
-
-                        disc_master.BurnComplete += delegate { burn_complete = true; };
-                        disc_master.TrackProgress += disc_master_TrackProgress;
-
+                        OnActionChanged(RecorderAction.Writing);
                         disc_master.RecordDisc(simulate, eject);
-                        Console.WriteLine("YO WAY YO");
-                        while(!burn_complete) {
-                        }
-
                         is_writing = false;
                         return RecorderResult.Finished;
                     }
@@ -117,10 +113,22 @@ namespace Banshee.Cdrom.Windows
             }
         }
 
-        void disc_master_TrackProgress(object sender, ProgressEventArgs args)
+        void disc_master_BlockProgress(object sender, ProgressEventArgs args)
+        {
+            OnProgressChanged((double)(args.Completed) / (double)(args.Total));
+        }
+
+        private void OnProgressChanged(double fraction)
         {
             if(ProgressChanged != null) {
-                ProgressChanged(this, new ProgressChangedArgs((double)args.Completed / (double)args.Total));
+                ProgressChanged(this, new ProgressChangedArgs(fraction));
+            }
+        }
+
+        private void OnActionChanged(RecorderAction action)
+        {
+            if(ActionChanged != null) {
+                ActionChanged(this, new ActionChangedArgs(action, DriveMediaType.CD));
             }
         }
 
@@ -152,14 +160,18 @@ namespace Banshee.Cdrom.Windows
         {
             get {
                 return DiscRecorderClosure<long>(delegate(DiscRecorder disc_recorder) {
-                    disc_recorder.OpenExclusive();
-                    MediaDetails media = disc_recorder.GetMediaDetails();
-                    long result = 0;
-                    if (media.MediaPresent) {
-                        result = media.FreeBlocks * 2352;
+                    try {
+                        disc_recorder.OpenExclusive();
+                        MediaDetails media = disc_recorder.GetMediaDetails();
+                        long result = 0;
+                        if (media.MediaPresent) {
+                            result = media.FreeBlocks * 2352;
+                        }
+                        disc_recorder.CloseExclusive();
+                        return result;
+                    } catch {
+                        return 0;
                     }
-                    disc_recorder.CloseExclusive();
-                    return result;
                 });
             }
         }

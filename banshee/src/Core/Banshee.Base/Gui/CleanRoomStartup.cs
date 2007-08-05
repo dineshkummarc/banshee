@@ -50,9 +50,9 @@ namespace Banshee.Gui
                 return;
             }
             
-            try {
+            //try {
                 startup(args);
-            } catch(Exception e) {
+            /*} catch(Exception e) {
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e);
             
@@ -61,7 +61,7 @@ namespace Banshee.Gui
                 dialog.Run();
                 dialog.Destroy();
                 System.Environment.Exit(1);
-            }
+            }*/
         }
     }
 }

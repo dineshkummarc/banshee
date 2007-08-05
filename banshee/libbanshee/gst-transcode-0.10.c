@@ -239,7 +239,7 @@ gst_transcoder_new_decoded_pad(GstElement *decodebin, GstPad *pad,
 
 static gboolean
 gst_transcoder_create_pipeline(GstTranscoder *transcoder, 
-    const char *input_file, const char *output_file, 
+    const char **input_file, const char **output_file, 
     const gchar *encoder_pipeline)
 {
     GstElement *source_elem;
@@ -248,6 +248,7 @@ gst_transcoder_create_pipeline(GstTranscoder *transcoder,
     GstElement *sink_elem;
     GstElement *conv_elem;
     GstPad *encoder_pad;
+	gboolean have_gnomevfs;
 
     if(transcoder == NULL) {
         return FALSE;
@@ -255,10 +256,16 @@ gst_transcoder_create_pipeline(GstTranscoder *transcoder,
     
     transcoder->pipeline = gst_pipeline_new("pipeline");
 
-    source_elem = gst_element_factory_make("filesrc", "source"); // WINOWS TODO programatically use gnomevfssrc
+    have_gnomevfs = TRUE;
+	
+	source_elem = gst_element_factory_make("gnomevfssrc", "source"); // WINOWS TODO programatically use gnomevfssrc
     if(source_elem == NULL) {
-        gst_transcoder_raise_error(transcoder, _("Could not create 'gnomevfssrc' plugin"), NULL);
-        return FALSE;
+		have_gnomevfs = FALSE;
+        source_elem = gst_element_factory_make("filesrc", "source");
+		if(source_elem == NULL) {
+			gst_transcoder_raise_error(transcoder, _("Could not create 'gnomevfssrc' or 'filesrc' plugin"), NULL);
+			return FALSE;
+		}
     }
 
     decoder_elem = gst_element_factory_make("decodebin", "decodebin");
@@ -267,10 +274,14 @@ gst_transcoder_create_pipeline(GstTranscoder *transcoder,
         return FALSE;
     }
     
-    sink_elem = gst_element_factory_make("filesink", "sink"); // WINOWS TODO programatically use gnomevfssink
+    sink_elem = gst_element_factory_make("gnomevfssink", "sink"); // WINOWS TODO programatically use gnomevfssink
     if(sink_elem == NULL) {
-        gst_transcoder_raise_error(transcoder, _("Could not create 'gnomevfssink' plugin"), NULL);
-        return FALSE;
+        have_gnomevfs = FALSE;
+        sink_elem = gst_element_factory_make("filesink", "source");
+		if(sink_elem == NULL) {
+			gst_transcoder_raise_error(transcoder, _("Could not create 'gnomevfssink' or 'filesink' plugin"), NULL);
+			return FALSE;
+		}
     }
     
     transcoder->sink_bin = gst_bin_new("sinkbin");
@@ -311,8 +322,17 @@ gst_transcoder_create_pipeline(GstTranscoder *transcoder,
         
     gst_element_link(source_elem, decoder_elem);
 
-    g_object_set(source_elem, "location", input_file, NULL);
-    g_object_set(sink_elem, "location", output_file, NULL);
+    if(!have_gnomevfs) {
+		*input_file = g_filename_from_uri(*input_file, NULL, NULL);
+		*output_file = g_filename_from_uri(*output_file, NULL, NULL);
+	}
+	if(&input_file == NULL || &output_file == NULL) {
+		gst_transcoder_raise_error(transcoder, _("Could not convert URIs to filenames"), NULL);
+		return FALSE;
+	}
+	
+	g_object_set(source_elem, "location", *input_file, NULL);
+    g_object_set(sink_elem, "location", *output_file, NULL);
 
     g_signal_connect(decoder_elem, "new-decoded-pad", 
         G_CALLBACK(gst_transcoder_new_decoded_pad), transcoder);
@@ -369,13 +389,16 @@ void
 gst_transcoder_transcode(GstTranscoder *transcoder, const gchar *input_uri, 
     const gchar *output_uri, const gchar *encoder_pipeline)
 {
-    g_return_if_fail(transcoder != NULL);
+    const gchar **input = &input_uri;
+	const gchar **output = &output_uri;
+	
+	g_return_if_fail(transcoder != NULL);
     
     if(transcoder->is_transcoding) {
         return;
     }
     
-    if(!gst_transcoder_create_pipeline(transcoder, input_uri, output_uri, encoder_pipeline)) {
+    if(!gst_transcoder_create_pipeline(transcoder, input, output, encoder_pipeline)) {
         gst_transcoder_raise_error(transcoder, _("Could not construct pipeline"), NULL); 
         return;
     }
@@ -384,7 +407,7 @@ gst_transcoder_transcode(GstTranscoder *transcoder, const gchar *input_uri,
         g_free(transcoder->output_uri);
     }
     
-    transcoder->output_uri = g_strdup(output_uri);
+    transcoder->output_uri = g_strdup(*output);
     transcoder->is_transcoding = TRUE;
     
     gst_element_set_state(GST_ELEMENT(transcoder->pipeline), GST_STATE_PLAYING);

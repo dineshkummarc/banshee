@@ -105,5 +105,11 @@ namespace Banshee.Plugins.NotificationAreaIcon
         {
             window.notify_icon.ShowBalloonTip(timeout, tipTitle, tipText, tipIcon);
         }
+
+        public string Text
+        {
+            get { return window.notify_icon.Text; }
+            set { window.notify_icon.Text = value; }
+        }
     }
 }
