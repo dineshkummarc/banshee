@@ -349,54 +349,21 @@ namespace Banshee.PlayerMigration
             xml_reader.Close();
 
             data.total_processed++;
+            location = ConvertToLocalUri(location);
             if(location == null) {
                 return;
             }
-
-            location = ConvertToLocalUriFormat(location);
-
-            string local_uri = null;
-            if(!data.local_library) {
-                int index = location.IndexOf(data.default_query);
-                if(index == -1 && data.query_dirs.Length > 0) {
-                    int count = 0;
-                    string path = data.query_dirs[data.query_dirs.Length - 1];
-                    do {
-                        for(int k = data.query_dirs.Length - 2; k >= count; k--) {
-                            path = Path.Combine(path, data.query_dirs[k]);
-                        }
-                        index = location.IndexOf(path);
-                        count++;
-                    } while(index == -1 && count < data.query_dirs.Length);
-                    if(index == -1) {
-                        index = location.IndexOf(data.fallback_dir);
-                        if(index != -1) {
-                            index += data.fallback_dir.Length + 1;
-                        }
-                    }
-                }
-                if(index == -1) {
-                    Banshee.Sources.ImportErrorsSource.Instance.AddError(location,
-                        "Unable to map iTunes URI to local URI", null);
-                    return;
-                }
-                local_uri = location.Substring(index, location.Length - index);
-                local_uri = Path.Combine(data.local_prefix, local_uri);
-            } else {
-                local_uri = location.Substring(17); // 17 is the length of "file://localhost/"
-            }
-
             SafeUri safe_uri = null;
             try {
-                safe_uri = new SafeUri(local_uri);
+                safe_uri = new SafeUri(location);
             } catch {
-                Banshee.Sources.ImportErrorsSource.Instance.AddError(local_uri,
+                Banshee.Sources.ImportErrorsSource.Instance.AddError(location,
                     "URI is not a local file path", null);
                 return;
             }
             
             if(!IOProxy.File.Exists(safe_uri)) {
-                Banshee.Sources.ImportErrorsSource.Instance.AddError(local_uri,
+                Banshee.Sources.ImportErrorsSource.Instance.AddError(location,
                     "File does not exist", null);
                 return;
             }
@@ -410,7 +377,7 @@ namespace Banshee.PlayerMigration
                     ? Globals.Library.GetTrack(track_id)
                     : new LibraryTrackInfo(safe_uri.AbsoluteUri);
             } catch (Exception e) {
-                Banshee.Sources.ImportErrorsSource.Instance.AddError(local_uri, e.Message, e);
+                Banshee.Sources.ImportErrorsSource.Instance.AddError(location, e.Message, e);
                 return;
             }
 
@@ -624,6 +591,46 @@ namespace Banshee.PlayerMigration
             } else {
                 data.smart_playlists_count++;
             }
+        }
+
+        private string ConvertToLocalUri(string uri)
+        {
+            if(uri == null) {
+                return null;
+            }
+
+            string local_uri = null;
+            uri = ConvertToLocalUriFormat(uri);
+            if(!data.local_library) {
+                int index = uri.IndexOf(data.default_query);
+                if(index == -1 && data.query_dirs.Length > 0) {
+                    int count = 0;
+                    string path = data.query_dirs[data.query_dirs.Length - 1];
+                    do {
+                        for(int k = data.query_dirs.Length - 2; k >= count; k--) {
+                            path = Path.Combine(path, data.query_dirs[k]);
+                        }
+                        index = uri.IndexOf(path);
+                        count++;
+                    } while(index == -1 && count < data.query_dirs.Length);
+                    if(index == -1) {
+                        index = uri.IndexOf(data.fallback_dir);
+                        if(index != -1) {
+                            index += data.fallback_dir.Length + 1;
+                        }
+                    }
+                }
+                if(index == -1) {
+                    Banshee.Sources.ImportErrorsSource.Instance.AddError(uri,
+                        "Unable to map iTunes URI to local URI", null);
+                    return null;
+                }
+                local_uri = uri.Substring(index, uri.Length - index);
+                local_uri = Path.Combine(data.local_prefix, local_uri);
+            } else {
+                local_uri = uri.Substring(17); // 17 is the length of "file://localhost/"
+            }
+            return local_uri;
         }
 
         // URIs are UTF-8 percent-encoded. Deconding with System.Web.HttpServerUtility

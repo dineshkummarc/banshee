@@ -21,7 +21,7 @@ namespace Banshee.Cdrom.Windows
         private List<RecorderTrack> tracks = new List<RecorderTrack>();
         private object burner_mutex = new object();
         private DiscMaster disc_master;
-        private bool is_writing;
+        private volatile bool is_writing, cancel;
         private int max_write_speed, min_write_speed;
         
         internal WindowsRecorder(char c) : base (c)
@@ -80,14 +80,23 @@ namespace Banshee.Cdrom.Windows
 
         public RecorderResult WriteTracks(int speed, bool eject)
         {
+            try {
+                return WriteTracks(eject);
+            } finally {
+                is_writing = false;
+            }
+        }
+        private RecorderResult WriteTracks(bool eject)
+        {
             lock(burner_mutex) {
+                cancel = false;
                 // FIXME handle recorders that don't do audio CDs
                 return DiscRecorderClosure<RecorderResult>(delegate(DiscRecorder disc_recorder) {
                     disc_master.DiscRecorders.ActiveDiscRecorder = disc_recorder;
                     using(RedbookDiscMaster redbook = disc_master.RedbookDiscMaster()) {
                         OnActionChanged(RecorderAction.PreparingWrite);
                         foreach(RecorderTrack track in tracks) {
-                            if(track.Type == RecorderTrackType.Audio) {
+                            if(track.Type == RecorderTrackType.Audio && !cancel) {
                                 redbook.AddAudioTrackFromStream(new FileStream(track.FileName, FileMode.Open));
                             }
                         }
@@ -102,11 +111,13 @@ namespace Banshee.Cdrom.Windows
                             OnActionChanged(RecorderAction.Fixating);
                             OnProgressChanged(0.0);
                         };
-                        
+
                         is_writing = true;
+                        if(cancel) {
+                            return RecorderResult.Canceled;
+                        }
                         OnActionChanged(RecorderAction.Writing);
                         disc_master.RecordDisc(simulate, eject);
-                        is_writing = false;
                         return RecorderResult.Finished;
                     }
                 });
@@ -134,10 +145,10 @@ namespace Banshee.Cdrom.Windows
 
         public bool CancelWrite(bool skipIfDangerous)
         {
-            /*if(is_writing) {
-                int cancel = 1;
-                disc_master.QueryCancelRequest(out cancel);
-            }*/
+            if(!is_writing) {
+                cancel = true;
+                return true;
+            }
             return false;
         }
 

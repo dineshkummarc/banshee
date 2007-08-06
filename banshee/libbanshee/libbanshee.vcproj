@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gobject-2.0.lib glib-2.0.lib libmusicbrainz.lib libgstreamer-0.10.lib libgstbase-0.10.lib intl.lib winmm.lib"
+				AdditionalDependencies="gobject-2.0.lib glib-2.0.lib libmusicbrainz.lib libgstreamer-0.10.lib libgstbase-0.10.lib intl.lib"
 				AdditionalLibraryDirectories="&quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\lib&quot;;&quot;D:\Visual Studio 2005\Projects\Banshee Port\gstreamer\lib&quot;;&quot;C:\mono\Mono-1.2.4\lib&quot;"
 				ModuleDefinitionFile="libbanshee.def"
 				GenerateDebugInformation="true"

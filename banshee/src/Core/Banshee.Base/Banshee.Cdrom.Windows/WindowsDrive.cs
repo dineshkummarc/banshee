@@ -61,7 +61,7 @@ namespace Banshee.Cdrom.Windows
 
         public string Device
         {
-            get { return drive_letter.ToString() + @":\"; }
+            get { return drive_letter.ToString() + @":"; }
         }
 
         public virtual bool HaveMedia

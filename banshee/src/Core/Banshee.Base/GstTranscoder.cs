@@ -71,9 +71,6 @@ namespace Banshee.Base
         [DllImport("libbanshee")]
         private static extern bool gst_transcoder_get_is_transcoding(HandleRef handle);
 
-        [DllImport("libglib-2.0-0.dll")]
-        private static extern IntPtr g_filename_from_uri(IntPtr filename, IntPtr hostname, IntPtr error);
-
         private HandleRef handle;
         private GstTranscoderProgressCallback ProgressCallback;
         private GstTranscoderFinishedCallback FinishedCallback;

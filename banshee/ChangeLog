@@ -16,7 +16,7 @@
 	* Banshee.Plugins.NotificationAreaIcon/Properties/*,
 	  Banshee.Plugins.NotificationAreaIcon/Resources/*: added banshee_icon.ico resource
 
-	* Banshee.Plugins.NotificationAreaIcon/NotificationAreaIconPlugin.cs: Made to with SystemTray
+	* Banshee.Plugins.NotificationAreaIcon/NotificationAreaIconPlugin.cs: Made to work with SystemTray
 
 	* Banshee.Plugins.NotificationAreaIcon/SystemTray.cs: Added SystemTray class to interface
 	  with the Windows system tray.
