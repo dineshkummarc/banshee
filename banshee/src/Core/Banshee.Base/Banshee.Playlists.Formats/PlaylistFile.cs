@@ -40,7 +40,12 @@ namespace Banshee.Playlists.Formats
             } else {
                 return System.IO.Path.GetFileName(ti.Uri.AbsolutePath);                
             }            
-        }    
+        }
+
+        public virtual string GetPlaylistName(string playlist_uri)
+        {
+            return Path.GetFileNameWithoutExtension(playlist_uri);
+        }
         
         public string UpdateExtension(string uri) 
         {            
@@ -70,14 +75,14 @@ namespace Banshee.Playlists.Formats
         
         protected string AbsoluteToRelative(string absPath, string relativeTo)
         {
-            string relativePath = null;    
+            string relativePath = null;
             char[] slash = new char[] { Path.DirectorySeparatorChar };
             
             try {
                 // Determine the common part of the path.
-                string commonPath = Path.DirectorySeparatorChar.ToString();
-                string[] tokens = absPath.Split(slash, StringSplitOptions.RemoveEmptyEntries);                
-                for (int i = 0; i < tokens.Length; i++) {
+                string commonPath = Path.GetPathRoot(absPath);
+                string[] tokens = absPath.Split(Path.DirectorySeparatorChar);                
+                for (int i = 1; i < tokens.Length; i++) {
                     string temp = commonPath + tokens[i];    
                     if (relativeTo.StartsWith(temp)) {                        
                         commonPath = temp + Path.DirectorySeparatorChar;

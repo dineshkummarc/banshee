@@ -104,7 +104,7 @@ gst_playback_bus_callback(GstBus *bus, GstMessage *message, gpointer data)
             // FIXME: This is to work around a bug in qtdemux in
             // -good <= 0.10.6
             if(message->src != NULL && message->src->name != NULL &&
-                strncmp(message->src->name, "qtdemux", 0) == 0) {
+                strncmp(message->src->name, "qtdemux", 8) == 0) {
                 break;
             }
             
@@ -442,7 +442,7 @@ gst_playback_open(GstPlayback *engine, const gchar *uri)
         return;
     }
 
-    if(uri != NULL && g_str_has_prefix(uri, "cdda://")) {
+	if(uri != NULL && g_str_has_prefix(uri, "cdda://")) {
         const gchar *p = g_utf8_strchr(uri, -1, '#');
         const gchar *new_cdda_device;
         

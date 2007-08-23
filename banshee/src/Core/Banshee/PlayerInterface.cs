@@ -574,7 +574,7 @@ namespace Banshee
                 Globals.DBusPlayer.SelectAudioCd(Globals.ArgumentQueue.Dequeue("audio-cd"));
             } else if(Globals.ArgumentQueue.Contains("dap")) {
                 Globals.DBusPlayer.SelectDap(Globals.ArgumentQueue.Dequeue("dap"));
-            } else {
+            } else if(SourceManager.ActiveSource == null) {
                 SourceManager.SetActiveSource(LibrarySource.Instance);
             }
 
@@ -2051,7 +2051,7 @@ namespace Banshee
 
             // Import the tracks specified in the playlist.
             if (uris != null) {
-                ImportPlaylistWorker worker = new ImportPlaylistWorker(uris);
+                ImportPlaylistWorker worker = new ImportPlaylistWorker(playlist_uri, uris);
                 Thread t = new Thread(new ThreadStart(worker.Import));		        
                 t.Start();
             } else {

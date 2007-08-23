@@ -362,6 +362,7 @@
     <Compile Include="Banshee.Cdrom.Windows\WindowsRecorder.cs" />
     <Compile Include="Banshee.Cdrom\CdromCore.cs" />
     <Compile Include="Banshee.Cdrom\AudioCdDisk.cs" />
+    <Compile Include="Banshee.Playlists.Formats\Wpl.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\..\..\data\banshee-dialogs.glade">

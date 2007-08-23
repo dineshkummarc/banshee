@@ -103,59 +103,70 @@ namespace Banshee.Playlists
         {
             return new PlaylistFile[] {
                     new M3u(),
-                    new Pls()
+                    new Pls(),
+                    new Wpl()
                 };
         }
-        
-        public static string[] ImportPlaylist(string playlistUri)
-        {            
-            PlaylistFile[] formats = PlaylistFileUtil.GetAllExportFormats();            
-            string[] uris = null;
-            
+
+        private static PlaylistFile[] GetSortedFormats(string playlist_uri)
+        {
+            PlaylistFile[] formats = PlaylistFileUtil.GetAllExportFormats();
+
             // If the file has an extenstion, rearrange the format array so that the 
             // appropriate format is tried first.
-            if (System.IO.Path.HasExtension(playlistUri)) {
-                string extension = System.IO.Path.GetExtension(playlistUri);
+            if(System.IO.Path.HasExtension(playlist_uri)) {
+                string extension = System.IO.Path.GetExtension(playlist_uri);
                 extension = extension.ToLower();
-                
+
                 int index = -1;
-                foreach (PlaylistFile format in formats) {
-                    index++;                    
-                    if (extension.Equals("." + format.Extension)) {                        
+                foreach(PlaylistFile format in formats) {
+                    index++;
+                    if(extension.Equals("." + format.Extension)) {
                         break;
-                    } 
+                    }
                 }
-                                
-                if (index != -1 && index != 0 && index < formats.Length) {
+
+                if(index != -1 && index != 0 && index < formats.Length) {
                     // Move to first position in array.
                     PlaylistFile preferredFormat = formats[index];
                     formats[index] = formats[0];
                     formats[0] = preferredFormat;
                 }
             }
-            
-            
-            foreach (PlaylistFile format in formats) {
-                try {
-                    uris = format.Import(playlistUri);
-                    break;
-                } catch (InvalidPlaylistException) {                    
-                    continue;
-                }            
-            }
+            return formats;
+        }
+
+        public static string GetPlaylistName(string playlist_uri)
+        {
+            return GetSortedFormats(playlist_uri)[0].GetPlaylistName(playlist_uri);
+        }
         
+        public static string[] ImportPlaylist(string playlist_uri)
+        {
+            string[] uris = null;
+            PlaylistFile[] formats = GetSortedFormats(playlist_uri);
+            foreach(PlaylistFile format in formats) {
+                try {
+                    uris = format.Import(playlist_uri);
+                    break;
+                } catch(InvalidPlaylistException) {
+                    continue;
+                }
+            }
             return uris;
         }
     }
     
     public class ImportPlaylistWorker
     {
-        private string[] uris;
+        private readonly string playlist_uri;
+        private readonly string[] uris;
         private List<string> not_found_uri_list = new List<string>();
         private List<TrackInfo> track_info_list = new List<TrackInfo>();
         
-        public ImportPlaylistWorker(string[] uris)
+        public ImportPlaylistWorker(string playlist_uri, string[] uris)
         {
+            this.playlist_uri = playlist_uri;
             this.uris = uris;
         }
         
@@ -193,7 +204,7 @@ namespace Banshee.Playlists
                 bool found_track = false;
                 
                 foreach (TrackInfo ti in LibrarySource.Instance.Tracks) {
-                    if (ti.Uri.AbsolutePath.Equals(uri)) {
+                    if(CompareUris(ti.Uri.AbsolutePath, uri)) {
                         found_track = true;
                         break;
                     }
@@ -251,28 +262,46 @@ namespace Banshee.Playlists
                    }        
                }
         }
+
+        private bool CompareUris(string uri1, string uri2)
+        {
+            return Path.ChangeExtension(uri1, Path.GetExtension(uri1).ToLower()).Equals(
+                Path.ChangeExtension(uri2, Path.GetExtension(uri2).ToLower()));
+        }
         
         private void CreatePlaylist()
         {
             foreach (string uri in uris) {                  
                 foreach (TrackInfo ti in LibrarySource.Instance.Tracks) {
-                    if (ti.Uri.AbsolutePath.Equals(uri)) {                                
+                    if(CompareUris(ti.Uri.AbsolutePath, uri)) {                                
                         track_info_list.Add(ti);                        
                         break;
                     }
                 }
             }
                
-               // Create the playlist, add the tracks, then add the playlist to the library.
-               if (track_info_list.Count > 0) {                   
-                   PlaylistSource playlist = new PlaylistSource();                
+           // Create the playlist, add the tracks, then add the playlist to the library.
+           if (track_info_list.Count > 0) {                   
+                PlaylistSource playlist = new PlaylistSource();                
                 foreach(TrackInfo ti in track_info_list) {
                     playlist.AddTrack(ti);
                 }
+
+                string name = PlaylistFileUtil.GetPlaylistName(playlist_uri);
+                if(name == null || name == string.Empty) {
+                    name = PlaylistUtil.GoodUniqueName(playlist.Tracks);
+                } else {
+                    foreach(PlaylistSource p in PlaylistSource.Playlists) {
+                        if(p.Name == name) {
+                            name = PlaylistUtil.GoodUniqueName(playlist.Tracks);
+                            break;
+                        }
+                    }
+                }
                 
-                playlist.Rename(PlaylistUtil.GoodUniqueName(playlist.Tracks));                
-                playlist.Commit();                                
-                
+                playlist.Rename(name);
+                playlist.Commit();
+
                 LibrarySource.Instance.AddChildSource(playlist);
             }
         }

@@ -126,8 +126,10 @@ namespace Banshee.PlayerMigration
                     xml_reader.Read();
                     xml_reader.Read();
                     if(xml_reader.ReadContentAsString() != "1") {
-                        message = Catalog.GetString("Banshee is not familiar with this version of the iTunes library format." +
-                            " Importing may or may not work as expected, or at all. Would you like to attempt to import anyway?");
+                        message = Catalog.GetString(String.Format(
+                            "{0} is not familiar with this version of the iTunes library format." +
+                            " Importing may or may not work as expected, or at all. Would you like to attempt to import anyway?",
+                            Branding.ApplicationName));
                         prompt = true;
                         break;
                     }
