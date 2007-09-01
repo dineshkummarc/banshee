@@ -258,7 +258,7 @@ gst_transcoder_create_pipeline(GstTranscoder *transcoder,
 
     have_gnomevfs = TRUE;
 	
-	source_elem = gst_element_factory_make("gnomevfssrc", "source"); // WINOWS TODO programatically use gnomevfssrc
+	source_elem = gst_element_factory_make("gnomevfssrc", "source");
     if(source_elem == NULL) {
 		have_gnomevfs = FALSE;
         source_elem = gst_element_factory_make("filesrc", "source");
@@ -274,7 +274,7 @@ gst_transcoder_create_pipeline(GstTranscoder *transcoder,
         return FALSE;
     }
     
-    sink_elem = gst_element_factory_make("gnomevfssink", "sink"); // WINOWS TODO programatically use gnomevfssink
+    sink_elem = gst_element_factory_make("gnomevfssink", "sink");
     if(sink_elem == NULL) {
         have_gnomevfs = FALSE;
         sink_elem = gst_element_factory_make("filesink", "source");

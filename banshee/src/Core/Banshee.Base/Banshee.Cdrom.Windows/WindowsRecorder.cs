@@ -48,9 +48,9 @@ namespace Banshee.Cdrom.Windows
                 return true;
             });
         }
-        private T DiscRecorderClosure<T>(DiscRecorderDelegate<T> del) where T : new()
+        private T DiscRecorderClosure<T>(DiscRecorderDelegate<T> del)
         {
-            T result = new T();
+            T result = default(T);
             using(disc_master = new DiscMaster()) {
                 foreach(DiscRecorder disc_recorder in disc_master.DiscRecorders) {
                     if(disc_recorder.DriveLetter[0] == DriveLetter) {

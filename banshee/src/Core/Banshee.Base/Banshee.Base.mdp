@@ -11,9 +11,6 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./AudioCd/AudioCdCore.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AudioCd/AudioCdDisk.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AudioCd/AudioCdTrackInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.AudioProfiles/GConfProfileConfiguration.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.AudioProfiles/Pipeline.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.AudioProfiles/PipelineVariable.cs" subtype="Code" buildaction="Compile" />
@@ -33,10 +30,13 @@
     <File name="./Banshee.Burner/BurnerSessionRecorder.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Burner/BurnerSource.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Burner/BurnerUtilities.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom/AudioCdDisk.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom/AudioCdTrackInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom/CdromCore.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom/DriveFactory.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Cdrom/DriveMediaType.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Cdrom/IDiscDuplicator.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Cdrom/IDrive.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Banshee.Cdrom/IDriveFactory.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Cdrom/IRecorder.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Cdrom/RecorderAction.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Cdrom/RecorderResult.cs" subtype="Code" buildaction="Compile" />
@@ -47,6 +47,7 @@
     <File name="./Banshee.Cdrom.Iso/ImageStatus.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Cdrom.Iso.Mkisofs/MkisofsImageCreator.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Cdrom.Iso.Mkisofs/MkisofsProcess.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Nautilus/NautilusAudioCdDisk.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Cdrom.Nautilus/NautilusDiscDuplicator.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Cdrom.Nautilus/NautilusDrive.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Cdrom.Nautilus/NautilusDriveFactory.cs" subtype="Code" buildaction="Compile" />
@@ -56,6 +57,36 @@
     <File name="./Banshee.Cdrom.Nautilus.Interop/BurnRecorderHandlers.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Cdrom.Nautilus.Interop/BurnRecorderTrack.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Cdrom.Nautilus.Interop/NautilusEnums.cs" subtype="Code" buildaction="Compile" />
+    
+    
+    <File name="./Banshee.Cdrom.Windows/WindowsAudioCdDisk.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows/WindowsDiscDuplicator.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows/WindowsDrive.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows/WindowsDriveFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows/WindowsRecorder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/CDDrive.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/CDDriveEvents.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/DiscMaster.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/DiscMasterProgressEvents.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/DiscRecorder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/DiscRecorderProperties.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/DiscRecorders.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/EventArgClasses.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/IMAPAIException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/IMAPIInterop.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/IStreamOnFileStream.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/IStreamOnStream.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/JolietDiscMaster.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/JolietDiscMasterProperties.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/JolietDiscMasterStorage.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/JolietIEnumStatStg.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/JolietIStorage.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/MediaDetails.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/PinnedByteBuffer.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/Property.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/PropertyStorage.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/RedbookDiscMaster.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Cdrom.Windows.Interop/Win32Functions.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Configuration/ConfigurationClient.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Configuration/GConfConfigurationClient.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Configuration/IConfigurationClient.cs" subtype="Code" buildaction="Compile" />
@@ -63,6 +94,7 @@
     <File name="./Banshee.Configuration.Schema/ImportSchema.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Configuration.Schema/LibrarySchema.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Configuration.Schema/PlayerWindowSchema.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Configuration.Schema/XmlConfigurationClient.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Equalizer/EqualizerManager.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Equalizer/EqualizerSetting.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Equalizer.Gui/EqualizerBandScale.cs" subtype="Code" buildaction="Compile" />
@@ -90,9 +122,11 @@
     <File name="./Banshee.Metadata.Rhapsody/RhapsodyQueryJob.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.PlayerMigration" subtype="Directory" buildaction="Compile" />
     <File name="./Banshee.PlayerMigration/AmarokPlayerImport.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.PlayerMigration/ItunesImport.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.PlayerMigration/ItunesImportDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.PlayerMigration/ItunesSmartPlaylistParser.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.PlayerMigration/PlayerImport.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Banshee.PlayerMigration/PlayerImportDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Banshee.PlayerMigration/PlayerImportSource.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.PlayerMigration/PlayerMigrationCore.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.PlayerMigration/RhythmboxPlayerImport.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Playlists" subtype="Directory" buildaction="Compile" />
     <File name="./Banshee.Playlists/PlaylistFileUtil.cs" subtype="Code" buildaction="Compile" />
@@ -101,6 +135,7 @@
     <File name="./Banshee.Playlists.Formats/M3u.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Playlists.Formats/PlaylistFile.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Playlists.Formats/Pls.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Banshee.Playlists.Formats/Wpl.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Playlists.Formats.Xspf/LinkEntry.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Playlists.Formats.Xspf/MetaEntry.cs" subtype="Code" buildaction="Compile" />
     <File name="./Banshee.Playlists.Formats.Xspf/Playlist.cs" subtype="Code" buildaction="Compile" />

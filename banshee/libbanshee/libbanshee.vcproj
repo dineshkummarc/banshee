@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;D:\Visual Studio 2005\Projects\Banshee Port\gstreamer\include&quot;;&quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\include&quot;;&quot;C:\mono\Mono-1.2.4\lib\glib-2.0\include&quot;;&quot;C:\mono\Mono-1.2.4\include\glib-2.0&quot;;&quot;$(ProjectDir)&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)&quot;;&quot;D:\Visual Studio 2005\Projects\Banshee Port\gstreamer\include&quot;;&quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\include&quot;;&quot;C:\Program Files\Mono-1.2.5\include&quot;;&quot;C:\Program Files\Mono-1.2.5\lib\glib-2.0\include&quot;;&quot;C:\Program Files\Mono-1.2.5\include\glib-2.0&quot;;&quot;C:\Program Files\Mono-1.2.5\include\cairo&quot;;&quot;C:\Program Files\Mono-1.2.5\include\gtk-2.0&quot;;&quot;C:\Program Files\Mono-1.2.5\include\pango-1.0&quot;;&quot;C:\Program Files\Mono-1.2.5\lib\gtk-2.0\include&quot;;&quot;C:\Program Files\Mono-1.2.5\include\atk-1.0&quot;"
 				PreprocessorDefinitions="WIN32"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
@@ -63,7 +63,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="gobject-2.0.lib glib-2.0.lib libmusicbrainz.lib libgstreamer-0.10.lib libgstbase-0.10.lib intl.lib"
-				AdditionalLibraryDirectories="&quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\lib&quot;;&quot;D:\Visual Studio 2005\Projects\Banshee Port\gstreamer\lib&quot;;&quot;C:\mono\Mono-1.2.4\lib&quot;"
+				AdditionalLibraryDirectories="&quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\lib&quot;;&quot;D:\Visual Studio 2005\Projects\Banshee Port\gstreamer\lib&quot;;&quot;C:\Program Files\Mono-1.2.5\lib&quot;"
 				ModuleDefinitionFile="libbanshee.def"
 				GenerateDebugInformation="true"
 				GenerateMapFile="false"

@@ -1,3 +1,6 @@
+2007-09-01 Scott Peterson <scottp@gnome.org>
+	Updated Makefile.ams and Monodevelop projects.
+
 2007-08-05 Scott Peterson <scottp@gnome.org>
 	* gst-transcode-0.10.c: gnomevfssrc/gnomevfssink now fall back to filesrc/filesink on Windows
 	

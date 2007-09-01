@@ -26,7 +26,10 @@ BANSHEE_AUDIOPROFILES_GUI_SOURCES = \
 	$(srcdir)/Banshee.AudioProfiles.Gui/TextViewLabel.cs
 
 BANSHEE_CDROM_SOURCES = \
-	$(srcdir)/Banshee.Cdrom/IDriveFactory.cs \
+	$(srcdir)/Banshee.Cdrom/AudioCdDisk.cs \
+	$(srcdir)/Banshee.Cdrom/AudioCdTrackInfo.cs \
+	$(srcdir)/Banshee.Cdrom/CdromCore.cs \
+	$(srcdir)/Banshee.Cdrom/DriveFactory.cs \
 	$(srcdir)/Banshee.Cdrom/IDrive.cs \
 	$(srcdir)/Banshee.Cdrom/IRecorder.cs \
 	$(srcdir)/Banshee.Cdrom/IDiscDuplicator.cs \
@@ -40,6 +43,7 @@ BANSHEE_CDROM_GUI_SOURCES = \
 	$(srcdir)/Banshee.Cdrom.Gui/RecorderSpeedComboBox.cs
 
 BANSHEE_CDROM_NAUTILUS_SOURCES = \
+	$(srcdir)/Banshee.Cdrom.Nautilus/NautilusAudioCdDisk.cs \
 	$(srcdir)/Banshee.Cdrom.Nautilus/NautilusDriveFactory.cs \
 	$(srcdir)/Banshee.Cdrom.Nautilus/NautilusDrive.cs \
 	$(srcdir)/Banshee.Cdrom.Nautilus/NautilusRecorder.cs \
@@ -51,6 +55,38 @@ BANSHEE_CDROM_NAUTILUS_INTEROP_SOURCES = \
 	$(srcdir)/Banshee.Cdrom.Nautilus.Interop/BurnRecorderTrack.cs \
 	$(srcdir)/Banshee.Cdrom.Nautilus.Interop/BurnRecorderHandlers.cs \
 	$(srcdir)/Banshee.Cdrom.Nautilus.Interop/NautilusEnums.cs
+	
+BANSHEE_CDROM_WINDOWS_SOURCES = \
+	$(srcdir)/Banshee.Cdrom.Windows/WindowsAudioCdDisk.cs \
+	$(srcdir)/Banshee.Cdrom.Windows/WindowsDriveFactory.cs \
+	$(srcdir)/Banshee.Cdrom.Windows/WindowsDrive.cs \
+	$(srcdir)/Banshee.Cdrom.Windows/WindowsRecorder.cs \
+	$(srcdir)/Banshee.Cdrom.Windows/WindowsDiscDuplicator.cs
+	
+BANSHEE_CDROM_WINDOWS_INTEROP_SOURCES = \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/CDDrive.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/CDDriveEvents.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/DiscMaster.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/DiscMasterProgressEvents.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/DiscRecorder.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/DiscRecorderProperties.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/DiscRecorders.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/EventArgClasses.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/IMAPIExceptions.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/IMAPIInterop.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/IStreamOnFileStream.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/IStreamOnStream.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/JolietDiscMaster.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/JolietDiscMasterProperties.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/JolietDiscMasterStorage.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/JolietIEnumStatStg.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/JolietIStorage.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/MediaDetails.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/PinnedByteBuffer.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/Property.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/PropertyStorage.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/RedbookDiscMaster.cs \
+	$(srcdir)/Banshee.Cdrom.Windows.Interop/Win32Functions.cs
 
 BANSHEE_CDROM_ISO_SOURCES = \
 	$(srcdir)/Banshee.Cdrom.Iso/IImageCreator.cs \
@@ -113,7 +149,8 @@ BANSHEE_SMARTPLAYLIST_SOURCES = \
 BANSHEE_PLAYLISTS_FORMATS_SOURCES = \
     $(srcdir)/Banshee.Playlists.Formats/PlaylistFile.cs \
     $(srcdir)/Banshee.Playlists.Formats/M3u.cs \
-    $(srcdir)/Banshee.Playlists.Formats/Pls.cs  
+    $(srcdir)/Banshee.Playlists.Formats/Pls.cs \
+    $(srcdir)/Banshee.Playlists.Formats/Wpl.cs
 
 BANSHEE_PLAYLISTS_FORMATS_XSPF_SOURCES = \
 	$(srcdir)/Banshee.Playlists.Formats.Xspf/XspfBaseObject.cs \
@@ -126,10 +163,12 @@ BANSHEE_PLAYLISTS_FORMATS_XSPF_SOURCES = \
 
 BANSHEE_PLAYER_MIGRATION_SOURCES = \
 	$(srcdir)/Banshee.PlayerMigration/PlayerImport.cs \
-	$(srcdir)/Banshee.PlayerMigration/PlayerImportDialog.cs \
-	$(srcdir)/Banshee.PlayerMigration/PlayerImportSource.cs \
-	$(srcdir)/Banshee.PlayerMigration/RhythmboxPlayerImport.cs \
-	$(srcdir)/Banshee.PlayerMigration/AmarokPlayerImport.cs
+	$(srcdir)/Banshee.PlayerMigration/PlayerMigrationCore.cs \
+	$(srcdir)/Banshee.PlayerMigration/AmarokPlayerImport.cs \
+	$(srcdir)/Banshee.PlayerMigration/ItunesImport.cs \
+	$(srcdir)/Banshee.PlayerMigration/ItunesImportDialog.cs \
+	$(srcdir)/Banshee.PlayerMigration/ItunesSmartPlaylistParser.cs \
+	$(srcdir)/Banshee.PlayerMigration/RhythmboxPlayerImport.cs
 
 BANSHEE_WEB_SOURCES = \
 	$(srcdir)/Banshee.Web/Browser.cs
@@ -138,7 +177,8 @@ BANSHEE_CONFIGURATION_SOURCES = \
 	$(srcdir)/Banshee.Configuration/ConfigurationClient.cs \
 	$(srcdir)/Banshee.Configuration/GConfConfigurationClient.cs \
 	$(srcdir)/Banshee.Configuration/IConfigurationClient.cs \
-	$(srcdir)/Banshee.Configuration/SchemaEntry.cs
+	$(srcdir)/Banshee.Configuration/SchemaEntry.cs \
+	$(srcdir)/Banshee.Configuration/XmlConfigurationClient.cs
 
 BANSHEE_CONFIGURATION_SCHEMA_SOURCES = \
 	$(srcdir)/Banshee.Configuration.Schema/LibrarySchema.cs \
@@ -197,11 +237,6 @@ GUI_SOURCES = \
 	$(srcdir)/Gui/SourceView.cs \
 	$(srcdir)/Gui/FileChooserDialog.cs
 
-AUDIOCD_SOURCES = \
-	$(srcdir)/AudioCd/AudioCdCore.cs \
-	$(srcdir)/AudioCd/AudioCdTrackInfo.cs \
-	$(srcdir)/AudioCd/AudioCdDisk.cs
-
 DAP_SOURCES = \
 	$(srcdir)/Dap/Dap.cs \
 	$(srcdir)/Dap/DapCore.cs \
@@ -245,7 +280,6 @@ NOTIFICATIONS_SOURCES = \
 	$(srcdir)/Notifications/Notifications.cs
 
 ASSEMBLY_SOURCES = \
-    $(AUDIOCD_SOURCES) \
     $(DAP_SOURCES) \
     $(SOURCES_SOURCES) \
     $(NETWORKMANAGER_SOURCES) \
@@ -257,6 +291,8 @@ ASSEMBLY_SOURCES = \
 	$(BANSHEE_CDROM_GUI_SOURCES) \
 	$(BANSHEE_CDROM_NAUTILUS_SOURCES) \
 	$(BANSHEE_CDROM_NAUTILUS_INTEROP_SOURCES) \
+	$(BANSHEE_CDROM_WINDOWS_SOURCES) \
+	$(BANSHEE_CDROM_WINDOWS_INTEROP_SOURCES) \
 	$(BANSHEE_CDROM_ISO_SOURCES) \
 	$(BANSHEE_CDROM_ISO_MKISOFS_SOURCES) \
 	$(BANSHEE_BURNER_SOURCES) \
@@ -359,7 +395,7 @@ Banshee_Base_EXPANDED_RESOURCES += $(top_builddir)/data/translators.xml
 Banshee_Base_EXPANDED_RESOURCES_BUILD = $(foreach resource,$(Banshee_Base_EXPANDED_RESOURCES), $(addprefix -resource:,$(resource)),$(notdir $(resource)))
 
 $(ASSEMBLY): $(ASSEMBLY_SOURCES) $(Banshee_Base_EXPANDED_RESOURCES)
-	$(BUILD_LIB) $(LNB_CSFLAGS) -out:$@ $(LINK_TAGLIB) $(LINK_BANSHEE_WIDGETS) $(LINK_MUSICBRAINZ) $(LINK_LAST_FM) $(LINK_HAL) $(LINK_DBUS) $(LINK_GTK) $(LINK_MONO_UNIX) $(LINK_BOO) $(LINK_BOOBUDDY) -r:System.Data -r:Mono.Data.SqliteClient -r:Mono.Cairo $(Banshee_Base_EXPANDED_RESOURCES_BUILD) $(ASSEMBLY_SOURCES)
+	$(BUILD_LIB) $(LNB_CSFLAGS) -out:$@ $(LINK_TAGLIB) $(LINK_BANSHEE_WIDGETS) $(LINK_MUSICBRAINZ) $(LINK_LAST_FM) $(LINK_HAL) $(LINK_DBUS) $(LINK_GTK) $(LINK_MONO_UNIX) $(LINK_BOO) $(LINK_BOOBUDDY) -r:System.Data -r:Mono.Data.SqliteClient -r:Mono.Cairo -r:System.Windows.Forms $(Banshee_Base_EXPANDED_RESOURCES_BUILD) $(ASSEMBLY_SOURCES)
 
 include $(top_srcdir)/build/gconf-schema-rules
 
