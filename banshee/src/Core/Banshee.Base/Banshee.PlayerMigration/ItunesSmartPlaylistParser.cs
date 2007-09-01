@@ -281,10 +281,9 @@ namespace Banshee.PlayerMigration
                     result.LimitMethod = 2;
                     break;
                 case (byte)LimitMethods.MB:
+                case (byte)LimitMethods.GB:
                     result.LimitMethod = 3;
                     break;
-                case (byte)LimitMethods.GB:
-                    goto case (byte)LimitMethods.MB;
                 }
                 switch(info[SELECTIONMETHODOFFSET]) {
                 case (byte)SelectionMethods.Random:

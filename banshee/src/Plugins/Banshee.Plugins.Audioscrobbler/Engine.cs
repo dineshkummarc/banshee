@@ -127,7 +127,7 @@ namespace Banshee.Plugins.Audioscrobbler {
 
         public void SetUserPassword (string username, string pass)
         {
-            if (username.Length = 0 || pass.Length == 0)
+            if (username.Length == 0 || pass.Length == 0)
                 return;
 
             this.username = username;

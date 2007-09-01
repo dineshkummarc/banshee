@@ -168,6 +168,7 @@ namespace Banshee.Plugins.NotificationAreaIcon
             InterfaceElements.PrimaryWindowClose = null;
             
             PlayerEngineCore.EventChanged -= OnPlayerEngineEventChanged;
+            PlayerEngineCore.StateChanged -= OnPlayerEngineCoreStateChanged;
             
             Globals.ActionManager.UI.RemoveUi(ui_manager_id);
             Globals.ActionManager.UI.RemoveActionGroup(actions);
@@ -347,14 +348,15 @@ namespace Banshee.Plugins.NotificationAreaIcon
         private void ShowNotification()
         {
             // This has to happen before the next if, otherwise the last_* members aren't set correctly.
-            if(current_track == null || (notify_last_title == current_track.DisplayTitle 
+            if (current_track == null || (notify_last_title != null
+                && notify_last_title == current_track.DisplayTitle 
                 && notify_last_artist == current_track.DisplayArtist)) {
                 return;
             }
             
             notify_last_title = current_track.DisplayTitle;
             notify_last_artist = current_track.DisplayArtist;
-
+            
             if(system_tray != null) {
                 string text = Branding.ApplicationName + "\r\n" +
                     current_track.DisplayTitle + "\r\n" +

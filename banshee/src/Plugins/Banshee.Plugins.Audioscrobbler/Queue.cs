@@ -141,7 +141,9 @@ namespace Banshee.Plugins.Audioscrobbler {
                 XmlNodeList nodes = doc.SelectNodes (query);
 
                 foreach (XmlNode node in nodes) {
-                    string artist, album, title = string.Empty;
+                    string title = string.Empty;
+                    string album = string.Empty;
+                    string artist = string.Empty;
                     int duration = 0;
                     DateTime start_time = new DateTime (0);
 
