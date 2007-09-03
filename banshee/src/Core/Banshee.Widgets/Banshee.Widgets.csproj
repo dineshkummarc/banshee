@@ -13,7 +13,7 @@
     <OutputPath>..\..\..\bin\Debug\</OutputPath>
     <DebugSymbols>True</DebugSymbols>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>
     </DefineConstants>

@@ -3,6 +3,10 @@
     <ProjectGuid>{7C20256C-80D1-4634-A451-ED4BEB2A506B}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>..\..\..\data\images\banshee_icon.ico</ApplicationIcon>
+    <OutputType>WinExe</OutputType>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputType>Exe</OutputType>
@@ -205,6 +209,9 @@
     <EmbeddedResource Include="..\..\..\data\UIManagerLayout.xml">
       <LogicalName>UIManagerLayout.xml</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\..\data\images\banshee_icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

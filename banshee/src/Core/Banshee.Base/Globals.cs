@@ -232,8 +232,11 @@ namespace Banshee.Base
             ShutdownRequestHandler handler = ShutdownRequested;
             if(handler != null) {
                 foreach(Delegate d in handler.GetInvocationList()) {
-                    if(!(bool)d.DynamicInvoke(null)) {
-                        return false;
+                    try {
+                        if(!(bool)d.DynamicInvoke(null)) {
+                            return false;
+                        }
+                    } catch {
                     }
                 }
             }

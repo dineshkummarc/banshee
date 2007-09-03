@@ -47,6 +47,7 @@ using Banshee.Dap;
 using Banshee.Sources;
 using Banshee.Gui;
 using Banshee.Gui.DragDrop;
+using Banshee.Configuration;
 using Banshee.Configuration.Schema;
 using Banshee.Playlists;
 using Banshee.Playlists.Formats;
@@ -1316,14 +1317,17 @@ namespace Banshee
                 mtype,
                 ButtonsType.Close,
                 entry.ShortMessage,
-                entry.Details);
+                entry.Details,
+                !entry.Suppress.Equals(SchemaEntry<bool>.Zero));
             
             dialog.Title = String.Empty;
             IconThemeUtils.SetWindowIcon(dialog);
             
-            dialog.Response += delegate(object obj, ResponseArgs response_args)
-            {
-                (obj as Dialog).Destroy();
+            dialog.Response += delegate(object obj, ResponseArgs response_args) {
+                if(!entry.Suppress.Equals(SchemaEntry<bool>.Zero)) {
+                    entry.Suppress.Set(dialog.Suppress);
+                }
+                dialog.Destroy();
             };
             
             dialog.ShowAll();

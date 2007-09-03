@@ -14,7 +14,7 @@
     <OutputPath>..\..\..\bin\Debug\Banshee.Plugins\</OutputPath>
     <DebugSymbols>True</DebugSymbols>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>
     </DefineConstants>
@@ -72,7 +72,7 @@
     <EmbeddedResource Include=".\NotificationAreaIconMenu.xml">
       <LogicalName>NotificationAreaIconMenu.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\data\images\banshee_icon.ico" />
+    <EmbeddedResource Include="..\..\..\data\images\banshee_icon_16.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

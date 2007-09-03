@@ -178,7 +178,7 @@ namespace Banshee.MediaEngine.Gstreamer
         protected override void OpenUri(SafeUri uri)
         {
             string path = uri.AbsoluteUri;
-            if(Environment.OSVersion.Platform != PlatformID.Unix && uri.IsLocalPath) {
+            if(Environment.OSVersion.Platform != PlatformID.Unix && uri.IsLocalPath) { // WINDOWS HACK
                 path = "file://" + uri.LocalPath;
             }
             IntPtr uri_ptr = GLib.Marshaller.StringToPtrGStrdup(path);

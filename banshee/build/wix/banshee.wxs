@@ -1,0 +1,838 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>
+
+  <Product Name='Banshee' Id='2186DD28-9155-4482-9115-7EDF7F634576'
+    Language='1033' Codepage='1252' Version='0.13.0' Manufacturer='Banshee Project'>
+
+    <Package Id='????????-????-????-????-????????????' Keywords='Installer'
+      Description="Banshee Windows Installer"
+      Comments='This is an experimental release. Please report bugs!'
+      InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
+      
+      <Condition Message='This setup requires the .NET Framework 2.0 or higher.'>
+        <![CDATA[MsiNetAssemblySupport >= "2.0.50727"]]>
+      </Condition>
+      
+    <Media Id='1' Cabinet='Banshee.cab' EmbedCab='yes' DiskPrompt="CD-ROM #1" />
+    
+    <Property Id="GSTREAMERINSTALLDIRKEYNAME" Value="Software\Gstreamer\0.10" />
+    
+    <Property Id="GSTREAMERINSTALLDIR">
+      <RegistrySearch Id='GstreamerRegistry' Type='raw' Root='HKLM' Key='[GSTREAMERINSTALLDIRKEYNAME]' />
+    </Property>
+    
+    <Property Id="HASGST">
+      <DirectorySearch Id="CheckGstDir" Path="[GSTREAMERINSTALLDIR]" Depth="0">
+        <DirectorySearch Id="CheckGstDir2" Path="bin" Depth="0">
+          <FileSearch Id="CheckGst" LongName="libgstreamer-0.10.dll" />
+        </DirectorySearch>
+      </DirectorySearch>
+    </Property>
+    
+    <Property Id="HASGSTBASE">
+      <DirectorySearch Id="CheckGstBaseDir" Path="[GSTREAMERINSTALLDIR]" Depth="0">
+        <DirectorySearch Id="CheckGstBaseDir2" Path="bin" Depth="0">
+          <FileSearch Id="CheckGstBase" LongName="libgstaudio-0.10.dll" />
+        </DirectorySearch>
+      </DirectorySearch>
+    </Property>
+    
+    <Property Id="HASGSTGOOD">
+      <DirectorySearch Id="CheckGstGoodDir" Path="[GSTREAMERINSTALLDIR]" Depth="0">
+        <DirectorySearch Id="CheckGstGoodDir2" Path="lib" Depth="0">
+          <DirectorySearch Id="CheckGstGoodDir3" Path="gstreamer-0.10" Depth="0">
+            <FileSearch Id="CheckGstGood" LongName="libgstalaw.dll" />
+          </DirectorySearch>
+        </DirectorySearch>
+      </DirectorySearch>
+    </Property>
+    
+    <Property Id="HASGSTBAD">
+      <DirectorySearch Id="CheckGstBadDir" Path="[GSTREAMERINSTALLDIR]" Depth="0">
+        <DirectorySearch Id="CheckGstBadDir2" Path="lib" Depth="0">
+          <DirectorySearch Id="CheckGstBadDir2" Path="gstreamer-0.10" Depth="0">
+            <FileSearch Id="CheckGstBad" LongName="libgstneon.dll" />
+          </DirectorySearch>
+        </DirectorySearch>
+      </DirectorySearch>
+    </Property>
+    
+    <Property Id="HASGSTUGLY">
+      <DirectorySearch Id="CheckGstUglyDir" Path="[GSTREAMERINSTALLDIR]" Depth="0">
+        <DirectorySearch Id="CheckGstUglyDir2" Path="lib" Depth="0">
+          <DirectorySearch Id="CheckGstUglyDir3" Path="gstreamer-0.10" Depth="0">
+            <FileSearch Id="CheckGstUgly" LongName="libgstlame.dll" />
+          </DirectorySearch>
+        </DirectorySearch>
+      </DirectorySearch>
+    </Property>
+    
+    <Property Id='DiskPrompt' Value="Banshee Installation [1]" />
+    
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id='ProgramFilesFolder' Name='PFiles'>
+        <Directory Id='INSTALLDIR' Name='Banshee'>
+        
+          <Component Id='MainExecutable' Guid='727AA4D9-50F5-4e45-8A4E-B0DFD646C76F'>
+            
+            <File Id='BansheeEXE' Name='Banshee.exe' DiskId='1' Source='..\..\bin\Release\Banshee.exe' Vital='yes'>
+              <Shortcut Id="startmenuBanhee" Directory="ProgramMenuFolder" Name="Banshee" 
+                WorkingDirectory='INSTALLDIR'
+                Icon="Banshee.exe" IconIndex="0" />
+              <Shortcut Id="desktopBanshee" Directory="DesktopFolder" Name="Banshee"
+                WorkingDirectory='INSTALLDIR'
+                Icon="Banshee.exe" IconIndex="0" />
+            </File>
+            
+          </Component>
+          
+          <Component Id='Base' Guid='6CCA8204-3127-4abf-BBF2-BC5DD986A067'>
+            <File Id='BansheeBaseDLL' Name='Base.dll' LongName="Banshee.Base.dll" DiskId='1' Source='..\..\bin\Release\Banshee.Base.dll' Vital='yes'/>
+          </Component>
+          
+          <Component Id='Widgets' Guid='2DCCE42F-C8D5-47c5-8196-689A68EDEF4B'>
+            <File Id='BansheeWidgetsDLL' Name='Widgets.dll' LongName="Banshee.Widgets.dll" DiskId='1' Source='..\..\bin\Release\Banshee.Widgets.dll' Vital='yes'/>
+          </Component>
+          
+          <Component Id='BooCompiler' Guid='43508040-2F07-42d4-9E24-207E0F922E6F'>
+            <File Id='BooLangCompilerDLL' Name='Compiler.dll' LongName="Boo.Lang.Compiler.dll" DiskId='1' Source='..\..\bin\Release\Boo.Lang.Compiler.dll'/>
+          </Component>
+          
+          <Component Id='Boo' Guid='5C6E2C3E-22A6-43c3-ACE1-F4308AB3B0C7'>
+            <File Id='BooLangDLL' Name='Boo.Lang.dll' DiskId='1' Source='..\..\bin\Release\Boo.Lang.dll'/>
+          </Component>
+          
+          <Component Id='BooInterpreter' Guid='CF7912B3-3448-40a0-B38D-FA9AD7CC9307'>
+            <File Id='BooLangInterpreterDLL' Name='Interp.dll' LongName="Boo.Lang.Interpreter.dll" DiskId='1' Source='..\..\bin\Release\Boo.Lang.Interpreter.dll'/>
+          </Component>
+          
+          <Component Id='BooParser' Guid='48C60238-B7D2-47a2-A3E8-B114AE897F21'>
+            <File Id='BooLangParserDLL' Name='Parser.dll' LongName="Boo.Lang.Parser.dll" DiskId='1' Source='..\..\bin\Release\Boo.Lang.Parser.dll'/>
+          </Component>
+          
+          <Component Id='BooBuddy' Guid='AF6069FD-8717-445b-BDCD-2909D2A3571F'>
+            <File Id='BooBuddyDLL' Name='BooBuddy.dll' DiskId='1' Source='..\..\bin\Release\BooBuddy.dll'/>
+          </Component>
+          
+          <Component Id='Hal' Guid='9E96B66E-034B-4583-8CE3-1D97A393468D'>
+            <File Id='HalDLL' Name='Hal.dll' DiskId='1' Source='..\..\bin\Release\Hal.dll'/>
+          </Component>
+          
+          <Component Id='GnomeKeyring' Guid='59796E8F-A711-4141-A444-4121DDEB15AF'>
+            <File Id='GnomeKeyringDLL' Name='Keyring.dll' LongName="Gnome.Keyring.dll" DiskId='1' Source='..\..\bin\Release\Gnome.Keyring.dll'/>
+          </Component>
+          
+          <Component Id='LastFM' Guid='F9C8C858-5306-46f2-BE3B-831988002D56'>
+            <File Id='LastFMDLL' Name='Last.FM.dll' DiskId='1' Source='..\..\bin\Release\Last.FM.dll'/>
+          </Component>
+          
+          <Component Id='LibBanshee' Guid='EA5DEB28-AA2F-4ea4-B74E-4EC2172AEA3C'>
+            <File Id='libbansheeDLL' Name='banshee.dll' LongName="libbanshee.dll" DiskId='1' Source='..\..\bin\Release\libbanshee.dll' Vital='yes'/>
+          </Component>
+          
+          <Component Id='Glib' Guid='217EEB60-F596-4eb0-A1A4-206E521FAF9E'>
+            <File Id='libglibDLL' Name='glib.dll' LongName="libglib-2.0-0.dll" DiskId='1' Source='..\..\bin\Release\libglib-2.0-0.dll' Vital='yes'/>
+          </Component>
+          
+          <Component Id='Gobject' Guid='6340590C-37F3-4551-8AF8-B94DC8D9FFFA'>
+            <File Id='libgobjectDLL' Name='gobject.dll' LongName="libgobject-2.0-0.dll" DiskId='1' Source='..\..\bin\Release\libgobject-2.0-0.dll' Vital='yes'/>
+          </Component>
+          
+          <Component Id='LibMusicBrainz' Guid='D7D52C79-8C9C-49f3-B8AB-BAFCABA47E5B'>
+            <File Id='libmusicbrainzDLL' Name='libmb.dll' LongName="libmusicbrainz.dll" DiskId='1' Source='..\..\bin\Release\libmusicbrainz.dll'/>
+          </Component>
+          
+          <Component Id='MusicBrainz' Guid='8D6AAB06-43B0-4df7-BAD7-353E2EC25613'>
+            <File Id='MusicBrainzDLL' Name='MB.dll' LongName="MusicBrainz.dll" DiskId='1' Source='..\..\bin\Release\MusicBrainz.dll'/>
+          </Component>
+          
+          <Component Id='DBus' Guid='8D6AAB06-43B0-4df7-BAD7-353E2EC25613'>
+            <File Id='NDeskDBusDLL' Name='DBus.dll' LongName="NDesk.DBus.dll" DiskId='1' Source='..\..\bin\Release\NDesk.DBus.dll'/>
+          </Component>
+          
+          <Component Id='DBusGlib' Guid='820DA15B-EAD8-4096-AD6F-E5BFF5B0A719'>
+            <File Id='NDeskDBusGlibDLL' Name='DBusGlib.dll' LongName="NDesk.DBus.GLib.dll" DiskId='1' Source='..\..\bin\Release\NDesk.DBus.Glib.dll'/>
+          </Component>
+          
+          <Component Id='TagLib' Guid='1BB2145A-7A01-4c05-ADC9-059919438B66'>
+            <File Id='TagLibDLL' Name='TagLib.dll' DiskId='1' Source='..\..\bin\Release\TagLib.dll'/>
+          </Component>
+          
+          <Directory Id='MediaEngine' Name="Engines" LongName='Banshee.MediaEngine'>
+            
+            <Component Id='GStreamer' Guid='971C2390-E4B5-416b-A361-41D9785A3C20'>
+              <File Id='GStreamerDLL' Name='GStream.dll' LongName="Banshee.MusicEngine.Gstreamer.dll" DiskId='1' Source='..\..\bin\Release\Banshee.MediaEngine\Banshee.MediaEngine.GStreamer.dll'/>
+            </Component>
+            
+            <Component Id='AxInterop' Guid='B29ABCCF-5B0A-469d-88AA-5F0DF7D67BC1'>
+              <File Id='AxInteropDLL' Name='Ax.dll' LongName="AxInterop.QTOControlLib.dll" DiskId='1' Source='..\..\bin\Release\Banshee.MediaEngine\AxInterop.QTOControlLib.dll'/>
+            </Component>
+            
+            <Component Id='Quicktime' Guid='06191194-67C0-4862-88E0-CE2FE6569B7D'>
+              <File Id='QuicktimeDLL' Name='QT.dll' LongName="Banshee.MusicEngine.Quicktime.dll" DiskId='1' Source='..\..\bin\Release\Banshee.MediaEngine\Banshee.MediaEngine.Quicktime.dll'/>
+            </Component>
+            
+            <Component Id='QTOControlLib' Guid='08011D83-0FD2-4d30-A2C2-6236D080E23C'>
+              <File Id='QTOControlLibDLL' Name='QTC.dll' LongName="Interop.QTOControlLib.dll" DiskId='1' Source='..\..\bin\Release\Banshee.MediaEngine\Interop.QTOControlLib.dll'/>
+            </Component>
+            
+            <Component Id='QTOLibrary' Guid='F8D92A39-9FD1-4ba0-933D-ADAAC3D31278'>
+              <File Id='QTOLibraryDLL' Name='QTL.dll' LongName="Interop.QTOLibrary.dll" DiskId='1' Source='..\..\bin\Release\Banshee.MediaEngine\Interop.QTOLibrary.dll'/>
+            </Component>
+            
+          </Directory>
+          
+          <Directory Id='Plugins' Name="Plugins" LongName='Banshee.Plugins'>
+          
+            <Component Id='Audioscrobbler' Guid='83E62191-C311-4097-9AEF-CDA8D2D186F1'>
+              <File Id='AudioscrobblerDLL' Name='Scrobblr.dll' LongName="Banshee.Plugins.Audioscrobbler.dll" DiskId='1' Source='..\..\bin\Release\Banshee.Plugins\Banshee.Plugins.Audioscrobbler.dll'/>
+            </Component>
+            
+            <Component Id='Bookmarks' Guid='90AD06A7-0AF1-47f3-9EC7-5673CF16DA47'>
+              <File Id='BookmarksDLL' Name='Bmarks.dll' LongName="Banshee.Plugins.Bookmarks.dll" DiskId='1' Source='..\..\bin\Release\Banshee.Plugins\Banshee.Plugins.Bookmarks.dll'/>
+            </Component>
+            
+            <Component Id='MetadataSearch' Guid='BB665696-5902-43eb-B726-08B0F2925E35'>
+              <File Id='MetadataSearchDLL' Name='Search.dll' LongName="Banshee.Plugins.MetadataSearch.dll" DiskId='1' Source='..\..\bin\Release\Banshee.Plugins\Banshee.Plugins.MetadataSearch.dll'/>
+            </Component>
+            
+            <Component Id='MiniMode' Guid='135F3933-582C-42d2-A54A-77BD0171C00F'>
+              <File Id='MiniModeDLL' Name='Mini.dll' LongName="Banshee.Plugins.MiniMode.dll" DiskId='1' Source='..\..\bin\Release\Banshee.Plugins\Banshee.Plugins.MiniMode.dll'/>
+            </Component>
+            
+            <Component Id='NotificationAreaIcon' Guid='2C83BAF6-1167-4e03-9509-6DE83605272E'>
+              <File Id='NotificationAreaIconDLL' LongName="Banshee.Plugins.NotificationAreaIcon.dll" Name='Icon.dll' DiskId='1' Source='..\..\bin\Release\Banshee.Plugins\Banshee.Plugins.NotificationAreaIcon.dll'/>
+            </Component>
+            
+            <Component Id='Podcast' Guid='145FACAA-0140-4d04-B7CB-610914DB821F'>
+              <File Id='PodcastDLL' Name='Podcast.dll' LongName="Banshee.Plugins.Podcast.dll" DiskId='1' Source='..\..\bin\Release\Banshee.Plugins\Banshee.Plugins.Podcast.dll'/>
+            </Component>
+            
+            <Component Id='Radio' Guid='1502D4E5-A996-42c5-AB7C-521372EB293D'>
+              <File Id='RadioDLL' Name='Radio.dll' LongName="Banshee.Plugins.Radio.dll" DiskId='1' Source='..\..\bin\Release\Banshee.Plugins\Banshee.Plugins.Radio.dll'/>
+            </Component>
+            
+            <Component Id='Recommendation' Guid='38DEF494-E3D6-4028-8518-BAB43E18AC6C'>
+              <File Id='RecommendationDLL' Name='Recomend.dll' LongName="Banshee.Plugins.Recommendation.dll" DiskId='1' Source='..\..\bin\Release\Banshee.Plugins\Banshee.Plugins.Recommendation.dll'/>
+            </Component>
+          
+          </Directory>
+          
+        </Directory>
+        
+      </Directory>
+      
+      <Directory Id="ProgramMenuFolder" Name="PMenu" LongName="Programs"/>
+      <Directory Id="DesktopFolder" Name="Desktop" />
+      
+      <Directory Id="AppDataFolder" Name="AData">
+      
+        <Directory Id="banshee" Name="banshee">
+        
+          <Directory Id="profiles" Name="profiles" LongName="audio-profiles">
+        
+            <Component Id='aac.xml' Guid='8F796ABB-7F1F-488c-8798-993542BC4F4B'>
+              <File Id='aacXML' Name='aac.xml' DiskId='1' Source='aac.xml'/>
+            </Component>
+            
+            <Component Id='base.xml' Guid='04EFB172-7255-4399-AE4A-B3654817C699'>
+              <File Id='baseXML' Name='base.xml' DiskId='1' Source='base.xml'/>
+            </Component>
+            
+            <Component Id='flac.xml' Guid='0D257CA0-2695-4589-BFB7-DB86F168A3D0'>
+              <File Id='flacXML' Name='flac.xml' DiskId='1' Source='flac.xml'/>
+            </Component>
+            
+            <Component Id='lame.xml' Guid='09889E6C-881F-4eb9-88E3-6656DAD038F7'>
+              <File Id='lameXML' Name='mp3-lame.xml' DiskId='1' Source='mp3-lame.xml'/>
+            </Component>
+            
+            <Component Id='xing.xml' Guid='FAAE29FD-E6B3-478d-8673-F8C71BD5CDBA'>
+              <File Id='xingXML' Name='mp3-xing.xml' DiskId='1' Source='mp3-xing.xml'/>
+            </Component>
+            
+            <Component Id='vorbis.xml' Guid='64D11FFD-7EAF-4fd3-A748-E4ADFCFD786F'>
+              <File Id='vorbisXML' Name='vorbis.xml' DiskId='1' Source='vorbis.xml'/>
+            </Component>
+            
+            <Component Id='wav.xml' Guid='322D926C-DDA2-40e5-A3A9-3FF54F9FFB9D'>
+              <File Id='wavXML' Name='wav.xml' DiskId='1' Source='wav.xml'/>
+            </Component>
+            
+            <Component Id='wavpack.xml' Guid='B475E77A-9418-44b7-9370-F3BF470311FF'>
+              <File Id='wavpackXML' Name='wavpack.xml' DiskId='1' Source='wavpack.xml'/>
+            </Component>
+            
+            <Component Id='wma.xml' Guid='7DBA21AF-FFAF-4a6e-AEF6-C259F3E222BB'>
+              <File Id='wmaXML' Name='wma.xml' DiskId='1' Source='wma.xml'/>
+            </Component>
+            
+          </Directory>
+        
+        </Directory>
+        
+      </Directory>
+      
+      <Directory Id="CommonFilesFolder" Name="CFiles">
+        <Directory Id="GstreamerDir" Name="Gst" LongName="Gstreamer">
+          <Directory Id="GSTREAMERINSTALLDIR" Name="0.10">
+            <Directory Id="gstbin" Name="bin">
+            
+              <Component Id='gstinspect' Guid='54386291-F580-449a-A8CE-68C124B30EA4'>
+                <File Id='gstinspectEXE' Name='gsti.exe' LongName="gst-inspect-0.10.exe" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\bin\gst-inspect-0.10.exe'/>
+              </Component>
+              
+              <Component Id='gstlaunch' Guid='EA1D822C-75D7-4adf-8C04-4AB4F6432A7E'>
+                <File Id='gstlaunchEXE' Name='gsti.exe' LongName="gst-launch-0.10.exe" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\bin\gst-launch-0.10.exe'/>
+              </Component>
+              
+              <Component Id='libgstbase' Guid='400C2080-7331-4226-8B82-EA5777D3C38E'>
+                <File Id='libgstbaseDLL' Name='gstbase.dll' LongName="libgstbase-0.10.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\bin\libgstbase-0.10.dll'/>
+              </Component>
+              
+              <Component Id='libgstcontroller' Guid='1264BAA1-09A1-414b-AFBF-7182BB6BBABA'>
+                <File Id='libgstcontrollerDLL' Name='gstcont.dll' LongName="libgstcontroller-0.10.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\bin\libgstcontroller-0.10.dll'/>
+              </Component>
+              
+              <Component Id='libgstdataprotocol' Guid='402D7924-E12E-4fe8-B13E-618148CF29FA'>
+                <File Id='libgstdataprotocolDLL' Name='gstdata.dll' LongName="libgstdataprotocol-0.10.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\bin\libgstdataprotocol-0.10.dll'/>
+              </Component>
+              
+              <Component Id='libgst' Guid='1B828795-4D40-4141-BEBB-0A8DE29B834B'>
+                <File Id='libgstDLL' Name='gst.dll' LongName="libgstreamer-0.10.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\bin\libgstreamer-0.10.dll'/>
+                <Environment Id="BinPATH" Action="set" Name="PATH" Part="last" System="no" Value="[gstbin]" />
+                <Environment Id="DepsPATH" Action="set" Name="PATH" Part="last" System="no" Value="[gstdeps]" />
+                <Environment Id="GST_PLUGIN_PATH" Action="set" Name="GST_PLUGIN_PATH" Part="last" System="no" Value="[gstlibgstreamer]" />
+                <Registry Id='GstRegistryKey' Root='HKLM' Key='[GSTREAMERINSTALLDIRKEYNAME]' Action='write' Type='string' Value='[GSTREAMERINSTALLDIR]' />
+              </Component>
+              
+              <Component Id='libgstaudio' Guid='98036B7E-5037-4e24-BB7F-00BF666E1702'>
+                <File Id='libgstaudioDLL' Name='gstaudio.dll' LongName="libgstaudio-0.10.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\bin\libgstaudio-0.10.dll'/>
+              </Component>
+              
+              <Component Id='libgstcdda' Guid='B8C4DC94-DF75-4b7a-90D3-C4FD78D92965'>
+                <File Id='libgstcddaDLL' Name='gstcdda.dll' LongName="libgstcdda-0.10.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\bin\libgstcdda-0.10.dll'/>
+              </Component>
+              
+              <Component Id='libgstinterfaces' Guid='8A0031EC-1F7E-4d56-96FE-C51855940C00'>
+                <File Id='libgstinterfacesDLL' Name='gstinter.dll' LongName="libgstinterfaces-0.10.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\bin\libgstinterfaces-0.10.dll'/>
+              </Component>
+              
+              <Component Id='libgstnetbuffer' Guid='5C2E537E-A382-498c-A4AA-456354BC415C'>
+                <File Id='libgstnetbufferDLL' Name='gstnetb.dll' LongName="libgstnetbuffer-0.10.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\bin\libgstnetbuffer-0.10.dll'/>
+              </Component>
+              
+              <Component Id='libgstpbutils' Guid='79349F35-94E1-49e6-BBFB-0DC3AEC50D8D'>
+                <File Id='libgstpbutilsDLL' Name='gstpbutl.dll' LongName="libgstpbutils-0.10.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\bin\libgstpbutils-0.10.dll'/>
+              </Component>
+              
+              <Component Id='libgstriff' Guid='1B8C708D-A908-4880-8801-8D660DA32B94'>
+                <File Id='libgstriffDLL' Name='gstriff.dll' LongName="libgstriff-0.10.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\bin\libgstriff-0.10.dll'/>
+              </Component>
+              
+              <Component Id='libgstrtpbin' Guid='02027F46-F87E-4577-A571-3112C6FCD92D'>
+                <File Id='libgstrtpbinDLL' Name='gstrtp.dll' LongName="libgstrtp-0.10.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\bin\libgstrtp-0.10.dll'/>
+              </Component>
+              
+              <Component Id='libgsttag' Guid='5BBEB49C-B226-47b4-B335-8C7031C1E6F3'>
+                <File Id='libgsttagDLL' Name='gsttag.dll' LongName="libgsttag-0.10.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\bin\libgsttag-0.10.dll'/>
+              </Component>
+              
+              <Component Id='libgstvideo' Guid='3891F41C-F572-45dc-A4BC-05429728BE89'>
+                <File Id='libgstvideoDLL' Name='gstvideo.dll' LongName="libgstvideo-0.10.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\bin\libgstvideo-0.10.dll'/>
+              </Component>
+              
+            </Directory>
+            
+            <Directory Id="gstlib" Name="lib">
+            
+              <Directory Id="gstlibgstreamer" Name="gst" LongName="gstreamer-0.10">
+              
+                <Component Id='libgstcoreelements' Guid='1329F651-B174-40e1-A8EF-B749B0625487'>
+                  <File Id='libgstcoreelementsDLL' Name='libcore.dll' LongName="libgstcoreelements.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstcoreelements.dll'/>
+                </Component>
+                
+                <Component Id='libgstadder' Guid='1329F651-B174-40e1-A8EF-B749B0625487'>
+                  <File Id='libgstadderDLL' Name='gstadder.dll' LongName="libgstadder.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstadder.dll'/>
+                </Component>
+                
+                <Component Id='libgstaudioconvert' Guid='6D89ECC8-C072-482f-83A8-C64C09244009'>
+                  <File Id='libgstaudioconvertDLL' Name='gstaconv.dll' LongName="libgstaudioconvert.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstaudioconvert.dll'/>
+                </Component>
+                
+                <Component Id='libgstaudiorate' Guid='462C600D-78BA-4c11-B0FC-386A83F77346'>
+                  <File Id='libgstaudiorateDLL' Name='gstarate.dll' LongName="libgstaudiorate.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstaudiorate.dll'/>
+                </Component>
+                
+                <Component Id='libgstaudioresample' Guid='1232C1EB-BC2D-4ac0-AF3F-E76DB329CD41'>
+                  <File Id='libgstaudioresampleDLL' Name='gstarsmp.dll' LongName="libgstaudioresample.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstaudioresample.dll'/>
+                </Component>
+                
+                <Component Id='libgstaudiotestsrc' Guid='6B1447A2-2C2B-4159-8A37-E8C4D198D4C7'>
+                  <File Id='libgstaudiotestsrcDLL' Name='gstatest.dll' LongName="libgstaudiotestsrc.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstaudiotestsrc.dll'/>
+                </Component>
+                
+                <Component Id='libgstdecodebin' Guid='2A2328AA-983F-45b7-83A2-0687894CA024'>
+                  <File Id='libgstdecodebinDLL' Name='gstdbin.dll' LongName="libgstdecodebin.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstdecodebin.dll'/>
+                </Component>
+                
+                <Component Id='libgstdecodebin2' Guid='6CD2E6DE-A496-413a-9941-F5BD5B65537C'>
+                  <File Id='libgstdecodebin2DLL' Name='gstdbin2.dll' LongName="libgstdecodebin2.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstdecodebin2.dll'/>
+                </Component>
+                
+                <Component Id='libgstffmpegcolorspace' Guid='F0CA4D1C-2D29-4b84-8B57-ADB076372058'>
+                  <File Id='libgstffmpegcolorspaceDLL' Name='gstffmpg.dll' LongName="libgstffmpegcolorspace.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstffmpegcolorspace.dll'/>
+                </Component>
+                
+                <Component Id='libgstgdp' Guid='21FDCB57-5B57-4d23-8CF4-574BD586C6FD'>
+                  <File Id='libgstgdpDLL' Name='gstgdp.dll' LongName="libgstgdp.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstgdp.dll'/>
+                </Component>
+                
+                <Component Id='libgstogg' Guid='EF9E8126-E1C5-4c05-AB2F-A532D8E4F01B'>
+                  <File Id='libgstoggDLL' Name='gstogg.dll' LongName="libgstogg.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstogg.dll'/>
+                </Component>
+                
+                <Component Id='libgstplaybin' Guid='9F1B9ADE-5306-4330-930B-5CF1031102B4'>
+                  <File Id='libgstplaybinDLL' Name='gstpbin.dll' LongName="libgstplaybin.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstplaybin.dll'/>
+                </Component>
+                
+                <Component Id='libgsttheora' Guid='AA638C57-A53A-473c-8379-B8D33ABDD65A'>
+                  <File Id='libgsttheoraDLL' Name='gsttheo.dll' LongName="libgsttheora.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgsttheora.dll'/>
+                </Component>
+                
+                <Component Id='libgsttypefindfunctions' Guid='EBE10D52-6FF9-4704-9856-8B08D474C5E8'>
+                  <File Id='libgsttypefindfunctionsDLL' Name='gsttff.dll' LongName="libgsttypefindfunctions.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgsttypefindfunctions.dll'/>
+                </Component>
+                
+                <Component Id='libgstvideorate' Guid='DD52BBE5-DC1D-4b55-8D36-C999E9388C4D'>
+                  <File Id='libgstvideorateDLL' Name='gstvrate.dll' LongName="libgstvideorate.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstvideorate.dll'/>
+                </Component>
+                
+                <Component Id='libgstvideoscale' Guid='74B9E10E-92DA-4845-A70F-E8EA1283F28C'>
+                  <File Id='libgstvideoscaleDLL' Name='gstscale.dll' LongName="libgstvideoscale.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstvideoscale.dll'/>
+                </Component>
+                
+                <Component Id='libgstvideotestsrc' Guid='377401CD-04F8-411c-A88D-1AECFB54AC41'>
+                  <File Id='libgstvideotestsrcDLL' Name='gstvtest.dll' LongName="libgstvideotestsrc.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstvideotestsrc.dll'/>
+                </Component>
+                
+                <Component Id='libgstvolume' Guid='72534B12-865E-49d7-8322-EC777F015D56'>
+                  <File Id='libgstvolumeDLL' Name='gstvol.dll' LongName="libgstvolume.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstvolume.dll'/>
+                </Component>
+                
+                <Component Id='libgstvorbis' Guid='817FABE5-631C-4038-B169-CFFABFA3B86C'>
+                  <File Id='libgstvorbisDLL' Name='gstvorb.dll' LongName="libgstvorbis.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstvorbis.dll'/>
+                </Component>
+                
+                <Component Id='libgstalaw' Guid='051F5C89-1ED3-4049-B4F7-DF04DDF6261C'>
+                  <File Id='libgstalawDLL' Name='gstalaw.dll' LongName="libgstalaw.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstalaw.dll'/>
+                </Component>
+                
+                <Component Id='libgstalpha' Guid='AC2908C7-A037-4782-B24D-3C64DDCB6CD4'>
+                  <File Id='libgstalphaDLL' Name='gstalpha.dll' LongName="libgstalpha.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstalpha.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstalphacolor' Guid='CE1D101A-9A2C-4f91-8829-6952EA28A343'>
+                  <File Id='libgstalphacolorDLL' Name='gstalphc.dll' LongName="libgstalphacolor.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstalphacolor.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstapetag' Guid='36A3A9AB-4256-4586-B63D-4457C5B0B345'>
+                  <File Id='libgstapetagDLL' Name='gstatag.dll' LongName="libgstapetag.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstapetag.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstaudiofx' Guid='414A141D-A374-4ff5-87D2-81008883AC33'>
+                  <File Id='libgstaudiofxDLL' Name='gstafx.dll' LongName="libgstaudiofx.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstaudiofx.dll'/>
+                </Component>
+                
+                <Component Id='libgstauparser' Guid='8A3CF8E1-F892-4e8a-B478-44EB9379F850'>
+                  <File Id='libgstauparseDLL' Name='gstapars.dll' LongName="libgstauparse.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstauparse.dll'/>
+                </Component>
+                
+                <Component Id='libgstautodetect' Guid='BD18035F-6145-45b7-8AC9-9E78ADCFB9CE'>
+                  <File Id='libgstautodetectDLL' Name='gstautod.dll' LongName="libgstautodetect.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstautodetect.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstavi' Guid='8E9BFD27-271C-4076-A83F-8708975F4FEB'>
+                  <File Id='libgstaviDLL' Name='gstavi.dll' LongName="libgstavi.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstavi.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstcutter' Guid='D1FBCE87-6E45-42ce-B87B-12C23241D813'>
+                  <File Id='libgstcutterDLL' Name='gstcut.dll' LongName="libgstcutter.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstcutter.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstdirectdraw' Guid='8C54E634-3E95-453e-8AF0-631C228EF356'>
+                  <File Id='libgstdirectdrawDLL' Name='gstddraw.dll' LongName="libgstdirectdraw.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstdirectdraw.dll'/>
+                </Component>
+                
+                <Component Id='libgstdirectsound' Guid='46AD9FC5-0672-4cb4-9F7A-831C06C0AD7F'>
+                  <File Id='libgstdirectsoundDLL' Name='gstdsoun.dll' LongName="libgstdirectsound.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstdirectsound.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgsteffectv' Guid='1DCBF0C7-79E1-4f02-AE7C-6B7A2ED17EC5'>
+                  <File Id='libgsteffectvDLL' Name='gstetv.dll' LongName="libgsteffectv.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgsteffectv.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstflx' Guid='2FB4C77A-3C62-49a2-AF7E-C3C0F283D724'>
+                  <File Id='libgstflxDLL' Name='gstflx.dll' LongName="libgstflx.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstflx.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstgoom' Guid='5A641BB8-7010-4fa5-BC35-8CDD7752EAC3'>
+                  <File Id='libgstgoomDLL' Name='gstgoom.dll' LongName="libgstgoom.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstgoom.dll'/>
+                </Component>
+                
+                <Component Id='libgsticydemux' Guid='03D1F736-5F54-4dd7-95FC-C70F28453646'>
+                  <File Id='libgsticydemuxDLL' Name='gstcdmux.dll' LongName="libgsticydemux.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgsticydemux.dll'/>
+                </Component>
+                
+                <Component Id='libgstid3demux' Guid='EE66A3BA-DBBB-424a-A784-FBE6DEA210BE'>
+                  <File Id='libgstid3demuxDLL' Name='gstdmux.dll' LongName="libgstid3demux.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstid3demux.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstjpeg' Guid='98D61A1E-252A-4ad3-A5CF-ED29F865F835'>
+                  <File Id='libgstjpegDLL' Name='gstjpeg.dll' LongName="libgstjpeg.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstjpeg.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstlevel' Guid='3FE62E9A-3976-406f-B114-4BCCD7E86350'>
+                  <File Id='libgstlevelDLL' Name='gstlevel.dll' LongName="libgstlevel.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstlevel.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstmatroska' Guid='719D056E-903F-4202-A9AB-8823C597D659'>
+                  <File Id='libgstmatroskaDLL' Name='gstmatr.dll' LongName="libgstmatroska.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstmatroska.dll'/>
+                </Component>
+                
+                <Component Id='libgstmonoscope' Guid='1B6E2421-07CC-4b50-951F-92347C2CFCCA'>
+                  <File Id='libgstmonoscopeDLL' Name='gstmscop.dll' LongName="libgstmonoscope.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstmonoscope.dll'/>
+                </Component>
+                
+                <Component Id='libgstmulaw' Guid='75849FDD-510F-42e2-9023-E7E089D9E5FF'>
+                  <File Id='libgstmulawDLL' Name='gstmulaw.dll' LongName="libgstmulaw.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstmulaw.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstmultipart' Guid='4CD5DF9C-9617-4128-9067-8E6E3F0D90C4'>
+                  <File Id='libgstmultipartDLL' Name='gstmulti.dll' LongName="libgstmultipart.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstmultipart.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstqtdemux' Guid='0EBB0DE9-B80C-415d-9F9E-FF76DA064A3E'>
+                  <File Id='libgstqtdemuxDLL' Name='gstqmux.dll' LongName="libgstqtdemux.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstqtdemux.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstrtp' Guid='96245222-9506-49c5-8F68-FEBC12EE01FA'>
+                  <File Id='libgstrtpDLL' Name='gstrtp.dll' LongName="libgstrtp.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstrtp.dll'/>
+                </Component>
+                
+                <Component Id='libgstrtsp' Guid='A16D98E8-341D-4325-B15B-1559F012222C'>
+                  <File Id='libgstrtspDLL' Name='gstrtsp.dll' LongName="libgstrtsp.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstrtsp.dll'/>
+                </Component>
+                
+                <Component Id='libgstsmpte' Guid='8CF5525F-F24B-4ba0-AD32-34E543D2F06B'>
+                  <File Id='libgstsmpteDLL' Name='gstsmpte.dll' LongName="libgstsmpte.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstsmpte.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstspeex' Guid='E20FE551-F5BD-494b-9F5B-01691DD710DB'>
+                  <File Id='libgstspeexDLL' Name='gstspeex.dll' LongName="libgstspeex.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstspeex.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstudp' Guid='A311E01D-0759-49f5-A449-3C8EE0EF6491'>
+                  <File Id='libgstudpDLL' Name='gstudp.dll' LongName="libgstudp.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstudp.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstvideobalance' Guid='CE455ACB-11C9-401f-A80E-2FB32E5F72C7'>
+                  <File Id='libgstvideobalanceDLL' Name='gstvbal.dll' LongName="libgstvideobalance.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstvideobalance.dll'/>
+                </Component>
+                
+                <Component Id='libgstvideobox' Guid='A147DA69-ABB3-4120-ADC9-58A8F1D5B9C1'>
+                  <File Id='libgstvideoboxDLL' Name='gstvbox.dll' LongName="libgstvideobox.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstvideobox.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstvideocrop' Guid='429C8329-2F8E-4fb9-BFC3-2A51B68A5190'>
+                  <File Id='libgstvideocropDLL' Name='gstvcrop.dll' LongName="libgstvideocrop.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstvideocrop.dll'/>
+                </Component>
+                
+                <Component Id='libgstvideoflip' Guid='B937D961-6F21-48b9-B06D-712DB879D934'>
+                  <File Id='libgstvideoflipDLL' Name='gstvflip.dll' LongName="libgstvideoflip.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstvideoflip.dll'/>
+                </Component>
+                
+                <Component Id='libgstvideomixer' Guid='E6C9890C-32D9-483e-B75A-F2F1C8FC31C5'>
+                  <File Id='libgstvideomixerDLL' Name='gstvmix.dll' LongName="libgstvideomixer.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstvideomixer.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstwaveform' Guid='C9AE80EE-F6DA-4587-9822-1B3D44CED4C8'>
+                  <File Id='libgstwaveformDLL' Name='gstwavfm.dll' LongName="libgstwaveform.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstwaveform.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstwavenc' Guid='6C74E5CB-4C8D-4432-BCDA-CFB9DA77A11E'>
+                  <File Id='libgstwavencDLL' Name='gstwaven.dll' LongName="libgstwavenc.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstwavenc.dll'/>
+                </Component>
+                
+                
+                <Component Id='libgstwavparse' Guid='A52D8180-ACE0-44a3-8CAC-9505960A9B76'>
+                  <File Id='libgstwavparseDLL' Name='gstwavp.dll' LongName="libgstwavparse.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstwavparse.dll'/>
+                </Component>
+                
+                <Component Id='libgstmpegvideoparse' Guid='AED1BCBB-7A50-4375-B8AD-233016905CA4'>
+                  <File Id='libgstmpegvideoparseDLL' Name='gstmpvp.dll' LongName="libgstmpegvideoparse.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstmpegvideoparse.dll'/>
+                </Component>
+                
+                <Component Id='libgstneon' Guid='549AF756-6643-4514-B874-C59DED2C91D0'>
+                  <File Id='libgstneonDLL' Name='gstneon.dll' LongName="libgstneon.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstneon.dll'/>
+                </Component>
+                
+                <Component Id='libgstasfdemux' Guid='45D66365-FD2F-4d7b-BC83-A18C905CAEB8'>
+                  <File Id='libgstasfdemuxDLL' Name='gstamux.dll' LongName="libgstasfdemux.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstasfdemux.dll'/>
+                </Component>
+                
+                <Component Id='libgstdvdlpcmdec' Guid='F43646C9-9F8A-41a0-A839-FD6F692D9993'>
+                  <File Id='libgstdvdlpcmdecDLL' Name='gstdvdl.dll' LongName="libgstdvdlpcmdec.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstdvdlpcmdec.dll'/>
+                </Component>
+                
+                <Component Id='libgstdvdsub' Guid='318A69A8-A670-457b-97BB-9B7DF95C5A54'>
+                  <File Id='libgstdvdsubDLL' Name='gstdvds.dll' LongName="libgstdvdsub.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstdvdsub.dll'/>
+                </Component>
+                
+                <Component Id='libgstiec958' Guid='98979533-D03B-48a0-9380-F47E5D440BF6'>
+                  <File Id='libgstiec958DLL' Name='gst958.dll' LongName="libgstiec958.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstiec958.dll'/>
+                </Component>
+                
+                <Component Id='libgstlame' Guid='E1894A14-A20A-4068-BFD4-A693DFE46F90'>
+                  <File Id='libgstlameDLL' Name='gstlame.dll' LongName="libgstlame.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstlame.dll'/>
+                </Component>
+                
+                <Component Id='libgstmad' Guid='02CCB40C-1A27-4e60-89BB-52F56F45D248'>
+                  <File Id='libgstmadDLL' Name='gstmad.dll' LongName="libgstmad.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstmad.dll'/>
+                </Component>
+                
+                <Component Id='libgstmpegaudioparse' Guid='98A764B6-C924-421e-8C45-B0122B348260'>
+                  <File Id='libgstmpegaudioparseDLL' Name='gstmpap.dll' LongName="libgstmpegaudioparse.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstmpegaudioparse.dll'/>
+                </Component>
+                
+                <Component Id='libgstmpegstream' Guid='A7DD8CAB-5428-40eb-A727-5AF0455F6F81'>
+                  <File Id='libgstmpegstreamDLL' Name='gstmps.dll' LongName="libgstmpegstream.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstmpegstream.dll'/>
+                </Component>
+                
+                <Component Id='libgstrealmedia' Guid='2B7FF699-FB33-41ed-9388-9908DDBC3417'>
+                  <File Id='libgstrealmediaDLL' Name='gstreal.dll' LongName="libgstrealmedia.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\lib\gstreamer-0.10\libgstrealmedia.dll'/>
+                </Component>
+                
+                <Component Id='libcdio' Guid='02FD3F40-776B-4644-87DD-06A8FC020EDA'>
+                  <File Id='libcdioLA' Name='libcdio.la' DiskId='1' Source='libcdio.la'/>
+                </Component>
+              
+              </Directory>
+            
+            </Directory>
+            
+            <Directory Id="gstdeps" Name="deps">
+              
+              <Component Id='libxml2' Guid='9CBF8C59-3C90-4de7-B1D9-6C7C6DDE2642'>
+                <File Id='libxml2DLL' Name='libxml2.dll' DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\deps\libxml2.dll'/>
+              </Component>
+              
+              <Component Id='liboil' Guid='6EC0C361-8153-498a-9B5F-CB61292DFA33'>
+                <File Id='liboilDLL' Name='liboil.dll' LongName="liboil-0.3-0.dll" DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\deps\liboil-0.3-0.dll'/>
+              </Component>
+              
+              <Component Id='ogg' Guid='63EA483E-11DF-4a66-AE2F-E8A4937B0E19'>
+                <File Id='oggDLL' Name='ogg.dll' DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\deps\ogg.dll'/>
+              </Component>
+              
+              <Component Id='vorbis' Guid='3DDF51CB-A956-4989-B85A-80F6E7C7264A'>
+                <File Id='vorbisDLL' Name='vorbis.dll' DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\deps\vorbis.dll'/>
+              </Component>
+              
+              <Component Id='libjpeg' Guid='73C814A5-97F5-4f3a-A5F0-2A88744F10A1'>
+                <File Id='libjpegDLL' Name='libjpeg.dll' DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\deps\libjpeg.dll'/>
+              </Component>
+              
+              <Component Id='libspeex' Guid='6547C081-0384-4867-8A57-9AD3B7081E4D'>
+                <File Id='libspeex' Name='libspeex.dll' DiskId='1' Source='C:\Program Files\Common Files\GStreamer\0.10\deps\libspeex.dll'/>
+              </Component>
+              
+            </Directory>
+          
+          </Directory>
+        </Directory>
+      </Directory>
+        
+    </Directory>
+      
+    <Feature Id='Base' Level='1'>
+      <ComponentRef Id='MainExecutable' />
+      <ComponentRef Id='Base' />
+      <ComponentRef Id='Widgets' />
+      <ComponentRef Id='BooCompiler' />
+      <ComponentRef Id='Boo' />
+      <ComponentRef Id='BooInterpreter' />
+      <ComponentRef Id='BooParser' />
+      <ComponentRef Id='BooBuddy' />
+      <ComponentRef Id='Hal' />
+      <ComponentRef Id='GnomeKeyring' />
+      <ComponentRef Id='LastFM' />
+      <ComponentRef Id='LibBanshee' />
+      <ComponentRef Id='Glib' />
+      <ComponentRef Id='Gobject' />
+      <ComponentRef Id='LibMusicBrainz' />
+      <ComponentRef Id='MusicBrainz' />
+      <ComponentRef Id='DBus' />
+      <ComponentRef Id='DBusGlib' />
+      <ComponentRef Id='TagLib' />
+      <ComponentRef Id='GStreamer' />
+      <ComponentRef Id='AxInterop' />
+      <ComponentRef Id='Quicktime' />
+      <ComponentRef Id='QTOControlLib' />
+      <ComponentRef Id='QTOLibrary' />
+    </Feature>
+    
+    <Feature Id="Profiles" Level="1">
+      <ComponentRef Id='aac.xml' />
+      <ComponentRef Id='base.xml' />
+      <ComponentRef Id='flac.xml' />
+      <ComponentRef Id='lame.xml' />
+      <ComponentRef Id='xing.xml' />
+      <ComponentRef Id='vorbis.xml' />
+      <ComponentRef Id='wav.xml' />
+      <ComponentRef Id='wavpack.xml' />
+      <ComponentRef Id='wma.xml' />
+    </Feature>
+    
+    <Feature Id="Plugins" Level="1">
+      <ComponentRef Id='Audioscrobbler' />
+      <ComponentRef Id='Bookmarks' />
+      <ComponentRef Id='MetadataSearch' />
+      <ComponentRef Id='MiniMode' />
+      <ComponentRef Id='NotificationAreaIcon' />
+      <ComponentRef Id='Podcast' />
+      <ComponentRef Id='Radio' />
+      <ComponentRef Id='Recommendation' />
+    </Feature>
+    
+    <Feature Id="gstreamer" Level="1">
+      <Feature Id="gstreamer_0.10.13" Level="1">
+        <ComponentRef Id='gstinspect' />
+        <ComponentRef Id='gstlaunch' />
+        <ComponentRef Id='libgstbase' />
+        <ComponentRef Id='libgstcontroller' />
+        <ComponentRef Id='libgstdataprotocol' />
+        <ComponentRef Id='libgst' />
+        <ComponentRef Id='libgstcoreelements' />
+        <ComponentRef Id='libxml2' />
+        <Condition Level="0">HASGSTBASE AND NOT Installed</Condition>
+      </Feature>
+      <Feature Id="gst_plugins_base_0.10.13" Level="1">
+        <ComponentRef Id='libgstaudio' />
+        <ComponentRef Id='libgstcdda' />
+        <ComponentRef Id='libgstinterfaces' />
+        <ComponentRef Id='libgstnetbuffer' />
+        <ComponentRef Id='libgstpbutils' />
+        <ComponentRef Id='libgstriff' />
+        <ComponentRef Id='libgstrtpbin' />
+        <ComponentRef Id='libgsttag' />
+        <ComponentRef Id='libgstvideo' />
+        <ComponentRef Id='libgstadder' />
+        <ComponentRef Id='libgstaudioconvert' />
+        <ComponentRef Id='libgstaudiorate' />
+        <ComponentRef Id='libgstaudioresample' />
+        <ComponentRef Id='libgstaudiotestsrc' />
+        <ComponentRef Id='libgstdecodebin' />
+        <ComponentRef Id='libgstdecodebin2' />
+        <ComponentRef Id='libgstffmpegcolorspace' />
+        <ComponentRef Id='libgstgdp' />
+        <ComponentRef Id='libgstogg' />
+        <ComponentRef Id='libgstplaybin' />
+        <ComponentRef Id='libgsttheora' />
+        <ComponentRef Id='libgsttypefindfunctions' />
+        <ComponentRef Id='libgstvideorate' />
+        <ComponentRef Id='libgstvideoscale' />
+        <ComponentRef Id='libgstvideotestsrc' />
+        <ComponentRef Id='libgstvolume' />
+        <ComponentRef Id='libgstvorbis' />
+        <ComponentRef Id='liboil' />
+        <ComponentRef Id='ogg' />
+        <ComponentRef Id='vorbis' />
+        <Condition Level="0">HASGSTBASE AND NOT Installed</Condition>
+      </Feature>
+      <Feature Id="gst_plugins_good_0.10.13" Level="1">
+        <ComponentRef Id='libgstalaw' />
+        <ComponentRef Id='libgstalpha' />
+        <ComponentRef Id='libgstalphacolor' />
+        <ComponentRef Id='libgstapetag' />
+        <ComponentRef Id='libgstaudiofx' />
+        <ComponentRef Id='libgstauparser' />
+        <ComponentRef Id='libgstautodetect' />
+        <ComponentRef Id='libgstavi' />
+        <ComponentRef Id='libgstcutter' />
+        <ComponentRef Id='libgstdirectdraw' />
+        <ComponentRef Id='libgstdirectsound' />
+        <ComponentRef Id='libgsteffectv' />
+        <ComponentRef Id='libgstflx' />
+        <ComponentRef Id='libgstgoom' />
+        <ComponentRef Id='libgsticydemux' />
+        <ComponentRef Id='libgstid3demux' />
+        <ComponentRef Id='libgstjpeg' />
+        <ComponentRef Id='libgstlevel' />
+        <ComponentRef Id='libgstmatroska' />
+        <ComponentRef Id='libgstmonoscope' />
+        <ComponentRef Id='libgstmulaw' />
+        <ComponentRef Id='libgstmultipart' />
+        <ComponentRef Id='libgstqtdemux' />
+        <ComponentRef Id='libgstrtp' />
+        <ComponentRef Id='libgstrtsp' />
+        <ComponentRef Id='libgstsmpte' />
+        <ComponentRef Id='libgstspeex' />
+        <ComponentRef Id='libgstudp' />
+        <ComponentRef Id='libgstvideobalance' />
+        <ComponentRef Id='libgstvideobox' />
+        <ComponentRef Id='libgstvideocrop' />
+        <ComponentRef Id='libgstvideoflip' />
+        <ComponentRef Id='libgstvideomixer' />
+        <ComponentRef Id='libgstwaveform' />
+        <ComponentRef Id='libgstwavenc' />
+        <ComponentRef Id='libgstwavparse' />
+        <ComponentRef Id='libjpeg' />
+        <ComponentRef Id='libspeex' />
+        <Condition Level="0">HASGSTGOOD AND NOT Installed</Condition>
+      </Feature>
+      <Feature Id="gst_plugins_bad_0.10.13" Level="1">
+        <ComponentRef Id='libgstmpegvideoparse' />
+        <ComponentRef Id='libgstneon' />
+        <Condition Level="0">HASGSTBAD AND NOT Installed</Condition>
+      </Feature>
+      <Feature Id="gst_plugins_ugly_0.10.13" Level="1">
+        <ComponentRef Id='libgstasfdemux' />
+        <ComponentRef Id='libgstdvdlpcmdec' />
+        <ComponentRef Id='libgstdvdsub' />
+        <ComponentRef Id='libgstiec958' />
+        <ComponentRef Id='libgstlame' />
+        <ComponentRef Id='libgstmad' />
+        <ComponentRef Id='libgstmpegaudioparse' />
+        <ComponentRef Id='libgstmpegstream' />
+        <ComponentRef Id='libgstrealmedia' />
+        <Condition Level="0">HASGSTUGLY AND NOT Installed</Condition>
+      </Feature>
+      <ComponentRef Id='libcdio' />
+    </Feature>
+    
+    <Icon Id="Banshee.exe" SourceFile="..\..\bin\Release\Banshee.exe" />
+    
+  </Product>
+</Wix>

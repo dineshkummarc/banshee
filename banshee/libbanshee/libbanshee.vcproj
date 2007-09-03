@@ -122,6 +122,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)&quot;;&quot;D:\Visual Studio 2005\Projects\Banshee Port\gstreamer\include&quot;;&quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\include&quot;;&quot;C:\Program Files\Mono-1.2.5\include&quot;;&quot;C:\Program Files\Mono-1.2.5\lib\glib-2.0\include&quot;;&quot;C:\Program Files\Mono-1.2.5\include\glib-2.0&quot;;&quot;C:\Program Files\Mono-1.2.5\include\cairo&quot;;&quot;C:\Program Files\Mono-1.2.5\include\gtk-2.0&quot;;&quot;C:\Program Files\Mono-1.2.5\include\pango-1.0&quot;;&quot;C:\Program Files\Mono-1.2.5\lib\gtk-2.0\include&quot;;&quot;C:\Program Files\Mono-1.2.5\include\atk-1.0&quot;"
 				PreprocessorDefinitions="WIN32"
+				ObjectFile="$(IntDir)\"
 				CompileAs="1"
 			/>
 			<Tool
@@ -138,6 +139,7 @@
 				AdditionalDependencies="gobject-2.0.lib glib-2.0.lib libmusicbrainz.lib libgstreamer-0.10.lib libgstbase-0.10.lib intl.lib"
 				AdditionalLibraryDirectories="&quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\lib&quot;;&quot;D:\Visual Studio 2005\Projects\Banshee Port\gstreamer\lib&quot;;&quot;C:\Program Files\Mono-1.2.5\lib&quot;"
 				ModuleDefinitionFile="libbanshee.def"
+				ImportLibrary=""
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -162,7 +164,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy /y &quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\lib\libmusicbrainz.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libglib-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libgobject-2.0-0.dll&quot; &quot;$(OutDir)&quot;"
+				CommandLine="copy /y &quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\lib\libmusicbrainz.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libglib-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libgobject-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;erase &quot;$(OutDir)\$(InputName).lib&quot;&#x0D;&#x0A;erase &quot;$(OutDir)\$(InputName).exp&quot;"
 			/>
 		</Configuration>
 	</Configurations>

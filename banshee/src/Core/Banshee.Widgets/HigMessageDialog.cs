@@ -23,8 +23,9 @@
  *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
  *  DEALINGS IN THE SOFTWARE.
  */
- 
+
 using System;
+using Mono.Unix;
 
 namespace Banshee.Widgets
 {
@@ -33,13 +34,25 @@ namespace Banshee.Widgets
         private Gtk.AccelGroup accel_group;
         private Gtk.Image image;
         private Gtk.VBox label_vbox;
+        private Gtk.CheckButton supress;
 
         public HigMessageDialog(Gtk.Window parent,
                      Gtk.DialogFlags flags,
                      Gtk.MessageType type,
                      Gtk.ButtonsType buttons,
+                     string header,
+                     string msg)
+            : this(parent, flags, type, buttons, header, msg, false)
+        {
+        }
+        
+        public HigMessageDialog(Gtk.Window parent,
+                     Gtk.DialogFlags flags,
+                     Gtk.MessageType type,
+                     Gtk.ButtonsType buttons,
                      string          header,
-                     string          msg)
+                     string          msg,
+                     bool            show_supress)
             : base()
         {
             HasSeparator = false;
@@ -82,10 +95,11 @@ namespace Banshee.Widgets
             
             label_vbox = new Gtk.VBox (false, 0);
             label_vbox.Show ();
+            label_vbox.Spacing = 10;
             hbox.PackStart (label_vbox, true, true, 0);
 
             string title = String.Format ("<span weight='bold' size='larger'>{0}" +
-                              "</span>\n",
+                              "</span>",
                               header);
 
             Gtk.Label label;
@@ -106,6 +120,13 @@ namespace Banshee.Widgets
             label.SetAlignment (0.0f, 0.5f);
             label.Show ();
             label_vbox.PackStart (label, false, false, 0);
+
+            if(show_supress) {
+                supress = new Gtk.CheckButton();
+                supress.Label = Catalog.GetString("Do not show this again");
+                supress.Show();
+                label_vbox.PackStart(supress);
+            }
             
             switch (buttons) {
             case Gtk.ButtonsType.None:
@@ -213,6 +234,11 @@ namespace Banshee.Widgets
         
         public Gtk.VBox LabelVBox {
             get { return label_vbox; }
+        }
+
+        public bool Suppress
+        {
+            get { return supress != null && supress.Active; }
         }
     }
 }

@@ -13,7 +13,7 @@
     <OutputPath>..\..\..\bin\Debug\</OutputPath>
     <DebugSymbols>True</DebugSymbols>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>
     </DefineConstants>
@@ -103,6 +103,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Banshee.AudioProfiles\XmlProfileConfiguration.cs" />
     <Compile Include="Banshee.Cdrom.Nautilus\NautilusAudioCdDisk.cs" />
     <Compile Include="Banshee.Cdrom.Windows.Interop\DiscMaster.cs" />
     <Compile Include="Banshee.Cdrom.Windows.Interop\DiscMasterProgressEvents.cs" />

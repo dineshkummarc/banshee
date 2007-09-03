@@ -45,6 +45,7 @@
  
 using System;
 using System.Collections;
+using Banshee.Configuration;
 
 namespace Banshee.Base
 {
@@ -77,6 +78,13 @@ namespace Banshee.Base
         private string details;
         private bool showUser;
         private DateTime timestamp;
+        private SchemaEntry<bool> suppress;
+
+        internal LogEntry(LogEntryType type, string shortMessage, string details, SchemaEntry<bool> suppress)
+            : this(type, shortMessage, details, !suppress.Get())
+        {
+            this.suppress = suppress;
+        }
         
         internal LogEntry(LogEntryType type, string shortMessage, string details, bool showUser)
         {
@@ -92,43 +100,12 @@ namespace Banshee.Base
             return String.Format("{0}: [{1}] ({2}) - {3}", type, timestamp, shortMessage, details);
         }
         
-        public LogEntryType Type   { get { return type;         } }
-        public string ShortMessage { get { return shortMessage; } }
-        public string Details      { get { return details;      } }
-        public DateTime TimeStamp  { get { return timestamp;    } }
-        public bool ShowUser       { get { return showUser;     } }
-    }
-    
-    public class ErrorLogEntry : LogEntry
-    {
-        public ErrorLogEntry(string shortMessage, string details, bool showUser) :
-            base(LogEntryType.Error, shortMessage, details, showUser)
-        {
-        }
-    }
-    
-    public class WarningLogEntry : LogEntry
-    {
-        public WarningLogEntry(string shortMessage, string details, bool showUser) :
-            base(LogEntryType.Warning, shortMessage, details, showUser)
-        {
-        }
-    }
-    
-    public class DebugLogEntry : LogEntry
-    {
-        public DebugLogEntry(string shortMessage, string details, bool showUser) :
-            base(LogEntryType.Debug, shortMessage, details, showUser)
-        {
-        }
-    }
-    
-    public class InformationLogEntry : LogEntry
-    {
-        public InformationLogEntry(string shortMessage, string details, bool showUser) :
-            base(LogEntryType.Information, shortMessage, details, showUser)
-        {
-        }
+        public LogEntryType Type          { get { return type;         } }
+        public string ShortMessage        { get { return shortMessage; } }
+        public string Details             { get { return details;      } }
+        public DateTime TimeStamp         { get { return timestamp;    } }
+        public bool ShowUser              { get { return showUser;     } }
+        public SchemaEntry<bool> Suppress { get { return suppress;     } }
     }
     
     public class LogCore : IEnumerable
@@ -167,17 +144,27 @@ namespace Banshee.Base
         
         public LogEntry PushError(string shortMessage, string details, bool showUser)
         {
-            return Push(new ErrorLogEntry(shortMessage, details, showUser));
+            return Push(new LogEntry(LogEntryType.Error, shortMessage, details, showUser));
+        }
+
+        public LogEntry PushError(string shortMessage, string details, SchemaEntry<bool> suppress)
+        {
+            return Push(new LogEntry(LogEntryType.Error, shortMessage, details, suppress));
         }
         
         public LogEntry PushWarning(string shortMessage, string details)
         {
             return PushWarning(shortMessage, details, true);
         }
+
+        public LogEntry PushWarning(string shortMessage, string details, SchemaEntry<bool> suppress)
+        {
+            return Push(new LogEntry(LogEntryType.Warning, shortMessage, details, suppress));
+        }
         
         public LogEntry PushWarning(string shortMessage, string details, bool showUser)
         {
-            return Push(new WarningLogEntry(shortMessage, details, showUser));
+            return Push(new LogEntry(LogEntryType.Warning, shortMessage, details, showUser));
         }
         
         public LogEntry PushInformation(string shortMessage, string details)
@@ -187,7 +174,12 @@ namespace Banshee.Base
         
         public LogEntry PushInformation(string shortMessage, string details, bool showUser)
         {
-            return Push(new InformationLogEntry(shortMessage, details, showUser));
+            return Push(new LogEntry(LogEntryType.Information, shortMessage, details, showUser));
+        }
+
+        public LogEntry PushInformation(string shortMessage, string details, SchemaEntry<bool> suppress)
+        {
+            return Push(new LogEntry(LogEntryType.Information, shortMessage, details, suppress));
         }
         
         public LogEntry PushDebug(string shortMessage, string details)
@@ -197,7 +189,12 @@ namespace Banshee.Base
         
         public LogEntry PushDebug(string shortMessage, string details, bool showUser)
         {
-            return Push(new DebugLogEntry(shortMessage, details, showUser));
+            return Push(new LogEntry(LogEntryType.Debug, shortMessage, details, showUser));
+        }
+
+        public LogEntry PushDebug(string shortMessage, string details, SchemaEntry<bool> suppress)
+        {
+            return Push(new LogEntry(LogEntryType.Debug, shortMessage, details, suppress));
         }
         
         public LogEntry Push(LogEntry entry)

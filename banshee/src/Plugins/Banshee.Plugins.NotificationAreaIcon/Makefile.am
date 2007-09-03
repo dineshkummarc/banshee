@@ -8,7 +8,7 @@ notificationareaicondir = $(pkglibdir)/Banshee.Plugins
 notificationareaicon_SCRIPTS = $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 
 MENU_RESOURCE = NotificationAreaIconMenu.xml
-ICON_RESOURCE = banshee_icon.ico
+ICON_RESOURCE = banshee_icon_16.ico
 
 ASSEMBLY_SOURCES = \
 	$(top_srcdir)/src/AssemblyInfo.cs \

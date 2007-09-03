@@ -1,3 +1,31 @@
+2007-09-03 Scott Peterson <scottp@gnome.org>
+	
+	* build/wix/libcdio.la: Added. Needed by Gstreamer to play media from CDs. Not included with
+	  Gstreamer for Windows by default.
+	  
+	* build/wix/banshee.wxs: Added Wix build file. You need to put the Wix executable files in
+	  that folder, and you also need to install all of the Gstreamer Windows packages from here:
+	  http://gstreamer.freedesktop.org/pkg/windows/releases/ (with the exception of ffmpeg)
+	  
+	* data/images/banshee_icon.ico: Updated with all recommended resolutions and sizes.
+	
+	* data/images/banshee_icon_16.ico: Added. Windows loves to fuck up the icon sizes in the
+	  system tray so this one is used to force the correct size for the NotificationAreaIcon plugin.
+	  
+	* Banshee.AudioProfiles/XmlProfileConfiguration.cs: Added. This is just a stub.
+	
+	* Banshee.Base/Gui/LogCoreDialog.cs:
+	* Banshee.Base/LogCore.cs:
+	* Banshee.Widgets/HigMessageDialog.cs:
+	* Main.cs:
+	  Added the ability to suppress an error message with a "Do not show this again" checkbox.
+	  This is done because the "Dbus is not availible" error box shows up every time on Windows.
+	  
+	* Banshee.MediaEngine.Quicktime/*: Added Quicktime playback engine. It currently uses a stupid
+	  stupid ActiveX control (which I'm looking into), but it does play DRMed files (any all others).
+	  
+	* Minor other changes (mostly conformance of line-endings).
+
 2007-09-01 Scott Peterson <scottp@gnome.org>
 	Updated Makefile.ams and Monodevelop projects.
 

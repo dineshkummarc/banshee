@@ -33,11 +33,13 @@ using Mono.Unix;
 using NDesk.DBus;
 
 using Banshee.Base;
+using Banshee.Configuration;
 
 namespace Banshee
 {    
     public static class BansheeEntry
-    {    
+    {
+        [STAThread]
         public static void Main(string [] args)
         {
             Banshee.Gui.CleanRoomStartup.Startup(Startup, args);
@@ -66,8 +68,8 @@ namespace Banshee
                 LogCore.Instance.PushWarning(
                     "DBus is not available", 
                     "Your environment is not properly set up to use DBus. Please fix your environment " +
-                    "or run Banshee through dbus-launch. Failure to do so may cause problems " + 
-                    "at a later time in Banshee during this instance.\n\n" + e.Message, true);
+                    "or run Banshee through dbus-launch. Failure to do so may cause problems " +
+                    "at a later time in Banshee during this instance.\n\n" + e.Message, DBusNotifySuppressSchema);
             }
             
             Gtk.Application.Init();
@@ -342,6 +344,13 @@ namespace Banshee
             
             System.Environment.Exit(0);
         }
+
+        public static readonly SchemaEntry<bool> DBusNotifySuppressSchema = new SchemaEntry<bool>(
+            "core", "dbus_notify_suppress",
+            false,
+            "DBus error notification suppression",
+            "Suppress notifications of a DBus initialization error"
+        );
     }
 }
 
