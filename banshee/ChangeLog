@@ -1,3 +1,19 @@
+2007-09-08 Scott Peterson <scottp@gnome.org>
+	* Utilities.cs: Disposed of Stream and StreamReader resources.
+
+	* IO/*: Added File.GetSize() to return size of file in bytes.
+
+	* QuicktimePlayerEngine.cs: Stability and bug fixes.
+
+	* QueuedSqliteDatabase.cs: Race conditional synchronization bug fixed.
+
+	* AbstractPlaylistSource.cs: Made to work with new changes to HigDialog
+
+	* SmartPlaylistSource.cs: Rework of synchronization code, use of
+	  IOProxy.File.GetSize(), replaced ArrayList with generic List.
+
+	* Other changes are probably just line ending conformance.
+
 2007-09-03 Scott Peterson <scottp@gnome.org>
 	
 	* build/wix/libcdio.la: Added. Needed by Gstreamer to play media from CDs. Not included with

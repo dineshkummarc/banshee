@@ -164,7 +164,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy /y &quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\lib\libmusicbrainz.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libglib-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libgobject-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;erase &quot;$(OutDir)\$(InputName).lib&quot;&#x0D;&#x0A;erase &quot;$(OutDir)\$(InputName).exp&quot;"
+				CommandLine="copy /y &quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\lib\libmusicbrainz.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libglib-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libgobject-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;erase &quot;$(OutDir)\$(InputName).lib&quot;&#x0D;&#x0A;erase &quot;$(OutDir)\$(InputName).exp&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

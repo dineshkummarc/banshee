@@ -48,6 +48,7 @@ namespace Banshee.IO
         void Delete(SafeUri uri);
         bool Exists(SafeUri uri);
         void Move(SafeUri from, SafeUri to);
+        long GetSize(SafeUri uri);
     }
     
     public interface IDirectory

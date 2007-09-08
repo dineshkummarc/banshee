@@ -63,6 +63,12 @@ namespace Banshee.IO.SystemIO
         {
             System.IO.File.Move(from.LocalPath, to.LocalPath);
         }
+
+
+        public long GetSize(SafeUri uri)
+        {
+            return new System.IO.FileInfo(uri.LocalPath).Length;
+        }
     }
 
     public class Directory : IDirectory

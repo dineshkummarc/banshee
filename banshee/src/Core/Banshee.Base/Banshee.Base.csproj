@@ -38,10 +38,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Mono.Cairo.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Data.SqliteClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Mono.Data.SqliteClient.dll</HintPath>
-    </Reference>
     <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Mono.Posix.dll</HintPath>
@@ -81,6 +77,9 @@
     </Reference>
     <Reference Include="Boo.Lang.Parser, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
       <HintPath>..\..\Extras\Boo\Boo.Lang.Parser.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Mono.Data.SqliteClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
@@ -384,7 +383,6 @@
       <LogicalName>UIManagerLayout.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\COPYING">
-      <LogicalName>COPYING</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\data\images\banshee-logo.png">
       <LogicalName>banshee-logo.png</LogicalName>

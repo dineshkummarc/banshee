@@ -7,6 +7,7 @@ using Banshee.Base;
 using Banshee.Sources;
 using Banshee.Database;
 using Banshee.Playlists;
+using Banshee.IO;
 
 using Mono.Unix;
 
@@ -15,7 +16,7 @@ namespace Banshee.SmartPlaylist
     public class SmartPlaylistSource : Banshee.Sources.ChildSource, IPlaylist
     {
         private List<TrackInfo> tracks = new List<TrackInfo>();
-        private ArrayList watchedPlaylists = new ArrayList();
+        private List<Source> watchedPlaylists = new List<Source>();
 
         public string Condition;
         public string OrderBy;
@@ -81,7 +82,7 @@ namespace Banshee.SmartPlaylist
             ret |= (Condition != null && Condition.IndexOf(String.Format("SmartPlaylistID = {0}", other_sp.Id)) != -1);
 
             if (recurse) {
-                foreach (Banshee.Sources.Source source in watchedPlaylists) {
+                foreach (Source source in watchedPlaylists) {
                     if (source is SmartPlaylistSource) {
                         ret |= (source as SmartPlaylistSource).DependsOn(other_sp);
                     }
@@ -188,7 +189,7 @@ namespace Banshee.SmartPlaylist
         public void ListenToPlaylists()
         {
             // First, stop listening to any/all playlists
-            foreach (Banshee.Sources.Source source in watchedPlaylists) {
+            foreach (Source source in watchedPlaylists) {
                 source.TrackAdded -= HandlePlaylistChanged;
                 source.TrackRemoved -= HandlePlaylistChanged;
             }
@@ -196,7 +197,7 @@ namespace Banshee.SmartPlaylist
             watchedPlaylists.Clear();
 
             if (PlaylistDependent) {
-                foreach (Banshee.Sources.Source source in SourceManager.Sources) {
+                foreach (Source source in SourceManager.Sources) {
                     if ((source is PlaylistSource && DependsOn(source as PlaylistSource)) ||
                         (source is SmartPlaylistSource && DependsOn(source as SmartPlaylistSource, false)))
                     {
@@ -214,94 +215,97 @@ namespace Banshee.SmartPlaylist
 
             //Console.WriteLine ("Refreshing smart playlist {0} with condition {1}", Source.Name, Condition);
 
-            // Delete existing tracks
-            Globals.Library.Db.Execute(new DbCommand(
-                "DELETE FROM SmartPlaylistEntries WHERE SmartPlaylistID = :playlist_id",
-                "playlist_id", Id
-            ));
-
-            // Add matching tracks
-            Globals.Library.Db.Execute(String.Format(
-                @"INSERT INTO SmartPlaylistEntries 
-                    SELECT {0} as SmartPlaylistID, TrackId FROM Tracks {1} {2}",
-                    Id, PrependCondition("WHERE"), OrderAndLimit
-            ));
-
-            // Load the new tracks in
-            IDataReader reader = Globals.Library.Db.Query(new DbCommand(
-                @"SELECT TrackID 
-                    FROM SmartPlaylistEntries
-                    WHERE SmartPlaylistID = :playlist_id",
+            lock(TracksMutex) {
+                // Delete existing tracks
+                Globals.Library.Db.Execute(new DbCommand(
+                    "DELETE FROM SmartPlaylistEntries WHERE SmartPlaylistID = :playlist_id",
                     "playlist_id", Id
-            ));
-            
-            List<TrackInfo> tracks_to_add = new List<TrackInfo>();
-            List<TrackInfo> tracks_to_remove = new List<TrackInfo>();
+                ));
 
-            Dictionary<int, TrackInfo> old_tracks = new Dictionary<int, TrackInfo>(tracks.Count);
-            foreach (TrackInfo track in tracks) {
-                old_tracks.Add(track.TrackId, track);
-            }
+                // Add matching tracks
+                Globals.Library.Db.Execute(String.Format(
+                    @"INSERT INTO SmartPlaylistEntries 
+                        SELECT {0} as SmartPlaylistID, TrackId FROM Tracks {1} {2}",
+                        Id, PrependCondition("WHERE"), OrderAndLimit
+                ));
 
-            double sum = 0;
-            double limit = 0;
-            bool check_limit = LimitCriterion != 0 && LimitNumber != "0";
-            if (check_limit) {
-                limit = Double.Parse(LimitNumber); 
-            }
+                // Load the new tracks in
+                Mono.Data.SqliteClient.SqliteDataReader reader = Globals.Library.Db.Query(new DbCommand(
+                    @"SELECT TrackID 
+                        FROM SmartPlaylistEntries
+                        WHERE SmartPlaylistID = :playlist_id",
+                        "playlist_id", Id
+                ));
 
-            while(reader.Read()) {
-                int id = Convert.ToInt32(reader[0]);
+                List<TrackInfo> tracks_to_add = new List<TrackInfo>();
+                List<TrackInfo> tracks_to_remove = new List<TrackInfo>();
 
-                TrackInfo track = null;
-                try {
-                    track = Globals.Library.Tracks[id] as TrackInfo;
-                } catch {}
-
-                //Console.WriteLine ("evaluating track {0} (old? {1})", track, old_tracks.Contains(track));
-                if (track == null || track.TrackId <= 0) {
-                    Console.WriteLine ("bad track = {0}", track);
-                    continue;
+                double sum = 0;
+                double limit = 0;
+                bool check_limit = LimitCriterion != 0 && LimitNumber != "0";
+                if(check_limit) {
+                    limit = Double.Parse(LimitNumber);
                 }
 
-                if (check_limit) {
-                    switch (LimitCriterion) {
-                    case 1: // minutes
-                        sum += track.Duration.TotalMinutes;
-                        break;
-                    case 2: // hours
-                        sum += track.Duration.TotalHours;
-                        break;
-                    case 3: // MB
-                        try {
-                            Gnome.Vfs.FileInfo file = new Gnome.Vfs.FileInfo(track.Uri.AbsoluteUri);
-                            sum += (double) (file.Size / (1024 * 1024));
-                        } catch (System.IO.FileNotFoundException) {}
-                        break;
+                Dictionary<int, TrackInfo> old_tracks = new Dictionary<int, TrackInfo>(tracks.Count);
+                Dictionary<int, TrackInfo> old_tracks_backup = new Dictionary<int, TrackInfo>(tracks.Count);
+                foreach(TrackInfo track in tracks) {
+                    old_tracks.Add(track.TrackId, track);
+                    old_tracks_backup.Add(track.TrackId, track);
+                }
+                List<TrackInfo> found = new List<TrackInfo>();
+                while(reader.Read()) {
+
+                    int id = Convert.ToInt32(reader[0]);
+
+                    TrackInfo track = null;
+                    try {
+                        track = Globals.Library.Tracks[id] as TrackInfo;
+                    } catch { }
+                    found.Add(track);
+
+                    //Console.WriteLine ("evaluating track {0} (old? {1})", track, old_tracks.Contains(track));
+                    if(track == null || track.TrackId <= 0) {
+                        Console.WriteLine("bad track = {0}", track);
+                        continue;
                     }
 
-                    // If we've reached the limit, break out of the add track cycle
-                    if (sum > limit) {
-                        break;
+                    if(check_limit) {
+                        switch(LimitCriterion) {
+                        case 1: // minutes
+                            sum += track.Duration.TotalMinutes;
+                            break;
+                        case 2: // hours
+                            sum += track.Duration.TotalHours;
+                            break;
+                        case 3: // MB
+                            if(IOProxy.File.Exists(track.Uri)) {
+                                sum += (double)(IOProxy.File.GetSize(track.Uri) / (1024 * 1024));
+                            }
+                            break;
+                        }
+
+                        // If we've reached the limit, break out of the add track cycle
+                        if(sum > limit) {
+                            break;
+                        }
+                    }
+                    if(old_tracks.ContainsKey(track.TrackId)) {
+                        // If we already have it, remove it from the old_tracks list so it isn't removed
+                        old_tracks.Remove(track.TrackId);
+                    } else {
+                        // Otherwise, we need to add it.
+                        tracks_to_add.Add(track);
                     }
                 }
+                // If there are old tracks we didn't examine, they should be removed
+                tracks_to_remove.AddRange(old_tracks.Values);
 
-                if (old_tracks.ContainsKey(track.TrackId)) {
-                    // If we already have it, remove it from the old_tracks list so it isn't removed
-                    old_tracks.Remove(track.TrackId);
-                } else {
-                    // Otherwise, we need to add it.
-                    tracks_to_add.Add(track);
-                }
+                RemoveTracks(tracks_to_remove);
+                AddTracks(tracks_to_add);
+
+                reader.Dispose();
             }
-
-            // If there are old tracks we didn't examine, they should be removed
-            tracks_to_remove.AddRange(old_tracks.Values);
-
-            RemoveTracks(tracks_to_remove);
-            AddTracks(tracks_to_add);
-
-            reader.Dispose();
 
             t.Stop();
         }
@@ -396,7 +400,7 @@ namespace Banshee.SmartPlaylist
         public void RemoveTracks(List<TrackInfo> tracks_to_remove)
         {
             lock(TracksMutex) {
-                foreach (TrackInfo track in tracks_to_remove) {
+                foreach(TrackInfo track in tracks_to_remove) {
                     tracks.Remove(track);
                 }
             }

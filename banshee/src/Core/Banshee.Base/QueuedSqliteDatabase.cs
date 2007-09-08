@@ -38,10 +38,10 @@ namespace Banshee.Database
         private Queue<QueuedSqliteCommand> command_queue = new Queue<QueuedSqliteCommand>();
         private SqliteConnection connection;
         private Thread queue_thread;
-        private bool dispose_requested = false;
-        private bool processing_queue = false;
+        private volatile bool dispose_requested = false;
+        private volatile bool processing_queue = false;
         private string dbpath;
-        private bool connected;
+        private volatile bool connected;
         
         public QueuedSqliteDatabase(string dbpath)
         {
@@ -103,12 +103,12 @@ namespace Banshee.Database
         {
             WaitForConnection();
             command.Connection = connection;
-            command.CommandType = Banshee.Database.CommandType.Execute;;
+            command.CommandType = Banshee.Database.CommandType.Execute;
             QueueCommand(command);
             command.WaitForResult();
             return command.InsertID;
         }
-        
+
         public int Execute(object command)
         {
             return Execute(new DbCommand(command.ToString()));
@@ -125,9 +125,9 @@ namespace Banshee.Database
 
         private void WakeUp()
         {
-            Monitor.Enter(command_queue);
-            Monitor.Pulse(command_queue);
-            Monitor.Exit(command_queue);
+            Monitor.Enter(this);
+            Monitor.Pulse(this);
+            Monitor.Exit(this);
         }
         
         private void ProcessQueue()
@@ -140,9 +140,15 @@ namespace Banshee.Database
             
             processing_queue = true;
             bool in_dispose_transaction = false;
-            
+
+            Monitor.Enter(this);
+            bool in_lock = true;
             while(true) {
                 while(command_queue.Count > 0) {
+                    if(in_lock) {
+                        Monitor.Exit(this);
+                        in_lock = false;
+                    }
                     if(dispose_requested && !in_dispose_transaction) {
                         (new SqliteCommand("BEGIN", connection)).ExecuteNonQuery();
                         in_dispose_transaction = true;
@@ -153,6 +159,11 @@ namespace Banshee.Database
                         command = command_queue.Dequeue();
                     }
                     command.Execute();
+
+                    if(command_queue.Count == 0) {
+                        Monitor.Enter(this);
+                        in_lock = true;
+                    }
                 }
 
                 if(dispose_requested) {
@@ -161,13 +172,12 @@ namespace Banshee.Database
                     }
                     connection.Close();
                     processing_queue = false;
-                    return;
+                    break;
                 }
-                
-                Monitor.Enter(command_queue);
-                Monitor.Wait(command_queue);
-                Monitor.Exit(command_queue);
+
+                Monitor.Wait(this);
             }
+            Monitor.Exit(this);
         }
     }
 

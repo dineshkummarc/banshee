@@ -154,24 +154,13 @@ namespace Banshee.Sources
                 Gtk.ButtonsType.Cancel,
                 String.Format(Catalog.GetString("Are you sure you want to delete this {0}?"),
                     source.GenericName.ToLower()),
-                source.Name);
+                source.Name, true);
             
             dialog.AddButton(Gtk.Stock.Delete, Gtk.ResponseType.Ok, false);
             
-            Gtk.Alignment alignment = new Gtk.Alignment(0.0f, 0.0f, 0.0f, 0.0f);
-            alignment.TopPadding = 10;
-            Gtk.CheckButton confirm_button = new Gtk.CheckButton(String.Format(Catalog.GetString(
-                "Do not ask me this again"), source.GenericName.ToLower()));
-            confirm_button.Toggled += delegate {
-                do_not_ask = confirm_button.Active;
-            };
-            alignment.Add(confirm_button);
-            alignment.ShowAll();
-            dialog.LabelVBox.PackStart(alignment, false, false, 0);
-            
             try {
                 if(dialog.Run() == (int)Gtk.ResponseType.Ok) {
-                    ConfigurationClient.Set<bool>("sources", key, do_not_ask);
+                    ConfigurationClient.Set<bool>("sources", key, dialog.Suppress);
                     return true;
                 }
                 

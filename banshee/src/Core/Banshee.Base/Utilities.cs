@@ -315,9 +315,11 @@ namespace Banshee.Base
         public static string GetFileContents(string name)
         {
             Assembly asm = Assembly.GetCallingAssembly();
-            Stream stream = asm.GetManifestResourceStream(name);
-            StreamReader reader = new StreamReader(stream);
-            return reader.ReadToEnd();    
+            using(Stream stream = asm.GetManifestResourceStream(name)) {
+                using(StreamReader reader = new StreamReader(stream)) {
+                    return reader.ReadToEnd();
+                }
+            }
         }
     }
     

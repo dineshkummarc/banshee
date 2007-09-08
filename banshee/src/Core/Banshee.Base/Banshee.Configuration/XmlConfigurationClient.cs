@@ -90,7 +90,7 @@ namespace Banshee.Configuration
         
         public T Get<T>(string namespce, string key, T fallback)
 		{
-		    lock(xml_document) {
+            lock(xml_document) {
     		    XmlNode namespace_node = GetNamespaceNode(namespce == null
     		        ? new string [] {null_namespace}
     		        : namespce.Split('.'), false);

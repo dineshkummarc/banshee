@@ -99,6 +99,11 @@ namespace Banshee.IO.GnomeVfs
             Gnome.Vfs.Move.Uri(new Gnome.Vfs.Uri(from.AbsoluteUri), 
                                new Gnome.Vfs.Uri(to.AbsoluteUri), true);
         }
+
+        public long GetSize(SafeUri uri)
+        {
+            return new Gnome.Vfs.FileInfo(uri.AbsoluteUri).Size;
+        }
     }
 
     public class Directory : IDirectory

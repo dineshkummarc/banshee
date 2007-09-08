@@ -93,6 +93,11 @@ namespace Banshee.IO.Unix
         {
             Mono.Unix.Native.Stdlib.rename(from.LocalPath, to.LocalPath);
         }
+
+        public long GetSize(SafeUri uri)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
     }
 
     public class Directory : IDirectory

@@ -68,9 +68,13 @@ namespace Banshee.MediaEngine.Quicktime
 
         public override void Dispose()
         {
-            control.Dispose();
-            timer.Dispose();
             base.Dispose();
+            if(control != null) {
+                control.Dispose();
+            }
+            if(timer != null) {
+                timer.Dispose();
+            }
         }
 
         protected override void OpenUri(SafeUri uri)
@@ -91,7 +95,7 @@ namespace Banshee.MediaEngine.Quicktime
                 timer.Stop();
                 return;
             }
-            if(control.axQTControl.Movie.Time == control.axQTControl.Movie.Duration) {
+            if(control.axQTControl.Movie != null && control.axQTControl.Movie.Time == control.axQTControl.Movie.Duration) {
                 Close();
                 OnEventChanged(PlayerEngineEvent.EndOfStream);
             }
@@ -113,8 +117,12 @@ namespace Banshee.MediaEngine.Quicktime
 
         public override void Close()
         {
-            control.axQTControl.URL = "";
-            timer.Stop();
+            if(control != null) {
+                control.axQTControl.URL = "";
+            }
+            if(timer != null) {
+                timer.Stop();
+            }
             base.Close();
         }
 
@@ -134,19 +142,21 @@ namespace Banshee.MediaEngine.Quicktime
         public override uint Position {
             get {
                 return control.axQTControl.Movie != null
-                  ? (uint)(control.axQTControl.Movie.Time / 600)
+                  ? (uint)(control.axQTControl.Movie.Time / control.axQTControl.Movie.TimeScale)
                   : 0;
             }
             set {
                 if(control.axQTControl.Movie != null) {
-                    control.axQTControl.Movie.Time = (int)(value * 600);
+                    control.axQTControl.Movie.Time = (int)(value * control.axQTControl.Movie.TimeScale);
                 }
             }
         }
 
         public override uint Length {
-            get { return control.axQTControl.Movie != null
-                    ? (uint)(control.axQTControl.Movie.Duration / 600)
+            get
+            {
+                return control.axQTControl.Movie != null
+                    ? (uint)(control.axQTControl.Movie.Duration / control.axQTControl.Movie.TimeScale)
                     : 0; }
         }
 
