@@ -102,7 +102,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Banshee.AudioProfiles\XmlProfileConfiguration.cs" />
     <Compile Include="Banshee.Cdrom.Nautilus\NautilusAudioCdDisk.cs" />
     <Compile Include="Banshee.Cdrom.Windows.Interop\DiscMaster.cs" />
     <Compile Include="Banshee.Cdrom.Windows.Interop\DiscMasterProgressEvents.cs" />
@@ -126,7 +125,6 @@
     <Compile Include="Banshee.Cdrom.Windows.Interop\RedbookDiscMaster.cs" />
     <Compile Include="Banshee.Cdrom.Windows\WindowsAudioCdDisk.cs" />
     <Compile Include="Banshee.Cdrom\AudioCdTrackInfo.cs" />
-    <Compile Include=".\Banshee.AudioProfiles\GConfProfileConfiguration.cs" />
     <Compile Include=".\Banshee.AudioProfiles\Pipeline.cs" />
     <Compile Include=".\Banshee.AudioProfiles\PipelineVariable.cs" />
     <Compile Include=".\Banshee.AudioProfiles\Profile.cs" />

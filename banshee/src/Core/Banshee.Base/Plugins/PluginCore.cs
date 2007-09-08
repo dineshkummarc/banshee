@@ -81,7 +81,7 @@ namespace Banshee.Plugins
                     if(ConfigurationClient.Get<bool>(plugin.ConfigurationNamespace, "enabled", false)) {
                         plugin.Initialize();
                     }
-                } catch(GConf.NoSuchKeyException) {
+                } catch {
                 }
             }
             
