@@ -27,13 +27,13 @@
  
 using System;
 using System.Collections;
-using System.Runtime.InteropServices;
 using System.Timers;
+using QTOControlLib;
+using QTOLibrary;
+using AxQTOControlLib;
 using Mono.Unix;
 
-using Banshee.Base;
 using Banshee.MediaEngine;
-using Banshee.Gstreamer;
 
 public static class PluginModuleEntry
 {
@@ -50,136 +50,138 @@ namespace Banshee.MediaEngine.Quicktime
     
     public class QuicktimePlayerEngine : PlayerEngine
     {
-        private ActiveXControl control;
-        private System.Timers.Timer timer;
-
+        private readonly Timer timer = new Timer(500);
+        private readonly ActiveXControl axcontrol = new ActiveXControl();
+        
         public QuicktimePlayerEngine()
         {
-            control = new ActiveXControl();
-            control.axQTControl.Error += new AxQTOControlLib._IQTControlEvents_ErrorEventHandler(axQTControl_Error);
+            if(!QTControl.get_IsQuickTimeAvailable(0)) {
+                throw new ApplicationException(Catalog.GetString("Quicktime is not availible"));
+            }
+            if(QTControl.QuickTimeInitialize(0, 0) != 0) {
+                throw new ApplicationException(Catalog.GetString("Quicktime could not be initialized"));
+            }
+
+            QTControl.QTEvent += new AxQTOControlLib._IQTControlEvents_QTEventEventHandler(QTControl_QTEvent);
+            QTControl.Error += new AxQTOControlLib._IQTControlEvents_ErrorEventHandler(QTControl_Error);
+
+            timer.AutoReset = true;
+            timer.Enabled = false;
+            timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
         }
 
-        void axQTControl_Error(object sender, AxQTOControlLib._IQTControlEvents_ErrorEvent e)
+        void QTControl_Error(object sender, _IQTControlEvents_ErrorEvent e)
         {
-            Console.WriteLine("Quicktime Error: " + e);
+            Console.WriteLine("Quicktime Error: " + e.errorCode);
+            
             OnEventChanged(PlayerEngineEvent.Error);
             Close();
         }
 
-        public override void Dispose()
-        {
-            base.Dispose();
-            if(control != null) {
-                control.Dispose();
-            }
-            if(timer != null) {
-                timer.Dispose();
-            }
-        }
-
-        protected override void OpenUri(SafeUri uri)
-        {
-            control.axQTControl.URL = uri.LocalPath;
-            if(timer == null) {
-                timer = new System.Timers.Timer(500);
-                timer.AutoReset = true;
-                timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
-                timer.Enabled = false;
-            }
-        }
-
-        private void timer_Elapsed(object sender, ElapsedEventArgs e)
+        void timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             OnEventChanged(PlayerEngineEvent.Iterate);
-            if(control.axQTControl.Movie == null) {
-                timer.Stop();
-                return;
+        }
+
+        void QTControl_QTEvent(object sender, _IQTControlEvents_QTEventEvent e)
+        {
+            if(e.eventID == (int)QTEventIDsEnum.qtEventMovieDidEnd) {
+                // You can't change the QTMovie from within the event handler. Booo.
+                Banshee.Base.ThreadAssist.Spawn(delegate {
+                    Close();
+                    OnEventChanged(PlayerEngineEvent.EndOfStream);
+                });
             }
-            if(control.axQTControl.Movie != null && control.axQTControl.Movie.Time == control.axQTControl.Movie.Duration) {
-                Close();
-                OnEventChanged(PlayerEngineEvent.EndOfStream);
-            }
+        }
+
+        public override void Dispose()
+        {
+            Close();
+            timer.Dispose();
+            axcontrol.Dispose();
+            QTControl.QuickTimeTerminate();
+        }
+
+        protected override void OpenUri(Banshee.Base.SafeUri uri)
+        {
+            QTControl.URL = uri.LocalPath;
+            QTControl.Movie.EventListeners.Add(QTEventClassesEnum.qtEventClassStateChange, QTEventIDsEnum.qtEventMovieDidEnd, 0, null);
         }
 
         public override void Play()
         {
-            control.axQTControl.Movie.Play(1);
+            QTControl.Movie.Play(1);
             timer.Start();
             base.Play();
         }
 
         public override void Pause()
         {
-            control.axQTControl.Movie.Pause();
             timer.Stop();
+            QTControl.Movie.Pause();
             base.Pause();
         }
 
         public override void Close()
         {
-            if(control != null) {
-                control.axQTControl.URL = "";
-            }
-            if(timer != null) {
-                timer.Stop();
-            }
+            timer.Stop();
+            QTControl.URL = "";
             base.Close();
         }
 
         public override ushort Volume {
             get {
-                return control.axQTControl.Movie != null
-                    ? (ushort)(control.axQTControl.Movie.AudioVolume * 100)
+                return QTControl.Movie != null
+                    ? (ushort)(QTControl.Movie.AudioVolume * 100)
                     : (ushort)0;
             }
             set {
-                if(control.axQTControl.Movie != null) {
-                    control.axQTControl.Movie.AudioVolume = (float)value / (float)100;
+                if(QTControl.Movie != null) {
+                    QTControl.Movie.AudioVolume = (float)value / (float)100;
                 }
             }
         }
 
         public override uint Position {
             get {
-                return control.axQTControl.Movie != null
-                  ? (uint)(control.axQTControl.Movie.Time / control.axQTControl.Movie.TimeScale)
+                return QTControl.Movie != null
+                  ? (uint)(QTControl.Movie.Time / QTControl.Movie.TimeScale)
                   : 0;
             }
             set {
-                if(control.axQTControl.Movie != null) {
-                    control.axQTControl.Movie.Time = (int)(value * control.axQTControl.Movie.TimeScale);
+                if(QTControl.Movie != null) {
+                    QTControl.Movie.Time = (int)(value * QTControl.Movie.TimeScale);
                 }
             }
         }
 
         public override uint Length {
-            get
-            {
-                return control.axQTControl.Movie != null
-                    ? (uint)(control.axQTControl.Movie.Duration / control.axQTControl.Movie.TimeScale)
+            get {
+                return QTControl.Movie != null
+                    ? (uint)(QTControl.Movie.Duration / QTControl.Movie.TimeScale)
                     : 0; }
         }
 
         private static string[] source_capabilities = { "file" };
-        public override IEnumerable SourceCapabilities
-        {
+        public override IEnumerable SourceCapabilities {
             get { return source_capabilities; }
         }
 
         private static string[] decoder_capabilities = { "m4p", "m4a" };
-        public override IEnumerable ExplicitDecoderCapabilities
-        {
+        public override IEnumerable ExplicitDecoderCapabilities {
             get { return decoder_capabilities; }
         }
 
-        public override string Id
-        {
+        public override string Id {
             get { return "quicktime"; }
         }
 
-        public override string Name
-        {
+        public override string Name {
             get { return Catalog.GetString("Quicktime"); }
+        }
+        
+        private AxQTControl QTControl {
+            get { return axcontrol.axQTControl; }
         }
     }
 }

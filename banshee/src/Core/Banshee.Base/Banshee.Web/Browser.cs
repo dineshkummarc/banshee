@@ -40,12 +40,16 @@ namespace Banshee.Web
             try {
                 return Gnome.Url.Show(uri);
             } catch(Exception e) {
-                LogCore.Instance.PushWarning(Catalog.GetString("Could not launch URL"),
-                    String.Format(Catalog.GetString("{0} could not be opened: {1}\n\n " + 
-                        "Check your 'Preferred Applications' settings."), uri, e.Message));
+                if(Environment.OSVersion.Platform == PlatformID.Unix) {
+                    LogCore.Instance.PushWarning(Catalog.GetString("Could not launch URL"),
+                        String.Format(Catalog.GetString("{0} could not be opened: {1}\n\n " +
+                            "Check your 'Preferred Applications' settings."), uri, e.Message));
+                    return false;
+                } else {
+                    System.Diagnostics.Process.Start(uri);
+                    return true;
+                }
             }
-            
-            return false;
         }
 
         public static readonly string UserAgent = String.Format("Banshee {0} (http://banshee-project.org/", Banshee.Base.ConfigureDefines.VERSION);

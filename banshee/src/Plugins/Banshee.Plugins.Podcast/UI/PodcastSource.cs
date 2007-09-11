@@ -34,7 +34,6 @@ using System.Collections.Generic;
 using Gtk;
 using Gdk;
 using GLib;
-using Gnome;
 
 using Mono.Gettext;
 
@@ -954,7 +953,7 @@ namespace Banshee.Plugins.Podcast.UI
 
             if (feed != null)
             {
-                Gnome.Url.Show (feed.Link.ToString ());
+                Web.Browser.Open (feed.Link.ToString ());
             }
         }
 
@@ -1090,7 +1089,7 @@ namespace Banshee.Plugins.Podcast.UI
                 if (pi.Link != null && pi.Link != String.Empty)
                     try
                     {
-                        Gnome.Url.Show (pi.Link);
+                        Web.Browser.Open (pi.Link);
                     }
                     catch (Exception e)
                     {

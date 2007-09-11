@@ -369,7 +369,7 @@ namespace Banshee.Plugins.Recommendation
             }
 
             artist_tile.Clicked += delegate {
-                Gnome.Url.Show(node.SelectSingleNode ("url").InnerText);
+                Web.Browser.Open(node.SelectSingleNode ("url").InnerText);
             };
 
             return artist_tile;
@@ -401,7 +401,7 @@ namespace Banshee.Plugins.Recommendation
                 };
             } else {
                 track_button.Clicked += delegate {
-                    Gnome.Url.Show(node.SelectSingleNode("url").InnerText);
+                    Web.Browser.Open(node.SelectSingleNode("url").InnerText);
                 };
             }
 
@@ -424,7 +424,7 @@ namespace Banshee.Plugins.Recommendation
             album_button.Add(label);
 
             album_button.Clicked += delegate {
-                Gnome.Url.Show(node.SelectSingleNode("url").InnerText);
+                Web.Browser.Open(node.SelectSingleNode("url").InnerText);
             };
 
             return album_button;

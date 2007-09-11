@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Banshee.MediaEngine.Quicktime
 {
-	public partial class ActiveXControl: Form
+	internal partial class ActiveXControl: Form
 	{
 		public ActiveXControl()
 		{

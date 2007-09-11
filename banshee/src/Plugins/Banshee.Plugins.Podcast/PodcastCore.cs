@@ -393,7 +393,7 @@ namespace Banshee.Plugins.Podcast
 
         internal static void VisitPodcastAlley ()
         {
-            Gnome.Url.Show (@"http://www.podcastalley.com");
+            Web.Browser.Open(@"http://www.podcastalley.com");
         }
 
         internal static void RunSubscribeDialog ()
