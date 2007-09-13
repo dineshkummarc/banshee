@@ -1,3 +1,9 @@
+2007-09-13 Scott Peterson <scottp@gnome.org>
+
+	* Fixed volume problem with Quicktime.
+
+	* Unified some line-endings.
+
 2007-09-11 Scott Peterson <scottp@gnome.org>
 
 	* Banshee.Web/Browser.cs: Added support for opening URLs on Windows.

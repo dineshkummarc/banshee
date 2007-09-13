@@ -91,8 +91,14 @@ namespace Banshee.Plugins.Radio
                 if(!Gnome.Vfs.Vfs.Initialized) {
                     Gnome.Vfs.Vfs.Initialize();
                 }
-                
-                TotemPlParser.Parser parser = new TotemPlParser.Parser();
+
+                TotemPlParser.Parser parser = null;
+                try {
+                    parser = new TotemPlParser.Parser();
+                } catch {
+                    OnParsingPlaylistFinished();
+                    return;
+                }
                 parser.Entry += OnHavePlaylistEntry;
                 
                 foreach(Uri uri in track.Locations) {

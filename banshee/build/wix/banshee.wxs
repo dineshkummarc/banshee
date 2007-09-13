@@ -208,10 +208,6 @@
               <File Id='PodcastDLL' Name='Podcast.dll' LongName="Banshee.Plugins.Podcast.dll" DiskId='1' Source='..\..\bin\Release\Banshee.Plugins\Banshee.Plugins.Podcast.dll'/>
             </Component>
             
-            <Component Id='Radio' Guid='1502D4E5-A996-42c5-AB7C-521372EB293D'>
-              <File Id='RadioDLL' Name='Radio.dll' LongName="Banshee.Plugins.Radio.dll" DiskId='1' Source='..\..\bin\Release\Banshee.Plugins\Banshee.Plugins.Radio.dll'/>
-            </Component>
-            
             <Component Id='Recommendation' Guid='38DEF494-E3D6-4028-8518-BAB43E18AC6C'>
               <File Id='RecommendationDLL' Name='Recomend.dll' LongName="Banshee.Plugins.Recommendation.dll" DiskId='1' Source='..\..\bin\Release\Banshee.Plugins\Banshee.Plugins.Recommendation.dll'/>
             </Component>
@@ -722,7 +718,6 @@
       <ComponentRef Id='MiniMode' />
       <ComponentRef Id='NotificationAreaIcon' />
       <ComponentRef Id='Podcast' />
-      <ComponentRef Id='Radio' />
       <ComponentRef Id='Recommendation' />
     </Feature>
     

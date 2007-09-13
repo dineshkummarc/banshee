@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2006 Sebastian Dröge <slomo@circular-chaos.org> 
+ *  Copyright (c) 2006 Sebastian Dr??ge <slomo@circular-chaos.org> 
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a
  *  copy of this software and associated documentation files (the "Software"),  
