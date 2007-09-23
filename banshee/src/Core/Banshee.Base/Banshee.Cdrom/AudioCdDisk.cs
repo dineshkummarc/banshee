@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using MusicBrainz;
 
 using Banshee.Widgets;
 using Banshee.AudioProfiles;
 using Mono.Unix;
+using MusicBrainzSharp;
 
 namespace Banshee.Base
 {
@@ -56,23 +56,22 @@ namespace Banshee.Base
         protected virtual void LoadDiskInfo()
         {
             tracks.Clear();
-            SimpleDisc mb_disc = new SimpleDisc(device_node);
-            //mb_disc.Client.Debug = true;
+            Disc disc = Disc.GetFromDevice(device_node);
 
-            foreach(SimpleTrack mb_track in mb_disc) {
+            for(int i = 0; i < disc.TrackDurations.Length; i++ ) {
                 AudioCdTrackInfo track = new AudioCdTrackInfo(this);
-                track.Duration = new TimeSpan(mb_track.Length * TimeSpan.TicksPerSecond);
-                track.TrackIndex = mb_track.Index;
+                track.Duration = new TimeSpan(disc.TrackDurations[i] * TimeSpan.TicksPerSecond);
+                track.TrackIndex = i + 1;
                 track.Artist = Catalog.GetString("Unknown Artist");
                 track.Album = Catalog.GetString("Unknown Album");
-                track.Title = String.Format(Catalog.GetString("Track {0}"), mb_track.Index);
+                track.Title = String.Format(Catalog.GetString("Track {0}"), i);
 
                 tracks.Add(track);
             }
 
             album_title = Catalog.GetString("Audio CD");
 
-            QueryMetadata(mb_disc);
+            QueryMetadata(disc);
         }
         
         public bool Eject()
@@ -119,7 +118,7 @@ namespace Banshee.Base
             QueryMetadata(null);
         }
 
-        protected virtual void QueryMetadata(SimpleDisc disc)
+        protected virtual void QueryMetadata(Disc disc)
         {
             ThreadPool.QueueUserWorkItem(QueryMusicBrainz, disc);
         }
@@ -140,70 +139,43 @@ namespace Banshee.Base
 
             Status = AudioCdLookupStatus.SearchingMetadata;
 
-            SimpleDisc mb_disc;
-
-            if(o == null) {
-                mb_disc = new SimpleDisc(device_node);
-            } else {
-                mb_disc = o as SimpleDisc;
-            }
+            Disc disc = null as Disc ?? Disc.GetFromDevice(device_node);
+            Query<Release> query = null;
 
             try {
-                mb_disc.QueryCDMetadata();
+                query = Release.Query(disc);
             } catch {
                 Status = AudioCdLookupStatus.ErrorLookup;
                 mb_querying = false;
                 return;
             }
-
-            int min = tracks.Count < mb_disc.Tracks.Length
-                ? tracks.Count : mb_disc.Tracks.Length;
-
-            if(mb_disc.AlbumName != null) {
-                album_title = mb_disc.AlbumName;
+            if(query.ResultsWindow.Count == 0) {
+                return;
             }
+            Release release = query.ResultsWindow[0].Result;
+
+            int min = tracks.Count < release.TrackCount
+                ? tracks.Count : release.TrackCount;
+
+            album_title = release.Title;
 
             for(int i = 0; i < min; i++) {
-                tracks[i].Duration = new TimeSpan(mb_disc[i].Length * TimeSpan.TicksPerSecond);
-                (tracks[i] as AudioCdTrackInfo).TrackIndex = mb_disc[i].Index;
+                tracks[i].Duration = new TimeSpan(release.Tracks[i].Duration * TimeSpan.TicksPerMillisecond);
+                (tracks[i] as AudioCdTrackInfo).TrackIndex = i + 1;
 
-                if(mb_disc[i].Artist != null) {
-                    tracks[i].Artist = mb_disc[i].Artist;
+                if(release.Tracks[i].Artist != null) {
+                    tracks[i].Artist = release.Tracks[i].Artist.Name;
                 }
 
-                if(mb_disc.AlbumName != null) {
-                    tracks[i].Album = mb_disc.AlbumName;
-                }
-
-                if(mb_disc[i].Title != null) {
-                    tracks[i].Title = mb_disc[i].Title;
-                }
-
-                tracks[i].Asin = mb_disc.AmazonAsin;
+                tracks[i].Album = release.Title;
+                tracks[i].Title = release.Tracks[i].Title;
+                tracks[i].Asin = release.Asin;
                 tracks[i].RemoteLookupStatus = RemoteLookupStatus.Success;
             }
 
-            string asin = mb_disc.AmazonAsin;
-
-            if(asin == null || asin == String.Empty) {
-                HandleUpdated();
-
-                // sometimes ASINs aren't associated with a CD disc ID, but they are associated
-                // with file track metadata. If no ASIN was returned for the CD lookup, use the
-                // first track on the CD to attempt a file lookup
-                try {
-                    SimpleTrack mb_track = SimpleQuery.FileLookup(mb_disc.Client,
-                        tracks[0].Artist, tracks[0].Album, tracks[0].Title, 0, 0);
-                    asin = mb_track.Asin;
-                    for(int i = 0; i < min; i++) {
-                        tracks[i].Asin = asin;
-                    }
-                } catch {
-                }
-            }
+            string asin = release.Asin;
 
             mb_queried = true;
-            mb_disc.Dispose();
             HandleUpdated();
 
             string path = Paths.GetCoverArtPath(asin);

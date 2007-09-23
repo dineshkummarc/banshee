@@ -1,7 +1,7 @@
 SUBDIRS = \
    Boo \
    BooBuddy \
-   MusicBrainz \
+   MusicBrainzSharp \
    Gnome.Keyring \
    Last.FM 
 

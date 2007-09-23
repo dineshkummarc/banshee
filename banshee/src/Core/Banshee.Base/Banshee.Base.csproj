@@ -84,13 +84,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Extras\MusicBrainzSharp\MusicBrainzSharp.csproj">
+      <Project>{F43D5B11-792B-4965-A2F7-44A22BDF104D}</Project>
+      <Name>MusicBrainzSharp</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Banshee.Widgets\Banshee.Widgets.csproj">
       <Project>{B89B7A12-9FC2-4337-8ED6-1F0A6873329C}</Project>
       <Name>Banshee.Widgets</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Extras\MusicBrainz\MusicBrainz.csproj">
-      <Project>{922F1199-FC80-4DF4-B999-BCAEEB8494C6}</Project>
-      <Name>MusicBrainz</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Extras\BooBuddy\BooBuddy.csproj">
       <Project>{79F46094-5CA6-4B4F-ACFF-4E7AB5F8C91A}</Project>

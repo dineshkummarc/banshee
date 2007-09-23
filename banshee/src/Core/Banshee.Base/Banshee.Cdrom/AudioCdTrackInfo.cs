@@ -31,7 +31,6 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Mono.Unix;
-using MusicBrainz;
 
 namespace Banshee.Base
 {   

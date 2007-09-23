@@ -1,5 +1,4 @@
 using System;
-using MusicBrainz;
 
 using Banshee.Base;
 using Banshee.Cdrom;

@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gobject-2.0.lib glib-2.0.lib libmusicbrainz.lib libgstreamer-0.10.lib libgstbase-0.10.lib intl.lib"
+				AdditionalDependencies="gobject-2.0.lib glib-2.0.lib libgstreamer-0.10.lib libgstbase-0.10.lib intl.lib"
 				AdditionalLibraryDirectories="&quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\lib&quot;;&quot;D:\Visual Studio 2005\Projects\Banshee Port\gstreamer\lib&quot;;&quot;C:\Program Files\Mono-1.2.5\lib&quot;"
 				ModuleDefinitionFile="libbanshee.def"
 				GenerateDebugInformation="true"
@@ -94,7 +94,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy /y &quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\lib\libmusicbrainz.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libglib-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libgobject-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
+				CommandLine="copy /y &quot;C:\GtkRun\bin\libglib-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libgobject-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -164,7 +164,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy /y &quot;D:\Visual Studio 2005\Projects\Banshee Port\libmusicbrainz\lib\libmusicbrainz.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libglib-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libgobject-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;erase &quot;$(OutDir)\$(InputName).lib&quot;&#x0D;&#x0A;erase &quot;$(OutDir)\$(InputName).exp&quot;&#x0D;&#x0A;"
+				CommandLine="copy /y &quot;C:\GtkRun\bin\libglib-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy /y &quot;C:\GtkRun\bin\libgobject-2.0-0.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;erase &quot;$(OutDir)\$(InputName).lib&quot;&#x0D;&#x0A;erase &quot;$(OutDir)\$(InputName).exp&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -176,10 +176,6 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath=".\gst-mbtrm.c"
-				>
-			</File>
 			<File
 				RelativePath=".\gst-misc-0.10.c"
 				>
@@ -206,10 +202,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\gst-mbtrm.h"
-				>
-			</File>
 			<File
 				RelativePath=".\gst-playback.h"
 				>

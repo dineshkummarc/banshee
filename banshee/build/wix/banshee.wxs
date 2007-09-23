@@ -138,12 +138,8 @@
             <File Id='libgobjectDLL' Name='gobject.dll' LongName="libgobject-2.0-0.dll" DiskId='1' Source='..\..\bin\Release\libgobject-2.0-0.dll' Vital='yes'/>
           </Component>
           
-          <Component Id='LibMusicBrainz' Guid='D7D52C79-8C9C-49f3-B8AB-BAFCABA47E5B'>
-            <File Id='libmusicbrainzDLL' Name='libmb.dll' LongName="libmusicbrainz.dll" DiskId='1' Source='..\..\bin\Release\libmusicbrainz.dll'/>
-          </Component>
-          
-          <Component Id='MusicBrainz' Guid='8D6AAB06-43B0-4df7-BAD7-353E2EC25613'>
-            <File Id='MusicBrainzDLL' Name='MB.dll' LongName="MusicBrainz.dll" DiskId='1' Source='..\..\bin\Release\MusicBrainz.dll'/>
+          <Component Id='MusicBrainzSharp' Guid='27F019F4-38DA-4d91-B91B-5A8B00BE93F7'>
+            <File Id='MusicBrainzSharpDLL' Name='MBS.dll' LongName="MusicBrainzSharp.dll" DiskId='1' Source='..\..\bin\Release\MusicBrainzSharp.dll'/>
           </Component>
           
           <Component Id='DBus' Guid='8D6AAB06-43B0-4df7-BAD7-353E2EC25613'>
@@ -687,8 +683,7 @@
       <ComponentRef Id='LibBanshee' />
       <ComponentRef Id='Glib' />
       <ComponentRef Id='Gobject' />
-      <ComponentRef Id='LibMusicBrainz' />
-      <ComponentRef Id='MusicBrainz' />
+      <ComponentRef Id='MusicBrainzSharp' />
       <ComponentRef Id='DBus' />
       <ComponentRef Id='DBusGlib' />
       <ComponentRef Id='TagLib' />

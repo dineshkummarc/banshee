@@ -1,3 +1,10 @@
+2007-09-23 Scott Peterson <scottp@gnome.org>
+
+	* Replaced libmusicbrainz-based MusicBrainz interface with fully
+	  managed MusicBrainzSharp.
+	  
+	* Various other minor things.
+
 2007-09-13 Scott Peterson <scottp@gnome.org>
 
 	* Fixed volume problem with Quicktime.
