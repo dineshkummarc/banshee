@@ -5,6 +5,8 @@ using System.Xml;
 
 namespace MusicBrainzSharp
 {
+    #region Enums
+
     public enum LabelIncType
     {
         // Object
@@ -28,6 +30,8 @@ namespace MusicBrainzSharp
         Unspecified
     }
 
+    #endregion
+
     public sealed class LabelInc : Inc
     {
         public LabelInc(LabelIncType type)
@@ -44,8 +48,8 @@ namespace MusicBrainzSharp
     
     public sealed class Label : MusicBrainzEntity
     {
-        const string extension = "label";
-        protected override string url_extension { get { return extension; } }
+        const string EXTENSION = "label";
+        protected override string url_extension { get { return EXTENSION; } }
 
         public static LabelInc[] DefaultIncs = new LabelInc[] { };
         protected override Inc[] default_incs
@@ -65,10 +69,10 @@ namespace MusicBrainzSharp
 
         protected override bool ProcessAttributes(XmlReader reader)
         {
-            string type = reader.GetAttribute("type");
-            foreach(LabelType enumeration in Enum.GetValues(typeof(LabelType)) as LabelType[])
-                if(EnumUtil.EnumToString(enumeration) == type) {
-                    this.type = enumeration;
+            string type_string = reader.GetAttribute("type");
+            foreach(LabelType type in Enum.GetValues(typeof(LabelType)) as LabelType[])
+                if(EnumUtil.EnumToString(type) == type_string) {
+                    this.type = type;
                     break;
                 }
             return this.type != LabelType.Unspecified;
@@ -118,22 +122,24 @@ namespace MusicBrainzSharp
         {
             EntityQueryParameters parameters = new EntityQueryParameters();
             parameters.Name = name;
-            return Query<Label>(extension, parameters, DefaultIncs);
+            return Query<Label>(EXTENSION, parameters);
+        }
+
+        public static Query<Label> Query(string name, byte limit)
+        {
+            EntityQueryParameters parameters = new EntityQueryParameters();
+            parameters.Name = name;
+            return Query<Label>(EXTENSION, limit, 0, parameters);
         }
 
         public static Query<Label> QueryLucene(string lucene_query)
         {
-            return Query<Label>(extension, lucene_query, DefaultIncs);
+            return Query<Label>(EXTENSION, lucene_query);
         }
 
-        public static Query<Label> QueryAdvanced(EntityQueryParameters parameters, int limit, params Inc[] incs)
+        public static Query<Label> QueryLucene(string lucene_query, byte limit)
         {
-            return Query<Label>(extension, limit, 0, parameters, incs);
-        }
-
-        public static Query<Label> QueryLuceneAdvanced(string lucene_query, int limit, params Inc[] incs)
-        {
-            return Query<Label>(extension, limit, 0, lucene_query, incs);
+            return Query<Label>(EXTENSION, limit, 0, lucene_query);
         }
 
         #endregion

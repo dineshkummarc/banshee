@@ -104,8 +104,8 @@ namespace MusicBrainzSharp
 
     public sealed class Track : MusicBrainzItem
     {
-        const string extension = "track";
-        protected override string url_extension { get { return extension; } }
+        const string EXTENSION = "track";
+        protected override string url_extension { get { return EXTENSION; } }
 
         public static TrackInc[] DefaultIncs = new TrackInc[] { };
         protected override Inc[] default_incs
@@ -169,6 +169,8 @@ namespace MusicBrainzSharp
             return result;
         }
 
+        #region Properties
+
         uint duration;
         public uint Duration
         {
@@ -203,6 +205,8 @@ namespace MusicBrainzSharp
             }
         }
 
+        #endregion
+
         #region Get
 
         public static Track Get(string mbid)
@@ -233,7 +237,7 @@ namespace MusicBrainzSharp
         {
             TrackQueryParameters parameters = new TrackQueryParameters();
             parameters.Title = title;
-            return Query<Track>(extension, parameters, DefaultIncs);
+            return Query<Track>(EXTENSION, parameters);
         }
 
         public static Query<Track> Query(string title, ReleaseStatus status)
@@ -241,7 +245,7 @@ namespace MusicBrainzSharp
             TrackQueryParameters parameters = new TrackQueryParameters();
             parameters.Title = title;
             parameters.ReleaseStatus = status;
-            return Query<Track>(extension, parameters, DefaultIncs);
+            return Query<Track>(EXTENSION, parameters);
         }
 
         public static Query<Track> Query(string title, ReleaseType type)
@@ -249,7 +253,7 @@ namespace MusicBrainzSharp
             TrackQueryParameters parameters = new TrackQueryParameters();
             parameters.Title = title;
             parameters.ReleaseType = type;
-            return Query<Track>(extension, parameters, DefaultIncs);
+            return Query<Track>(EXTENSION, parameters);
         }
 
         public static Query<Track> Query(string title, ReleaseStatus status, ReleaseType type)
@@ -258,7 +262,7 @@ namespace MusicBrainzSharp
             parameters.Title = title;
             parameters.ReleaseStatus = status;
             parameters.ReleaseType = type;
-            return Query<Track>(extension, parameters, DefaultIncs);
+            return Query<Track>(EXTENSION, parameters);
         }
 
         public static Query<Track> Query(string title, string artist)
@@ -266,7 +270,7 @@ namespace MusicBrainzSharp
             TrackQueryParameters parameters = new TrackQueryParameters();
             parameters.Title = title;
             parameters.Artist = artist;
-            return Query<Track>(extension, parameters, DefaultIncs);
+            return Query<Track>(EXTENSION, parameters);
         }
 
         public static Query<Track> Query(string title, string artist, ReleaseStatus status)
@@ -275,7 +279,7 @@ namespace MusicBrainzSharp
             parameters.Title = title;
             parameters.Artist = artist;
             parameters.ReleaseStatus = status;
-            return Query<Track>(extension, parameters, DefaultIncs);
+            return Query<Track>(EXTENSION, parameters);
         }
 
         public static Query<Track> Query(string title, string artist, ReleaseType type)
@@ -284,7 +288,7 @@ namespace MusicBrainzSharp
             parameters.Title = title;
             parameters.Artist = artist;
             parameters.ReleaseType = type;
-            return Query<Track>(extension, parameters, DefaultIncs);
+            return Query<Track>(EXTENSION, parameters);
         }
 
         public static Query<Track> Query(string title, string artist, ReleaseStatus status, ReleaseType type)
@@ -294,7 +298,75 @@ namespace MusicBrainzSharp
             parameters.Artist = artist;
             parameters.ReleaseStatus = status;
             parameters.ReleaseType = type;
-            return Query<Track>(extension, parameters, DefaultIncs);
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Artist artist)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Artist artist, ReleaseStatus status)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseStatus = status;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Artist artist, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Artist artist, ReleaseStatus status, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseStatus = status;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(Artist artist)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.ArtistId = artist.MBID;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(Artist artist, ReleaseStatus status)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseStatus = status;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(Artist artist, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(Artist artist, ReleaseStatus status, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseStatus = status;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
         }
 
         public static Query<Track> Query(string title, string artist, string release)
@@ -303,7 +375,7 @@ namespace MusicBrainzSharp
             parameters.Title = title;
             parameters.Artist = artist;
             parameters.Release = release;
-            return Query<Track>(extension, parameters, DefaultIncs);
+            return Query<Track>(EXTENSION, parameters);
         }
 
         public static Query<Track> Query(string title, string artist, string release, ReleaseStatus status)
@@ -313,7 +385,7 @@ namespace MusicBrainzSharp
             parameters.Artist = artist;
             parameters.Release = release;
             parameters.ReleaseStatus = status;
-            return Query<Track>(extension, parameters, DefaultIncs);
+            return Query<Track>(EXTENSION, parameters);
         }
 
         public static Query<Track> Query(string title, string artist, string release, ReleaseType type)
@@ -323,7 +395,7 @@ namespace MusicBrainzSharp
             parameters.Artist = artist;
             parameters.Release = release;
             parameters.ReleaseType = type;
-            return Query<Track>(extension, parameters, DefaultIncs);
+            return Query<Track>(EXTENSION, parameters);
         }
 
         public static Query<Track> Query(string title, string artist, string release, ReleaseStatus status, ReleaseType type)
@@ -334,22 +406,251 @@ namespace MusicBrainzSharp
             parameters.Release = release;
             parameters.ReleaseStatus = status;
             parameters.ReleaseType = type;
-            return Query<Track>(extension, parameters, DefaultIncs);
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Artist artist, string release)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            parameters.Release = release;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Artist artist, string release, ReleaseStatus status)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            parameters.Release = release;
+            parameters.ReleaseStatus = status;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Artist artist, string release, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            parameters.Release = release;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Artist artist, string release, ReleaseStatus status, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            parameters.Release = release;
+            parameters.ReleaseStatus = status;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Release release)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ReleaseId = release.MBID;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Release release, ReleaseStatus status)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ReleaseId = release.MBID;
+            parameters.ReleaseStatus = status;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Release release, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ReleaseId = release.MBID;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Release release, ReleaseStatus status, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ReleaseId = release.MBID;
+            parameters.ReleaseStatus = status;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(Release release)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.ReleaseId = release.MBID;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(Release release, ReleaseStatus status)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.ReleaseId = release.MBID;
+            parameters.ReleaseStatus = status;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(Release release, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.ReleaseId = release.MBID;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(Release release, ReleaseStatus status, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.ReleaseId = release.MBID;
+            parameters.ReleaseStatus = status;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(Artist artist, Release release)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseId = release.MBID;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(Artist artist, Release release, ReleaseStatus status)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseId = release.MBID;
+            parameters.ReleaseStatus = status;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(Artist artist, Release release, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseId = release.MBID;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(Artist artist, Release release, ReleaseStatus status, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseId = release.MBID;
+            parameters.ReleaseStatus = status;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, string artist, Release release)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.Artist = artist;
+            parameters.ReleaseId = release.MBID;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, string artist, Release release, ReleaseStatus status)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.Artist = artist;
+            parameters.ReleaseId = release.MBID;
+            parameters.ReleaseStatus = status;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, string artist, Release release, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.Artist = artist;
+            parameters.ReleaseId = release.MBID;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, string artist, Release release, ReleaseStatus status, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.Artist = artist;
+            parameters.ReleaseId = release.MBID;
+            parameters.ReleaseStatus = status;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Artist artist, Release release)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseId = release.MBID;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Artist artist, Release release, ReleaseStatus status)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseId = release.MBID;
+            parameters.ReleaseStatus = status;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Artist artist, Release release, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseId = release.MBID;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(string title, Artist artist, Release release, ReleaseStatus status, ReleaseType type)
+        {
+            TrackQueryParameters parameters = new TrackQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseId = release.MBID;
+            parameters.ReleaseStatus = status;
+            parameters.ReleaseType = type;
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(TrackQueryParameters parameters)
+        {
+            return Query<Track>(EXTENSION, parameters);
+        }
+
+        public static Query<Track> Query(TrackQueryParameters parameters, byte limit)
+        {
+            return Query<Track>(EXTENSION, limit, 0, parameters);
         }
 
         public static Query<Track> QueryLucene(string lucene_query)
         {
-            return Query<Track>(extension, lucene_query, DefaultIncs);
+            return Query<Track>(EXTENSION, lucene_query);
         }
 
-        public static Query<Track> QueryAdvanced(TrackQueryParameters parameters, int limit, params Inc[] incs)
+        public static Query<Track> QueryLucene(string lucene_query, byte limit)
         {
-            return Query<Track>(extension, limit, 0, parameters, incs);
-        }
-
-        public static Query<Track> QueryLuceneAdvanced(string lucene_query, int limit, params Inc[] incs)
-        {
-            return Query<Track>(extension, limit, 0, lucene_query, incs);
+            return Query<Track>(EXTENSION, limit, 0, lucene_query);
         }
 
         #endregion

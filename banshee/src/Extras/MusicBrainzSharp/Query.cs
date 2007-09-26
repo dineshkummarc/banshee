@@ -11,60 +11,37 @@ namespace MusicBrainzSharp
         protected void AppendStringToBuilder(StringBuilder builder, string value)
         {
             foreach(char c in value) {
-                if(c == ' ')
+                if(c == ' ' || c == '/' || c == '.' || c == '&' || c == '\'')
                     builder.Append('+');
-                else if(c == '/' || c == '.' || c == '&' || c == '\'')
-                    ;
                 else
                     builder.Append(c);
             }
         }
     }
 
-    public class QueryResult<T> where T : MusicBrainzObject
-    {
-        internal QueryResult(T result, byte score)
-        {
-            this.result = result;
-            this.score = score;
-        }
-
-        T result;
-        public T Result
-        {
-            get { return result; }
-        }
-
-        byte score;
-        public byte Score
-        {
-            get { return score; }
-        }
-    }
-
     public class Query
     {
-        static int default_limit = 25;
-        public static int DefaultLimit
+        static byte default_limit = 25;
+        public static byte DefaultLimit
         {
             get { return default_limit; }
             set
             {
                 if(value < 1 || value > 100)
-                    throw new ArgumentException("The limit must be between 1 and 100 inclusively.");
+                    throw new Exception("The limit must be between 1 and 100 inclusively.");
                 default_limit = value;
             }
         }
     }
     
-    public class Query<T> : IEnumerable<QueryResult<T>> where T : MusicBrainzObject
+    public class Query<T> : IEnumerable<T> where T : MusicBrainzObject
     {
         string parameters;
         string url_extension;
 
         internal Inc[] ArtistReleaseIncs;
 
-        internal Query(string url_extension, int limit, int offset, string parameters)
+        internal Query(string url_extension, byte limit, int offset, string parameters)
         {
             if(limit < 1 || limit > 100)
                 throw new ArgumentException("The limit must be between 1 and 100 inclusively.");
@@ -74,8 +51,8 @@ namespace MusicBrainzSharp
             this.parameters = parameters;
         }
         
-        List<QueryResult<T>> results;
-        public List<QueryResult<T>> ResultsWindow
+        List<T> results;
+        public List<T> ResultsWindow
         {
             get {
                 if(results == null)
@@ -84,8 +61,8 @@ namespace MusicBrainzSharp
             }
         }
 
-        int limit;
-        public int Limit
+        byte limit;
+        public byte Limit
         {
             get { return limit; }
         }
@@ -108,7 +85,7 @@ namespace MusicBrainzSharp
                 if(weak_references.ContainsKey(offset)) {
                     WeakReference weak_reference = weak_references[offset] as WeakReference;
                     if(weak_reference.IsAlive)
-                        results = weak_reference.Target as List<QueryResult<T>>;
+                        results = weak_reference.Target as List<T>;
                 }
             }
         }
@@ -123,20 +100,20 @@ namespace MusicBrainzSharp
             }
         }
 
-        public List<QueryResult<T>> ToList()
+        public List<T> ToList()
         {
-            List<QueryResult<T>> list = new List<QueryResult<T>>(Count);
-            foreach(QueryResult<T> result in this)
+            List<T> list = new List<T>(Count);
+            foreach(T result in this)
                 list.Add(result);
             return list;
         }
 
-        public IEnumerator<QueryResult<T>> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             Offset = 0;
             int count = 0;
             while(count < Count) {
-                foreach(QueryResult<T> result in ResultsWindow) {
+                foreach(T result in ResultsWindow) {
                     yield return result;
                 }
                 count += ResultsWindow.Count;

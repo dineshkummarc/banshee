@@ -85,44 +85,6 @@ namespace MusicBrainzSharp
             CreateFromXml(reader);
         }
 
-        static void XmlProcessingClosure(string url, XmlProcessingDelegate code)
-        {
-            Monitor.Enter(server_mutex);
-
-            // Don't access the MB server twice within a second
-            TimeSpan time = DateTime.Now.Subtract(last_accessed);
-            if(interval.CompareTo(time) > 0) {
-                Thread.Sleep(interval.Subtract(time).Milliseconds);
-            }
-
-            HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
-            HttpWebResponse response = null;
-            try {
-                response = request.GetResponse() as HttpWebResponse;
-            } catch(WebException e) {
-                switch(((HttpWebResponse)e.Response).StatusCode) {
-                case HttpStatusCode.BadRequest:
-                    throw new MusicBrainzInvalidParameterException();
-                case HttpStatusCode.Unauthorized:
-                    throw new MusicBrainzUnauthorizedException();
-                case HttpStatusCode.NotFound:
-                    throw new MusicBrainzNotFoundException();
-                }
-            }
-
-            if(response.IsFromCache)
-                Monitor.Exit(server_mutex);
-
-            // Should we read the stream into a memory stream and run the XmlReader off of that?
-            code(new XmlTextReader(response.GetResponseStream()));
-            response.Close();
-
-            if(!response.IsFromCache) {
-                last_accessed = DateTime.Now;
-                Monitor.Exit(server_mutex);
-            }
-        }
-
         void CreateFromXml(XmlReader reader)
         {
             reader.Read();
@@ -135,18 +97,23 @@ namespace MusicBrainzSharp
                 if(reader.Name == "relation-list") {
                     switch(reader.GetAttribute("target-type")) {
                     case "Artist":
+                        artist_rels = new List<Relation<Artist>>();
                         CreateRelation<Artist>(reader.ReadSubtree(), artist_rels);
                         break;
                     case "Release":
+                        release_rels = new List<Relation<Release>>();
                         CreateRelation<Release>(reader.ReadSubtree(), release_rels);
                         break;
                     case "Track":
+                        track_rels = new List<Relation<Track>>();
                         CreateRelation<Track>(reader.ReadSubtree(), track_rels);
                         break;
                     case "Label":
+                        label_rels = new List<Relation<Label>>();
                         CreateRelation<Label>(reader.ReadSubtree(), label_rels);
                         break;
                     case "Url":
+                        url_rels = new List<UrlRelation>();
                         RelationDirection direction = RelationDirection.None;
                         string direction_string = reader.GetAttribute("direction");
                         if(direction_string != null)
@@ -161,7 +128,7 @@ namespace MusicBrainzSharp
                         string[] attributes = attributes_string == null
                             ? null
                             : attributes_string.Split(' ');
-                        url_rels.Add(new Relation(
+                        url_rels.Add(new UrlRelation(
                             reader.GetAttribute("type"),
                             reader.GetAttribute("target"),
                             direction,
@@ -176,10 +143,105 @@ namespace MusicBrainzSharp
             reader.Close();
         }
 
+
+        #region Properties
+
+        string mbid;
+        public string MBID
+        {
+            get { return mbid; }
+        }
+
+        byte score;
+        public byte Score
+        {
+            get { return score; }
+        }
+
+        List<Relation<Artist>> artist_rels;
+        bool dont_attempt_artist_rels;
+        public List<Relation<Artist>> ArtistRelations
+        {
+            get
+            {
+                if(artist_rels == null)
+                    artist_rels = dont_attempt_artist_rels
+                        ? new List<Relation<Artist>>()
+                        : ConstructObject(mbid, BaseIncType.ArtistRels).ArtistRelations;
+                return artist_rels;
+            }
+        }
+
+        List<Relation<Release>> release_rels;
+        bool dont_attempt_release_rels;
+        public List<Relation<Release>> ReleaseRelations
+        {
+            get
+            {
+                if(release_rels == null)
+                    release_rels = dont_attempt_release_rels
+                        ? new List<Relation<Release>>()
+                        : ConstructObject(mbid, BaseIncType.ReleaseRels).ReleaseRelations;
+
+                return release_rels;
+            }
+        }
+
+        List<Relation<Track>> track_rels;
+        bool dont_attempt_track_rels;
+        public List<Relation<Track>> TrackRelations
+        {
+            get
+            {
+                if(track_rels == null)
+                    track_rels = dont_attempt_track_rels
+                        ? new List<Relation<Track>>()
+                        : ConstructObject(mbid, BaseIncType.TrackRels).TrackRelations;
+                return track_rels;
+            }
+        }
+
+        List<Relation<Label>> label_rels;
+        bool dont_attempt_label_rels;
+        public List<Relation<Label>> LabelRelations
+        {
+            get
+            {
+                if(label_rels == null)
+                    label_rels = dont_attempt_label_rels
+                        ? new List<Relation<Label>>()
+                        : ConstructObject(mbid, BaseIncType.LabelRels).LabelRelations;
+
+                return label_rels;
+            }
+        }
+
+        List<UrlRelation> url_rels;
+        bool dont_attempt_url_rels;
+        public List<UrlRelation> UrlRelations
+        {
+            get
+            {
+                if(url_rels == null)
+                    url_rels = dont_attempt_url_rels
+                        ? new List<UrlRelation>()
+                        : ConstructObject(mbid, BaseIncType.UrlRels).UrlRelations;
+
+                return url_rels;
+            }
+        }
+
+        #endregion
+
+        #region Static Methods
+
         static void CreateRelation<T>(XmlReader reader, List<Relation<T>> relations) where T : MusicBrainzObject
         {
             ConstructorInfo constructor = typeof(T).GetConstructor(
-                new Type[] { typeof(XmlReader) });
+                BindingFlags.NonPublic | BindingFlags.Instance,
+                null,
+                new Type[] { typeof(XmlReader) },
+                null);
             while(reader.ReadToFollowing("relation")) {
                 string type = reader.GetAttribute("type");
                 RelationDirection direction = RelationDirection.None;
@@ -208,19 +270,12 @@ namespace MusicBrainzSharp
             }
             reader.Close();
         }
-
-        static string CreateParameters(QueryParameters parameters, Inc[] incs)
-        {
-            return parameters.ToString() + CreateParameters(incs);
-        }
         
-        static string CreateParameters(string query, Inc[] incs)
+        static string CreateParameters(string query)
         {
-            string inc_parameters = CreateParameters(incs);
-            StringBuilder builder = new StringBuilder(inc_parameters.Length + query.Length + 7);
+            StringBuilder builder = new StringBuilder(query.Length + 7);
             builder.Append("&query=");
             builder.Append(query);
-            builder.Append(inc_parameters);
             return builder.ToString();
         }
 
@@ -264,106 +319,72 @@ namespace MusicBrainzSharp
             return builder.ToString();
         }
 
-        string mbid;
-        public string MBID
+        static void XmlProcessingClosure(string url, XmlProcessingDelegate code)
         {
-            get { return mbid; }
-        }
+            Monitor.Enter(server_mutex);
 
-        byte score;
+            // Don't access the MB server twice within a second
+            TimeSpan time = DateTime.Now.Subtract(last_accessed);
+            if(interval.CompareTo(time) > 0) {
+                Thread.Sleep(interval.Subtract(time).Milliseconds);
+            }
 
-        List<Relation<Artist>> artist_rels;
-        bool dont_attempt_artist_rels;
-        public List<Relation<Artist>> ArtistRelations
-        {
-            get {
-                if(artist_rels == null)
-                    artist_rels = dont_attempt_artist_rels
-                        ? new List<Relation<Artist>>()
-                        : ConstructObject(mbid, BaseIncType.ArtistRels).ArtistRelations;
-                return artist_rels;
+            HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+            HttpWebResponse response = null;
+            try {
+                response = request.GetResponse() as HttpWebResponse;
+            } catch(WebException e) {
+                switch(((HttpWebResponse)e.Response).StatusCode) {
+                case HttpStatusCode.BadRequest:
+                    throw new MusicBrainzInvalidParameterException();
+                case HttpStatusCode.Unauthorized:
+                    throw new MusicBrainzUnauthorizedException();
+                case HttpStatusCode.NotFound:
+                    throw new MusicBrainzNotFoundException();
+                }
+            }
+
+            if(response.IsFromCache)
+                Monitor.Exit(server_mutex);
+
+            // Should we read the stream into a memory stream and run the XmlReader off of that?
+            code(new XmlTextReader(response.GetResponseStream()));
+            response.Close();
+
+            if(!response.IsFromCache) {
+                last_accessed = DateTime.Now;
+                Monitor.Exit(server_mutex);
             }
         }
 
-        List<Relation<Release>> release_rels;
-        bool dont_attempt_release_rels;
-        public List<Relation<Release>> ReleaseRelations
-        {
-            get {
-                if(release_rels == null)
-                    release_rels = dont_attempt_release_rels
-                        ? new List<Relation<Release>>()
-                        : ConstructObject(mbid, BaseIncType.ReleaseRels).ReleaseRelations;
+        #endregion
 
-                return release_rels;
-            }
+        #region Query
+
+        protected static Query<T> Query<T>(string url_extension, QueryParameters parameters) where T : MusicBrainzObject
+        {
+            return Query<T>(url_extension, MusicBrainzSharp.Query.DefaultLimit, 0, parameters);
         }
 
-        List<Relation<Track>> track_rels;
-        bool dont_attempt_track_rels;
-        public List<Relation<Track>> TrackRelations
+        protected static Query<T> Query<T>(string url_extension, byte limit, int offset, QueryParameters parameters) where T : MusicBrainzObject
         {
-            get {
-                if(track_rels == null)
-                    track_rels = dont_attempt_track_rels
-                        ? new List<Relation<Track>>()
-                        : ConstructObject(mbid, BaseIncType.TrackRels).TrackRelations;
-                return track_rels;
-            }
+            return new Query<T>(url_extension, limit, offset, parameters.ToString());
         }
 
-        List<Relation<Label>> label_rels;
-        bool dont_attempt_label_rels;
-        public List<Relation<Label>> LabelRelations
+        protected static Query<T> Query<T>(string url_extension, string query) where T : MusicBrainzObject
         {
-            get {
-                if(label_rels == null)
-                    label_rels = dont_attempt_label_rels
-                        ? new List<Relation<Label>>()
-                        : ConstructObject(mbid, BaseIncType.LabelRels).LabelRelations;
-                    
-                return label_rels;
-            }
+            return Query<T>(url_extension, MusicBrainzSharp.Query.DefaultLimit, 0, query);
         }
 
-        List<Relation> url_rels;
-        bool dont_attempt_url_rels;
-        public List<Relation> UrlRelations
+        protected static Query<T> Query<T>(string url_extension, byte limit, int offset, string query) where T : MusicBrainzObject
         {
-            get {
-                if(url_rels == null)
-                    url_rels = dont_attempt_url_rels
-                        ? new List<Relation>()
-                        : ConstructObject(mbid, BaseIncType.UrlRels).UrlRelations;
-                    
-                return url_rels;
-            }
+            return new Query<T>(url_extension, limit, offset, CreateParameters(query));
         }
 
-        protected static Query<T> Query<T>(string url_extension, QueryParameters parameters, params Inc[] incs) where T : MusicBrainzObject
-        {
-            return Query<T>(url_extension, MusicBrainzSharp.Query.DefaultLimit, 0, parameters, incs);
-        }
-
-        protected static Query<T> Query<T>(string url_extension, int limit, int offset, QueryParameters parameters, params Inc[] incs) where T : MusicBrainzObject
-        {
-            return new Query<T>(url_extension, limit, offset, CreateParameters(parameters, incs));
-        }
-
-        protected static Query<T> Query<T>(string url_extension, string query, params Inc[] incs) where T : MusicBrainzObject
-        {
-            return Query<T>(url_extension, MusicBrainzSharp.Query.DefaultLimit, 0, query, incs);
-        }
-
-        protected static Query<T> Query<T>(string url_extension, int limit, int offset, string query, params Inc[] incs) where T : MusicBrainzObject
-        {
-            return new Query<T>(url_extension, limit, offset, CreateParameters(query, incs));
-        }
-
-        internal static List<QueryResult<T>> DoQuery<T>(string url_extension, int limit, int offset, string parameters, Inc[] artist_release_incs, out int? count) where T : MusicBrainzObject
+        internal static List<T> DoQuery<T>(string url_extension, byte limit, int offset, string parameters, Inc[] artist_release_incs, out int? count) where T : MusicBrainzObject
         {
             int count_value = 0;
-            List<QueryResult<T>> results = new List<QueryResult<T>>();
+            List<T> results = new List<T>();
             XmlProcessingClosure(
                 CreateUrl(url_extension, limit, offset, parameters),
                 delegate(XmlReader reader) {
@@ -374,10 +395,8 @@ namespace MusicBrainzSharp
                     if(count_string != null)
                         count_value = int.Parse(count_string);
                     reader.Read();
-                    do {
-                        T result = GetResult<T>(reader.ReadSubtree(), artist_release_incs);
-                        results.Add(new QueryResult<T>(result, result.score));
-                    } while(reader.Read() && reader.NodeType == XmlNodeType.Element);
+                    do results.Add(GetResult<T>(reader.ReadSubtree(), artist_release_incs));
+                    while(reader.Read() && reader.NodeType == XmlNodeType.Element);
                     reader.Close();
                 }
             );
@@ -400,5 +419,7 @@ namespace MusicBrainzSharp
             else
                 return null;
         }
+
+        #endregion
     }
 }

@@ -11,6 +11,7 @@ namespace MusicBrainzSharp
         string barcode;
         Label label;
         Release release;
+        ReleaseFormat format;
 
         internal Event(XmlReader reader, Release release)
         {
@@ -22,6 +23,13 @@ namespace MusicBrainzSharp
             country = reader.GetAttribute("country") ?? string.Empty;
             catalog_number = reader.GetAttribute("catalog-number") ?? string.Empty;
             barcode = reader.GetAttribute("barcode") ?? string.Empty;
+            string format_string = reader.GetAttribute("format");
+            if(format_string != null)
+                foreach(ReleaseFormat format in Enum.GetValues(typeof(ReleaseFormat)))
+                    if(Enum.GetName(typeof(ReleaseFormat), format) == format_string) {
+                        this.format = format;
+                        break;
+                    }
             if(reader.ReadToDescendant("label"))
                 label = new Label(reader.ReadSubtree());
             reader.Close();
@@ -55,6 +63,11 @@ namespace MusicBrainzSharp
                 return label;
             }
             internal set { label = value; }
+        }
+
+        public ReleaseFormat Format
+        {
+            get { return format; }
         }
     }
 }

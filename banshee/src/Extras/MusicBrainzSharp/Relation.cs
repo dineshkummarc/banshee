@@ -47,9 +47,9 @@ namespace MusicBrainzSharp
         }
     }
 
-    public sealed class Relation : RelationPrimative<string>
+    public sealed class UrlRelation : RelationPrimative<string>
     {
-        internal Relation(string type, string target, RelationDirection direction,
+        internal UrlRelation(string type, string target, RelationDirection direction,
             DateTime begin, DateTime end, string[] attributes)
             : base(type, target, direction, begin, end, attributes)
         {

@@ -20,7 +20,6 @@ namespace MusicBrainzSharp
         const uint CONST3 = 0x8f1bbcdc;
         const uint CONST4 = 0xca62c1d6;
 
-        // SHA f()-functions
         delegate uint FFunction(uint x, uint y, uint z);
         static uint f1(uint x, uint y, uint z)
         {
@@ -39,13 +38,11 @@ namespace MusicBrainzSharp
             return x ^ y ^ z;
         }
 
-        // 32-bit rotate
         static uint R32(uint x, int n)
         {
             return (x << n) | (x >> (32 - n));
         }
 
-        // Specific cases, for when the overall rotation is unraveled
         static void FA(uint constant, FFunction f, TransformInfo info)
         {
             info.T = R32(info.A, 5) + f(info.B, info.C, info.D) + info.E + info.W[info.index++] + constant;
@@ -203,89 +200,29 @@ namespace MusicBrainzSharp
             info.D = digest[3];
             info.E = digest[4];
 
-            FA(CONST1, f1, info);
-            FB(CONST1, f1, info);
-            FC(CONST1, f1, info);
-            FD(CONST1, f1, info);
-            FE(CONST1, f1, info);
-            FT(CONST1, f1, info);
-            FA(CONST1, f1, info);
-            FB(CONST1, f1, info);
-            FC(CONST1, f1, info);
-            FD(CONST1, f1, info);
-            FE(CONST1, f1, info);
-            FT(CONST1, f1, info);
-            FA(CONST1, f1, info);
-            FB(CONST1, f1, info);
-            FC(CONST1, f1, info);
-            FD(CONST1, f1, info);
-            FE(CONST1, f1, info);
-            FT(CONST1, f1, info);
-            FA(CONST1, f1, info);
-            FB(CONST1, f1, info);
+            FA(CONST1, f1, info); FB(CONST1, f1, info); FC(CONST1, f1, info); FD(CONST1, f1, info);
+            FE(CONST1, f1, info); FT(CONST1, f1, info); FA(CONST1, f1, info); FB(CONST1, f1, info);
+            FC(CONST1, f1, info); FD(CONST1, f1, info); FE(CONST1, f1, info); FT(CONST1, f1, info);
+            FA(CONST1, f1, info); FB(CONST1, f1, info); FC(CONST1, f1, info); FD(CONST1, f1, info);
+            FE(CONST1, f1, info); FT(CONST1, f1, info); FA(CONST1, f1, info); FB(CONST1, f1, info);
 
-            FC(CONST2, f2, info);
-            FD(CONST2, f2, info);
-            FE(CONST2, f2, info);
-            FT(CONST2, f2, info);
-            FA(CONST2, f2, info);
-            FB(CONST2, f2, info);
-            FC(CONST2, f2, info);
-            FD(CONST2, f2, info);
-            FE(CONST2, f2, info);
-            FT(CONST2, f2, info);
-            FA(CONST2, f2, info);
-            FB(CONST2, f2, info);
-            FC(CONST2, f2, info);
-            FD(CONST2, f2, info);
-            FE(CONST2, f2, info);
-            FT(CONST2, f2, info);
-            FA(CONST2, f2, info);
-            FB(CONST2, f2, info);
-            FC(CONST2, f2, info);
-            FD(CONST2, f2, info);
+            FC(CONST2, f2, info); FD(CONST2, f2, info); FE(CONST2, f2, info); FT(CONST2, f2, info);
+            FA(CONST2, f2, info); FB(CONST2, f2, info); FC(CONST2, f2, info); FD(CONST2, f2, info);
+            FE(CONST2, f2, info); FT(CONST2, f2, info); FA(CONST2, f2, info); FB(CONST2, f2, info);
+            FC(CONST2, f2, info); FD(CONST2, f2, info); FE(CONST2, f2, info); FT(CONST2, f2, info);
+            FA(CONST2, f2, info); FB(CONST2, f2, info); FC(CONST2, f2, info); FD(CONST2, f2, info);
 
-            FE(CONST3, f3, info);
-            FT(CONST3, f3, info);
-            FA(CONST3, f3, info);
-            FB(CONST3, f3, info);
-            FC(CONST3, f3, info);
-            FD(CONST3, f3, info);
-            FE(CONST3, f3, info);
-            FT(CONST3, f3, info);
-            FA(CONST3, f3, info);
-            FB(CONST3, f3, info);
-            FC(CONST3, f3, info);
-            FD(CONST3, f3, info);
-            FE(CONST3, f3, info);
-            FT(CONST3, f3, info);
-            FA(CONST3, f3, info);
-            FB(CONST3, f3, info);
-            FC(CONST3, f3, info);
-            FD(CONST3, f3, info);
-            FE(CONST3, f3, info);
-            FT(CONST3, f3, info);
+            FE(CONST3, f3, info); FT(CONST3, f3, info); FA(CONST3, f3, info); FB(CONST3, f3, info);
+            FC(CONST3, f3, info); FD(CONST3, f3, info); FE(CONST3, f3, info); FT(CONST3, f3, info);
+            FA(CONST3, f3, info); FB(CONST3, f3, info); FC(CONST3, f3, info); FD(CONST3, f3, info);
+            FE(CONST3, f3, info); FT(CONST3, f3, info); FA(CONST3, f3, info); FB(CONST3, f3, info);
+            FC(CONST3, f3, info); FD(CONST3, f3, info); FE(CONST3, f3, info); FT(CONST3, f3, info);
 
-            FA(CONST4, f4, info);
-            FB(CONST4, f4, info);
-            FC(CONST4, f4, info);
-            FD(CONST4, f4, info);
-            FE(CONST4, f4, info);
-            FT(CONST4, f4, info);
-            FA(CONST4, f4, info);
-            FB(CONST4, f4, info);
-            FC(CONST4, f4, info);
-            FD(CONST4, f4, info);
-            FE(CONST4, f4, info);
-            FT(CONST4, f4, info);
-            FA(CONST4, f4, info);
-            FB(CONST4, f4, info);
-            FC(CONST4, f4, info);
-            FD(CONST4, f4, info);
-            FE(CONST4, f4, info);
-            FT(CONST4, f4, info);
-            FA(CONST4, f4, info);
-            FB(CONST4, f4, info);
+            FA(CONST4, f4, info); FB(CONST4, f4, info); FC(CONST4, f4, info); FD(CONST4, f4, info);
+            FE(CONST4, f4, info); FT(CONST4, f4, info); FA(CONST4, f4, info); FB(CONST4, f4, info);
+            FC(CONST4, f4, info); FD(CONST4, f4, info); FE(CONST4, f4, info); FT(CONST4, f4, info);
+            FA(CONST4, f4, info); FB(CONST4, f4, info); FC(CONST4, f4, info); FD(CONST4, f4, info);
+            FE(CONST4, f4, info); FT(CONST4, f4, info); FA(CONST4, f4, info); FB(CONST4, f4, info);
 
             digest[0] = digest[0] + info.E;
             digest[1] = digest[1] + info.T;

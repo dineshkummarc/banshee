@@ -5,6 +5,8 @@ using System.Text;
 
 namespace MusicBrainzSharp
 {
+    # region Enums
+
     public enum ReleaseType
     {
         Album,
@@ -30,6 +32,24 @@ namespace MusicBrainzSharp
         PsudoRelease
     }
 
+    public enum ReleaseFormat
+    {
+        Cartridge,
+        Casette,
+        CD,
+        DAT,
+        Digital,
+        DualDisc,
+        DVD,
+        LaserDisc,
+        MiniDisc,
+        None,
+        Other,
+        ReelToReel,
+        SACD,
+        Vinyl
+    }
+
     public enum ReleaseIncType
     {
         // Object
@@ -49,8 +69,10 @@ namespace MusicBrainzSharp
         Labels = 10,
         ReleaseEvents = 11,
         Tracks = 12
-        
+
     }
+
+    #endregion
 
     public sealed class ReleaseInc : Inc
     {
@@ -133,8 +155,8 @@ namespace MusicBrainzSharp
 
     public sealed class Release : MusicBrainzItem
     {
-        const string extension = "release";
-        protected override string url_extension { get { return extension; } }
+        const string EXTENSION = "release";
+        protected override string url_extension { get { return EXTENSION; } }
 
         public static ReleaseInc[] DefaultIncs = new ReleaseInc[] { };
         protected override Inc[] default_incs
@@ -145,6 +167,7 @@ namespace MusicBrainzSharp
         Release(string mbid, params Inc[] incs)
             : base(mbid, incs)
         {
+            bool dont_attempt_labels = false;
             foreach(Inc inc in incs)
                 switch(inc.Value) {
                 case (int)ReleaseIncType.Counts:
@@ -175,14 +198,14 @@ namespace MusicBrainzSharp
         {
             // How sure am I about getting the type and status in the "Type Status" format?
             // MB really ought to specify these two things seperatly.
-            string type = reader.GetAttribute("type");
-            if(type != null) {
-                foreach(string token in type.Split(' ')) {
+            string type_string = reader.GetAttribute("type");
+            if(type_string != null) {
+                foreach(string token in type_string.Split(' ')) {
                     if(this.type == ReleaseType.None) {
                         bool found = false;
-                        foreach(ReleaseType enumeration in Enum.GetValues(typeof(ReleaseType)) as ReleaseType[])
-                            if(EnumUtil.EnumToString(enumeration) == token) {
-                                this.type = enumeration;
+                        foreach(ReleaseType type in Enum.GetValues(typeof(ReleaseType)) as ReleaseType[])
+                            if(EnumUtil.EnumToString(type) == token) {
+                                this.type = type;
                                 found = true;
                                 break;
                             }
@@ -190,14 +213,14 @@ namespace MusicBrainzSharp
                             continue;
                     }
 
-                    foreach(ReleaseStatus enumeration in Enum.GetValues(typeof(ReleaseStatus)) as ReleaseStatus[])
-                        if(EnumUtil.EnumToString(enumeration) == token) {
-                            this.status = enumeration;
+                    foreach(ReleaseStatus status in Enum.GetValues(typeof(ReleaseStatus)) as ReleaseStatus[])
+                        if(EnumUtil.EnumToString(status) == token) {
+                            this.status = status;
                             break;
                         }
                 }
             }
-            return this.type != ReleaseType.None || status != ReleaseStatus.None;
+            return this.type != ReleaseType.None || this.status != ReleaseStatus.None;
         }
 
         protected override bool ProcessXml(XmlReader reader)
@@ -229,13 +252,6 @@ namespace MusicBrainzSharp
                         }
                         break;
                     }
-                case "label-list":
-                    if(reader.ReadToDescendant("label")) {
-                        labels = new List<Label>();
-                        do labels.Add(new Label(reader.ReadSubtree()));
-                        while(reader.ReadToNextSibling("label"));
-                    }
-                    break;
                 case "release-event-list":
                     if(reader.ReadToDescendant("event")) {
                         events = new List<Event>();
@@ -246,7 +262,7 @@ namespace MusicBrainzSharp
                 case "track-list": {
                         string offset = reader.GetAttribute("offset");
                         if(offset != null)
-                            track_offset = int.Parse(offset);
+                            track_number = int.Parse(offset) + 1;
                         string count = reader.GetAttribute("count");
                         if(count != null)
                             track_count = int.Parse(count);
@@ -268,6 +284,8 @@ namespace MusicBrainzSharp
             reader.Close();
             return result;
         }
+
+        #region Properties
 
         ReleaseType type = ReleaseType.None;
         public ReleaseType Type
@@ -350,19 +368,6 @@ namespace MusicBrainzSharp
             dont_attempt_event_label = true;
         }
 
-        List<Label> labels;
-        bool dont_attempt_labels;
-        public List<Label> Labels
-        {
-            get {
-                if(labels == null)
-                    labels = dont_attempt_labels
-                        ? new List<Label>()
-                        : new Release(MBID, ReleaseIncType.Labels).Labels;
-                return labels;
-            }
-        }
-
         List<Track> tracks;
         bool dont_attempt_tracks;
         public List<Track> Tracks
@@ -376,10 +381,10 @@ namespace MusicBrainzSharp
             }
         }
 
-        int? track_offset;
-        public int? TrackOffset
+        int? track_number;
+        public int? TrackNumber
         {
-            get { return track_offset; }
+            get { return track_number; }
         }
 
         int? track_count;
@@ -393,6 +398,8 @@ namespace MusicBrainzSharp
                 return track_count.Value;
             }
         }
+
+        #endregion
 
         #region Get
 
@@ -424,7 +431,7 @@ namespace MusicBrainzSharp
         {
             ReleaseQueryParameters parameters = new ReleaseQueryParameters();
             parameters.Title = title;
-            return Query<Release>(extension, parameters, DefaultIncs);
+            return Query<Release>(EXTENSION, parameters);
         }
 
         public static Query<Release> Query(string title, ReleaseStatus status)
@@ -432,7 +439,7 @@ namespace MusicBrainzSharp
             ReleaseQueryParameters parameters = new ReleaseQueryParameters();
             parameters.Title = title;
             parameters.ReleaseStatus = status;
-            return Query<Release>(extension, parameters, DefaultIncs);
+            return Query<Release>(EXTENSION, parameters);
         }
 
         public static Query<Release> Query(string title, ReleaseType type)
@@ -440,7 +447,7 @@ namespace MusicBrainzSharp
             ReleaseQueryParameters parameters = new ReleaseQueryParameters();
             parameters.Title = title;
             parameters.ReleaseType = type;
-            return Query<Release>(extension, parameters, DefaultIncs);
+            return Query<Release>(EXTENSION, parameters);
         }
 
         public static Query<Release> Query(string title, ReleaseStatus status, ReleaseType type)
@@ -449,7 +456,7 @@ namespace MusicBrainzSharp
             parameters.Title = title;
             parameters.ReleaseStatus = status;
             parameters.ReleaseType = type;
-            return Query<Release>(extension, parameters, DefaultIncs);
+            return Query<Release>(EXTENSION, parameters);
         }
 
         public static Query<Release> Query(string title, string artist)
@@ -457,7 +464,7 @@ namespace MusicBrainzSharp
             ReleaseQueryParameters parameters = new ReleaseQueryParameters();
             parameters.Title = title;
             parameters.Artist = artist;
-            return Query<Release>(extension, parameters, DefaultIncs);
+            return Query<Release>(EXTENSION, parameters);
         }
 
         public static Query<Release> Query(string title, string artist, ReleaseStatus status)
@@ -466,7 +473,7 @@ namespace MusicBrainzSharp
             parameters.Title = title;
             parameters.Artist = artist;
             parameters.ReleaseStatus = status;
-            return Query<Release>(extension, parameters, DefaultIncs);
+            return Query<Release>(EXTENSION, parameters);
         }
 
         public static Query<Release> Query(string title, string artist, ReleaseType type)
@@ -475,7 +482,7 @@ namespace MusicBrainzSharp
             parameters.Title = title;
             parameters.Artist = artist;
             parameters.ReleaseType = type;
-            return Query<Release>(extension, parameters, DefaultIncs);
+            return Query<Release>(EXTENSION, parameters);
         }
 
         public static Query<Release> Query(string title, string artist, ReleaseStatus status, ReleaseType type)
@@ -485,48 +492,102 @@ namespace MusicBrainzSharp
             parameters.Artist = artist;
             parameters.ReleaseStatus = status;
             parameters.ReleaseType = type;
-            return Query<Release>(extension, parameters, DefaultIncs);
+            return Query<Release>(EXTENSION, parameters);
+        }
+
+        public static Query<Release> Query(string title, Artist artist)
+        {
+            ReleaseQueryParameters parameters = new ReleaseQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            return Query<Release>(EXTENSION, parameters);
+        }
+
+        public static Query<Release> Query(string title, Artist artist, ReleaseStatus status)
+        {
+            ReleaseQueryParameters parameters = new ReleaseQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseStatus = status;
+            return Query<Release>(EXTENSION, parameters);
+        }
+
+        public static Query<Release> Query(string title, Artist artist, ReleaseType type)
+        {
+            ReleaseQueryParameters parameters = new ReleaseQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseType = type;
+            return Query<Release>(EXTENSION, parameters);
+        }
+
+        public static Query<Release> Query(string title, Artist artist, ReleaseStatus status, ReleaseType type)
+        {
+            ReleaseQueryParameters parameters = new ReleaseQueryParameters();
+            parameters.Title = title;
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseStatus = status;
+            parameters.ReleaseType = type;
+            return Query<Release>(EXTENSION, parameters);
+        }
+
+        public static Query<Release> Query(Artist artist, ReleaseStatus status)
+        {
+            ReleaseQueryParameters parameters = new ReleaseQueryParameters();
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseStatus = status;
+            return Query<Release>(EXTENSION, parameters);
+        }
+
+        public static Query<Release> Query(Artist artist, ReleaseType type)
+        {
+            ReleaseQueryParameters parameters = new ReleaseQueryParameters();
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseType = type;
+            return Query<Release>(EXTENSION, parameters);
+        }
+
+        public static Query<Release> Query(Artist artist, ReleaseStatus status, ReleaseType type)
+        {
+            ReleaseQueryParameters parameters = new ReleaseQueryParameters();
+            parameters.ArtistId = artist.MBID;
+            parameters.ReleaseStatus = status;
+            parameters.ReleaseType = type;
+            return Query<Release>(EXTENSION, parameters);
         }
 
         public static Query<Release> Query(Disc disc)
         {
             ReleaseQueryParameters parameters = new ReleaseQueryParameters();
             parameters.DiscId = disc.Id;
-            return Query<Release>(extension, parameters, DefaultIncs);
+            return Query<Release>(EXTENSION, parameters);
         }
 
         public static Query<Release> Query(ReleaseQueryParameters parameters)
         {
-            return Query<Release>(extension, parameters, DefaultIncs);
+            return Query<Release>(EXTENSION, parameters);
+        }
+
+        public static Query<Release> Query(ReleaseQueryParameters parameters, byte limit)
+        {
+            return Query<Release>(EXTENSION, limit, 0, parameters);
         }
 
         public static Query<Release> QueryLucene(string lucene_query)
         {
-            return Query<Release>(extension, lucene_query, DefaultIncs);
+            return Query<Release>(EXTENSION, lucene_query);
         }
 
-        public static Query<Release> QueryAdvanced(ReleaseQueryParameters parameters, int limit, params Inc[] incs)
+        public static Query<Release> QueryLucene(string lucene_query, byte limit)
         {
-            return Query<Release>(extension, limit, 0, parameters, incs);
-        }
-
-        public static Query<Release> QueryLuceneAdvanced(string lucene_query, int limit, params Inc[] incs)
-        {
-            return Query<Release>(extension, limit, 0, lucene_query, incs);
+            return Query<Release>(EXTENSION, limit, 0, lucene_query);
         }
 
         public static Query<Release> QueryFromDisc(string device)
         {
             ReleaseQueryParameters parameters = new ReleaseQueryParameters();
             parameters.DiscId = Disc.GetFromDevice(device).Id;
-            return Query<Release>(extension, parameters, DefaultIncs);
-        }
-
-        public static Query<Release> QueryFromDisc(Disc disc)
-        {
-            ReleaseQueryParameters parameters = new ReleaseQueryParameters();
-            parameters.DiscId = disc.Id;
-            return Query<Release>(extension, parameters, DefaultIncs);
+            return Query<Release>(EXTENSION, parameters);
         }
 
         #endregion

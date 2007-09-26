@@ -5,6 +5,8 @@ using System.Text;
 
 namespace MusicBrainzSharp
 {
+    #region Enums
+
     public enum ArtistType
     {
         Group,
@@ -24,6 +26,8 @@ namespace MusicBrainzSharp
         // Entity
         Aliases = 5
     }
+
+    #endregion
 
     public enum ArtistReleasesIncType
     {
@@ -63,8 +67,8 @@ namespace MusicBrainzSharp
     
     public sealed class Artist : MusicBrainzEntity
     {
-        const string extension = "artist";
-        protected override string url_extension { get { return extension; } }
+        const string EXTENSION = "artist";
+        protected override string url_extension { get { return EXTENSION; } }
 
         public static ArtistInc[] DefaultIncs = new ArtistInc[] { };
         protected override Inc[] default_incs
@@ -151,6 +155,8 @@ namespace MusicBrainzSharp
             return result;
         }
 
+        #region Properties
+
         ArtistType type = ArtistType.Unspecified;
         public ArtistType Type
         {
@@ -170,6 +176,8 @@ namespace MusicBrainzSharp
                 return releases;
             }
         }
+
+        #endregion
 
         #region Get
 
@@ -211,40 +219,49 @@ namespace MusicBrainzSharp
         {
             EntityQueryParameters parameters = new EntityQueryParameters();
             parameters.Name = name;
-            return Query<Artist>(extension, parameters, DefaultIncs);
+            return Query<Artist>(EXTENSION, parameters);
+        }
+
+        public static Query<Artist> Query(string name, byte limit)
+        {
+            EntityQueryParameters parameters = new EntityQueryParameters();
+            parameters.Name = name;
+            return Query<Artist>(EXTENSION, limit, 0, parameters);
         }
 
         public static Query<Artist> Query(string name, params ArtistInc[] release_incs)
         {
             EntityQueryParameters parameters = new EntityQueryParameters();
             parameters.Name = name;
-            Query<Artist> result = Query<Artist>(extension, parameters, release_incs);
+            Query<Artist> result = Query<Artist>(EXTENSION, parameters);
+            result.ArtistReleaseIncs = release_incs;
+            return result;
+        }
+
+        public static Query<Artist> Query(string name, byte limit, params ArtistInc[] release_incs)
+        {
+            EntityQueryParameters parameters = new EntityQueryParameters();
+            parameters.Name = name;
+            Query<Artist> result = Query<Artist>(EXTENSION, limit, 0, parameters);
             result.ArtistReleaseIncs = release_incs;
             return result;
         }
 
         public static Query<Artist> QueryLucene(string lucene_query)
         {
-            return Query<Artist>(extension, lucene_query, DefaultIncs);
+            return Query<Artist>(EXTENSION, lucene_query);
         }
 
         public static Query<Artist> QueryLucene(string lucene_query, params ArtistInc[] release_incs)
         {
-            Query<Artist> result = Query<Artist>(extension, lucene_query, release_incs);
+            Query<Artist> result = Query<Artist>(EXTENSION, lucene_query);
             result.ArtistReleaseIncs = release_incs;
             return result;
         }
 
-        public static Query<Artist> QueryAdvanced(EntityQueryParameters parameters, int limit, Inc[] incs, Inc[] release_incs)
+        public static Query<Artist> QueryLucene(string lucene_query, byte limit, params ArtistInc[] release_incs)
         {
-            Query<Artist> result = Query<Artist>(extension, limit, 0, parameters, incs);
-            result.ArtistReleaseIncs = release_incs;
-            return result;
-        }
-
-        public static Query<Artist> QueryLuceneAdvanced(string lucene_query, int limit, Inc[] incs, Inc[] release_incs)
-        {
-            Query<Artist> result = Query<Artist>(extension, limit, 0, lucene_query, incs);
+            Query<Artist> result = Query<Artist>(EXTENSION, limit, 0, lucene_query);
             result.ArtistReleaseIncs = release_incs;
             return result;
         }
