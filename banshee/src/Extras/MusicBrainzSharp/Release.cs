@@ -382,13 +382,13 @@ namespace MusicBrainzSharp
         }
 
         int? track_number;
-        public int? TrackNumber
+        public int TrackNumber
         {
-            get { return track_number; }
+            get { return track_number.HasValue ? track_number.Value : -1; }
         }
 
         int? track_count;
-        public int TrackCount
+        internal int TrackCount
         {
             get {
                 if(!track_count.HasValue)
@@ -405,22 +405,22 @@ namespace MusicBrainzSharp
 
         public static Release Get(string mbid)
         {
-            return GetAdvanced(mbid, DefaultIncs);
+            return Get(mbid, (Inc[])DefaultIncs);
         }
 
         public static Release Get(string mbid, params ReleaseInc[] incs)
         {
-            return GetAdvanced(mbid, incs);
+            return Get(mbid, (Inc[])incs);
         }
 
-        public static Release GetAdvanced(string mbid, params Inc[] incs)
+        static Release Get(string mbid, params Inc[] incs)
         {
             return new Release(mbid, incs);
         }
 
         protected override MusicBrainzObject ConstructObject(string mbid, params Inc[] incs)
         {
-            return GetAdvanced(mbid, incs);
+            return Get(mbid, incs);
         }
 
         #endregion

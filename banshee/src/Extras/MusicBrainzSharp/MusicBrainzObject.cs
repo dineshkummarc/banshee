@@ -120,10 +120,6 @@ namespace MusicBrainzSharp
                             direction = direction_string == "forward"
                                 ? RelationDirection.Forward
                                 : RelationDirection.Backward;
-                        DateTime begin;
-                        DateTime.TryParse(reader.GetAttribute("begin"), out begin);
-                        DateTime end;
-                        DateTime.TryParse(reader.GetAttribute("end"), out end);
                         string attributes_string = reader.GetAttribute("attributes");
                         string[] attributes = attributes_string == null
                             ? null
@@ -132,8 +128,8 @@ namespace MusicBrainzSharp
                             reader.GetAttribute("type"),
                             reader.GetAttribute("target"),
                             direction,
-                            begin,
-                            end,
+                            reader.GetAttribute("begin") ?? string.Empty,
+                            reader.GetAttribute("end") ?? string.Empty,
                             attributes));
                         break;
                     }
@@ -231,6 +227,17 @@ namespace MusicBrainzSharp
             }
         }
 
+        public override bool Equals(object obj)
+        {
+            MusicBrainzObject mbobj = obj as MusicBrainzObject;
+            return mbobj != null && mbobj.GetType() == GetType() && mbobj.MBID == MBID;
+        }
+
+        public override int GetHashCode()
+        {
+            return (GetType().Name + MBID).GetHashCode();
+        }
+
         #endregion
 
         #region Static Methods
@@ -250,10 +257,8 @@ namespace MusicBrainzSharp
                     direction = direction_string == "forward"
                         ? RelationDirection.Forward
                         : RelationDirection.Backward;
-                DateTime begin;
-                DateTime.TryParse(reader.GetAttribute("begin"), out begin);
-                DateTime end;
-                DateTime.TryParse(reader.GetAttribute("end"), out end);
+                string begin = reader.GetAttribute("begin") ?? string.Empty;
+                string end = reader.GetAttribute("end") ?? string.Empty;
                 string attributes_string = reader.GetAttribute("attributes");
                 string[] attributes = attributes_string == null
                     ? null

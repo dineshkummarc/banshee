@@ -16,11 +16,11 @@ namespace MusicBrainzSharp
         string type;
         string[] attributes;
         RelationDirection direction;
-        DateTime begin;
-        DateTime end;
+        string begin;
+        string end;
 
         internal RelationPrimative(string type, T target, RelationDirection direction,
-            DateTime begin, DateTime end, string[] attributes)
+            string begin, string end, string[] attributes)
         {
             this.type = type;
             this.target = target;
@@ -34,14 +34,14 @@ namespace MusicBrainzSharp
         public string Type { get { return type; } }
         public string[] Attributes { get { return attributes; } }
         public RelationDirection Direction { get { return direction; } }
-        public DateTime Begin { get { return begin; } }
-        public DateTime End { get { return end; } }
+        public string BeginDate { get { return begin; } }
+        public string EndDate { get { return end; } }
     }
     
     public sealed class Relation<T> : RelationPrimative<T> where T : MusicBrainzObject
     {
         internal Relation(string type, T target, RelationDirection direction,
-            DateTime begin, DateTime end, string[] attributes)
+            string begin, string end, string[] attributes)
             : base(type, target, direction, begin, end, attributes)
         {
         }
@@ -50,7 +50,7 @@ namespace MusicBrainzSharp
     public sealed class UrlRelation : RelationPrimative<string>
     {
         internal UrlRelation(string type, string target, RelationDirection direction,
-            DateTime begin, DateTime end, string[] attributes)
+            string begin, string end, string[] attributes)
             : base(type, target, direction, begin, end, attributes)
         {
         }

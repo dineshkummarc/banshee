@@ -5,7 +5,7 @@ namespace MusicBrainzSharp
 {
     public class Event
     {
-        DateTime date;
+        string date;
         string country;
         string catalog_number;
         string barcode;
@@ -17,9 +17,7 @@ namespace MusicBrainzSharp
         {
             this.release = release;
             reader.Read();
-            string date = reader.GetAttribute("date");
-            if(date != null)
-                DateTime.TryParse(date, out this.date);
+            date = reader.GetAttribute("date") ?? string.Empty;
             country = reader.GetAttribute("country") ?? string.Empty;
             catalog_number = reader.GetAttribute("catalog-number") ?? string.Empty;
             barcode = reader.GetAttribute("barcode") ?? string.Empty;
@@ -35,7 +33,7 @@ namespace MusicBrainzSharp
             reader.Close();
         }
 
-        public DateTime Date
+        public string Date
         {
             get { return date; }
         }

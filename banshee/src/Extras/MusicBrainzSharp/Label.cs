@@ -96,22 +96,22 @@ namespace MusicBrainzSharp
 
         public static Label Get(string mbid)
         {
-            return GetAdvanced(mbid, DefaultIncs);
+            return Get(mbid, (Inc[])DefaultIncs);
         }
 
         public static Label Get(string mbid, params LabelInc[] incs)
         {
-            return GetAdvanced(mbid, incs);
+            return Get(mbid, (Inc[])incs);
         }
 
-        public static Label GetAdvanced(string mbid, params Inc[] incs)
+        static Label Get(string mbid, params Inc[] incs)
         {
             return new Label(mbid, incs);
         }
 
         protected override MusicBrainzObject ConstructObject(string mbid, params Inc[] incs)
         {
-            return GetAdvanced(mbid, incs);
+            return Get(mbid, incs);
         }
 
         #endregion

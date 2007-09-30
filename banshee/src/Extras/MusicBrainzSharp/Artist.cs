@@ -183,32 +183,27 @@ namespace MusicBrainzSharp
 
         public static Artist Get(string mbid)
         {
-            return GetAdvanced(mbid, DefaultIncs, DefaultReleaseIncs);
+            return Get(mbid, (Inc[])DefaultIncs, DefaultReleaseIncs);
         }
 
         public static Artist Get(string mbid, params ArtistInc[] incs)
         {
-            return GetAdvanced(mbid, incs, DefaultReleaseIncs);
+            return Get(mbid, (Inc[])incs, DefaultReleaseIncs);
         }
 
         public static Artist Get(string mbid, ArtistInc[] incs, ArtistInc[] release_incs)
         {
-            return GetAdvanced(mbid, incs, release_incs);
+            return Get(mbid, (Inc[])incs, release_incs);
         }
 
-        public static Artist GetAdvanced(string mbid, params Inc[] incs)
-        {
-            return GetAdvanced(mbid, incs, DefaultReleaseIncs);
-        }
-
-        public static Artist GetAdvanced(string mbid, Inc[] incs, Inc[] release_incs)
+        static Artist Get(string mbid, Inc[] incs, ArtistInc[] release_incs)
         {
             return new Artist(mbid, incs, release_incs);
         }
 
         protected override MusicBrainzObject ConstructObject(string mbid, params Inc[] incs)
         {
-            return GetAdvanced(mbid, incs, DefaultReleaseIncs);
+            return Get(mbid, incs, DefaultReleaseIncs);
         }
 
         #endregion

@@ -63,12 +63,8 @@ namespace MusicBrainzSharp
                 disambiguation = reader.ReadContentAsString();
                 break;
             case "life-span":
-                string begin = reader.GetAttribute("begin");
-                if(begin != null)
-                    DateTime.TryParse(begin, out begin_date);
-                string end = reader.GetAttribute("end");
-                if(end != null)
-                    DateTime.TryParse(end, out end_date);
+                begin_date = reader.GetAttribute("begin") ?? string.Empty;
+                end_date = reader.GetAttribute("end") ?? string.Empty;
                 break;
             case "alias-list":
                 if(reader.ReadToDescendant("alias")) {
@@ -104,14 +100,14 @@ namespace MusicBrainzSharp
             get { return disambiguation; }
         }
 
-        DateTime begin_date;
-        public DateTime BeginDate
+        string begin_date;
+        public string BeginDate
         {
             get { return begin_date; }
         }
 
-        DateTime end_date;
-        public DateTime EndDate
+        string end_date;
+        public string EndDate
         {
             get { return end_date; }
         }

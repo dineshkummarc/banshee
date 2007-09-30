@@ -205,28 +205,36 @@ namespace MusicBrainzSharp
             }
         }
 
+        public int GetTrackNumber(Release release)
+        {
+            foreach(Release r in Releases)
+                if(r.Equals(release))
+                    return r.TrackNumber;
+            return -1;
+        }
+
         #endregion
 
         #region Get
 
         public static Track Get(string mbid)
         {
-            return Get(mbid, DefaultIncs);
+            return Get(mbid, (Inc[])DefaultIncs);
         }
 
         public static Track Get(string mbid, params TrackInc[] incs)
         {
-            return GetAdvanced(mbid, incs);
+            return Get(mbid, (Inc[])incs);
         }
 
-        public static Track GetAdvanced(string mbid, params Inc[] incs)
+        static Track Get(string mbid, params Inc[] incs)
         {
             return new Track(mbid, incs);
         }
 
         protected override MusicBrainzObject ConstructObject(string mbid, params Inc[] incs)
         {
-            return GetAdvanced(mbid, incs);
+            return Get(mbid, incs);
         }
 
         #endregion
