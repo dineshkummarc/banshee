@@ -5,38 +5,6 @@ using System.Text;
 
 namespace MusicBrainzSharp
 {
-    public enum TrackIncType
-    {
-        // Object
-        ArtistRels = 0,
-        LabelRels = 1,
-        ReleaseRels = 2,
-        TrackRels = 3,
-        UrlRels = 4,
-
-        // Item
-        Artist = 6,
-        TrackLevelRels = 7,
-        
-        // Tracks
-        Puids = 13,
-        Releases = 14
-    }
-
-    public sealed class TrackInc : Inc
-    {
-        public TrackInc(TrackIncType type)
-            : base((int)type)
-        {
-            name = EnumUtil.EnumToString(type);
-        }
-
-        public static implicit operator TrackInc(TrackIncType type)
-        {
-            return new TrackInc(type);
-        }
-    }
-
     public sealed class TrackQueryParameters : ItemQueryParameters
     {
         string release;
@@ -79,7 +47,7 @@ namespace MusicBrainzSharp
             StringBuilder builder = new StringBuilder();
             if(release != null) {
                 builder.Append("&release=");
-                AppendStringToBuilder(builder, release);
+                EncodeAndAppend(builder, release);
             }
             if(release_id != null) {
                 builder.Append("&releaseid=");
@@ -105,22 +73,14 @@ namespace MusicBrainzSharp
     public sealed class Track : MusicBrainzItem
     {
         const string EXTENSION = "track";
-        protected override string url_extension { get { return EXTENSION; } }
-
-        public static TrackInc[] DefaultIncs = new TrackInc[] { };
-        protected override Inc[] default_incs
+        protected override string url_extension
         {
-            get { return DefaultIncs; }
+            get { return EXTENSION; }
         }
         
-        Track(string mbid, params Inc[] incs)
-            : base(mbid, incs)
+        Track(string mbid)
+            : base(mbid)
         {
-            foreach(Inc inc in incs)
-                if(inc.Value == (int)TrackIncType.Releases)
-                    dont_attempt_releases = true;
-                else if(inc.Value == (int)TrackIncType.Puids)
-                    dont_attempt_puids = true;
         }
 
         internal Track(XmlReader reader)
@@ -128,15 +88,35 @@ namespace MusicBrainzSharp
         {
         }
 
-        protected override bool ProcessAttributes(XmlReader reader)
+        internal Track(XmlReader reader, bool all_rels_loaded)
+            : base(reader, all_rels_loaded)
+        {
+        }
+
+        protected override void HandleCreateInc(StringBuilder builder)
+        {
+            builder.Append("+releases+puids");
+            base.HandleCreateInc(builder);
+        }
+
+        public override void HandleLoadAllData()
+        {
+            Track track = Track.Get(MBID);
+            duration = track.Duration;
+            releases = track.Releases;
+            puids = track.Puids;
+            base.HandleLoadAllData(track);
+        }
+
+        protected override bool HandleAttributes(XmlReader reader)
         {
             return true;
         }
 
-        protected override bool ProcessXml(XmlReader reader)
+        protected override bool HandleXml(XmlReader reader)
         {
             reader.Read();
-            bool result = base.ProcessXml(reader);
+            bool result = base.HandleXml(reader);
             if(!result) {
                 result = true;
                 switch(reader.Name) {
@@ -154,10 +134,8 @@ namespace MusicBrainzSharp
                 case "puid-list":
                     if(reader.ReadToDescendant("puid")) {
                         puids = new List<string>();
-                        do {
-                            reader.Read();
-                            puids.Add(reader.ReadContentAsString());
-                        } while(reader.ReadToNextSibling("puid"));
+                        do puids.Add(reader["id"]);
+                        while(reader.ReadToNextSibling("puid"));
                     }
                     break;
                 default:
@@ -178,30 +156,22 @@ namespace MusicBrainzSharp
         }
 
         List<Release> releases;
-        bool dont_attempt_releases;
         public List<Release> Releases
         {
             get {
-                if(releases == null) {
-                    releases = dont_attempt_releases
-                        ? new List<Release>()
-                        : new Track(MBID, TrackIncType.Releases).Releases;
-                }
-                return releases;
+                if(releases == null)
+                    LoadAllData();
+                return releases ?? new List<Release>();
             }
         }
 
         List<string> puids;
-        bool dont_attempt_puids;
         public List<string> Puids
         {
             get {
-                if(puids == null) {
-                    puids = dont_attempt_puids
-                        ? new List<string>()
-                        : new Track(MBID, TrackIncType.Puids).Puids;
-                }
-                return puids;
+                if(puids == null)
+                    LoadAllData();
+                return puids ?? new List<string>();
             }
         }
 
@@ -215,29 +185,10 @@ namespace MusicBrainzSharp
 
         #endregion
 
-        #region Get
-
         public static Track Get(string mbid)
         {
-            return Get(mbid, (Inc[])DefaultIncs);
+            return new Track(mbid);
         }
-
-        public static Track Get(string mbid, params TrackInc[] incs)
-        {
-            return Get(mbid, (Inc[])incs);
-        }
-
-        static Track Get(string mbid, params Inc[] incs)
-        {
-            return new Track(mbid, incs);
-        }
-
-        protected override MusicBrainzObject ConstructObject(string mbid, params Inc[] incs)
-        {
-            return Get(mbid, incs);
-        }
-
-        #endregion
 
         #region Query
 

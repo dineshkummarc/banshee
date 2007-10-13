@@ -11,8 +11,7 @@ namespace MusicBrainzSharp
         public string Name
         {
             get { return name; }
-            set
-            {
+            set {
                 if(value == null)
                     throw new NullReferenceException("You cannot specify a null name string.");
                 name = value;
@@ -23,7 +22,7 @@ namespace MusicBrainzSharp
         {
             StringBuilder builder = new StringBuilder(name.Length);
             builder.Append("&name=");
-            AppendStringToBuilder(builder, name);
+            EncodeAndAppend(builder, name);
             return builder.ToString();
         }
     }
@@ -31,22 +30,38 @@ namespace MusicBrainzSharp
     // A person-like entity, such as an artist or a label.
     public abstract class MusicBrainzEntity : MusicBrainzObject
     {
-        protected MusicBrainzEntity(string mbid, params Inc[] incs)
-            : base(mbid, incs)
+        protected MusicBrainzEntity(string mbid)
+            : base(mbid)
         {
-            foreach(Inc inc in incs)
-                if(inc.Value == (int)ArtistIncType.Aliases) {
-                    dont_attempt_aliases = true;
-                    break;
-                }
+        }
+
+        protected MusicBrainzEntity(string mbid, string parameters)
+            : base(mbid, parameters)
+        {
         }
 
         protected MusicBrainzEntity(XmlReader reader)
             : base(reader)
         {
         }
+
+        protected override void HandleCreateInc(StringBuilder builder)
+        {
+            builder.Append("+aliases");
+        }
+
+        protected void HandleLoadAllData(MusicBrainzEntity entity)
+        {
+            name = entity.Name;
+            sort_name = entity.SortName;
+            disambiguation = entity.Disambiguation;
+            begin_date = entity.BeginDate;
+            end_date = entity.EndDate;
+            aliases = entity.Aliases;
+            base.HandleLoadAllData(entity);
+        }
         
-        protected override bool ProcessXml(XmlReader reader)
+        protected override bool HandleXml(XmlReader reader)
         {
             bool result = true;
             switch(reader.Name) {
@@ -63,8 +78,8 @@ namespace MusicBrainzSharp
                 disambiguation = reader.ReadContentAsString();
                 break;
             case "life-span":
-                begin_date = reader.GetAttribute("begin") ?? string.Empty;
-                end_date = reader.GetAttribute("end") ?? string.Empty;
+                begin_date = reader["begin"];
+                end_date = reader["end"];
                 break;
             case "alias-list":
                 if(reader.ReadToDescendant("alias")) {
@@ -82,49 +97,73 @@ namespace MusicBrainzSharp
             return result;
         }
 
-        string name = string.Empty;
+        # region Properties
+
+        string name;
         public string Name
         {
-            get { return name; }
+            get {
+                if(name == null)
+                    LoadAllData();
+                return name;
+            }
         }
 
-        string sort_name = string.Empty;
+        string sort_name;
         public string SortName
         {
-            get { return sort_name; }
+            get {
+                if(sort_name == null)
+                    LoadAllData();
+                return sort_name;
+            }
         }
 
-        string disambiguation = string.Empty;
+        string disambiguation;
         public string Disambiguation
         {
-            get { return disambiguation; }
+            get {
+                if(disambiguation == null)
+                    LoadAllData();
+                return disambiguation;
+            }
         }
 
         string begin_date;
         public string BeginDate
         {
-            get { return begin_date; }
+            get {
+                if(begin_date == null)
+                    LoadAllData();
+                return begin_date;
+            }
         }
 
         string end_date;
         public string EndDate
         {
-            get { return end_date; }
+            get {
+                if(end_date == null)
+                    LoadAllData();
+                return end_date;
+            }
         }
 
         List<string> aliases;
-        bool dont_attempt_aliases;
         public List<string> Aliases
         {
             get {
                 if(aliases == null)
-                    aliases = dont_attempt_aliases
-                        ? new List<string>()
-                        : ((MusicBrainzEntity)ConstructObject(
-                            MBID, ArtistIncType.Aliases)).Aliases;
-
-                return aliases;
+                    LoadAllData();
+                return aliases ?? new List<string>();
             }
+        }
+
+        #endregion
+
+        public override string ToString()
+        {
+            return name;
         }
     }
 }

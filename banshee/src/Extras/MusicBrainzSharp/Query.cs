@@ -8,13 +8,18 @@ namespace MusicBrainzSharp
     {
         public abstract override string ToString();
 
-        protected void AppendStringToBuilder(StringBuilder builder, string value)
+        protected void EncodeAndAppend(StringBuilder builder, string value)
         {
+            // percent-encode this biznatch
             foreach(char c in value) {
-                if(c == ' ' || c == '/' || c == '.' || c == '&' || c == '\'')
-                    builder.Append('+');
-                else
+                if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || 
+                    c == '-' || c == '_' || c == '.' || c == '~')
                     builder.Append(c);
+                else {
+                    builder.Append('%');
+                    foreach(byte b in Encoding.UTF8.GetBytes(new char[] { c }))
+                        builder.Append(String.Format("{0:X}", b));
+                } 
             }
         }
     }
@@ -25,8 +30,7 @@ namespace MusicBrainzSharp
         public static byte DefaultLimit
         {
             get { return default_limit; }
-            set
-            {
+            set {
                 if(value < 1 || value > 100)
                     throw new Exception("The limit must be between 1 and 100 inclusively.");
                 default_limit = value;
@@ -62,10 +66,7 @@ namespace MusicBrainzSharp
         }
 
         byte limit;
-        public byte Limit
-        {
-            get { return limit; }
-        }
+        public byte Limit { get { return limit; } }
 
         int offset;
         Dictionary<int, WeakReference> weak_references = new Dictionary<int, WeakReference>();
@@ -74,12 +75,11 @@ namespace MusicBrainzSharp
             get { return offset; }
             set {
                 // We WeakReference the results from previous offsets just in case.
-                if(results != null) {
+                if(results != null)
                     if(!weak_references.ContainsKey(offset))
                         weak_references.Add(offset, new WeakReference(results));
                     else
                         ((WeakReference)weak_references[offset]).Target = results;
-                }
                 results = null;
                 offset = value;
                 if(weak_references.ContainsKey(offset)) {
@@ -95,8 +95,19 @@ namespace MusicBrainzSharp
         {
             get {
                 if(!count.HasValue && ResultsWindow == null)
-                    ;
+                    ; // just accessing ResultsWindow will give count a value
                 return count.Value;
+            }
+        }
+
+        public T this[int i]
+        {
+            get {
+                if(i < 0 || i >= Count)
+                    throw new IndexOutOfRangeException();
+                if(i <= offset || i >= offset + limit)
+                    Offset = i;
+                return ResultsWindow[i - offset];
             }
         }
 
@@ -113,9 +124,8 @@ namespace MusicBrainzSharp
             Offset = 0;
             int count = 0;
             while(count < Count) {
-                foreach(T result in ResultsWindow) {
+                foreach(T result in ResultsWindow)
                     yield return result;
-                }
                 count += ResultsWindow.Count;
                 Offset = count;
             }

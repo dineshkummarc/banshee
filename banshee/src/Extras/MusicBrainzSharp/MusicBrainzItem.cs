@@ -53,11 +53,11 @@ namespace MusicBrainzSharp
         {
             if(title != null) {
                 builder.Append("&title=");
-                AppendStringToBuilder(builder, title);
+                EncodeAndAppend(builder, title);
             }
             if(artist != null) {
                 builder.Append("&artist=");
-                AppendStringToBuilder(builder, artist);
+                EncodeAndAppend(builder, artist);
             }
             if(artist_id != null) {
                 builder.Append("&artistid=");
@@ -65,7 +65,7 @@ namespace MusicBrainzSharp
             }
             if(release_type.HasValue) {
                 builder.Append("&releasetypes=");
-                builder.Append(EnumUtil.EnumToString(release_type));
+                builder.Append(Utilities.EnumToString(release_type));
             }
             if(release_status.HasValue) {
                 builder.Append(release_type.HasValue ? "+" : "&releasetypes=");
@@ -81,12 +81,9 @@ namespace MusicBrainzSharp
     // The item-like product of an artist, such as a track or a release.
     public abstract class MusicBrainzItem : MusicBrainzObject
     {
-        protected MusicBrainzItem(string mbid, params Inc[] incs)
-            : base(mbid, incs)
+        protected MusicBrainzItem(string mbid)
+            : base(mbid)
         {
-            foreach(Inc inc in incs)
-                if(inc.Value == (int)ReleaseIncType.Artist)
-                    dont_attempt_artist = true;
         }
 
         protected MusicBrainzItem(XmlReader reader)
@@ -94,7 +91,24 @@ namespace MusicBrainzSharp
         {
         }
 
-        protected override bool ProcessXml(XmlReader reader)
+        protected MusicBrainzItem(XmlReader reader, bool all_rels_loaded)
+            : base(reader, all_rels_loaded)
+        {
+        }
+
+        protected override void HandleCreateInc(StringBuilder builder)
+        {
+            builder.Append("+artist");
+        }
+
+        public void HandleLoadAllData(MusicBrainzItem item)
+        {
+            title = item.Title;
+            artist = item.Artist;
+            base.HandleLoadAllData(item);
+        }
+
+        protected override bool HandleXml(XmlReader reader)
         {
             bool result = true;
             switch(reader.Name) {
@@ -112,22 +126,29 @@ namespace MusicBrainzSharp
             return result;
         }
 
-        string title = string.Empty;
+        string title;
         public string Title
         {
-            get { return title; }
+            get {
+                if(title == null)
+                    LoadAllData();
+                return title;
+            }
         }
 
         Artist artist;
-        bool dont_attempt_artist;
         public Artist Artist
         {
             get {
-                if(artist == null && !dont_attempt_artist)
-                    artist = ((MusicBrainzItem)ConstructObject(
-                        MBID, new ReleaseInc(ReleaseIncType.Artist))).Artist;
+                if(artist == null)
+                    LoadAllData();
                 return artist;
             }
+        }
+
+        public override string ToString()
+        {
+            return title;
         }
     }
 }

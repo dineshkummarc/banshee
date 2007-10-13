@@ -50,43 +50,7 @@ namespace MusicBrainzSharp
         Vinyl
     }
 
-    public enum ReleaseIncType
-    {
-        // Object
-        ArtistRels = 0,
-        LabelRels = 1,
-        ReleaseRels = 2,
-        TrackRels = 3,
-        UrlRels = 4,
-
-        // Item
-        Artist = 6,
-        TrackLevelRels = 7,
-        
-        // Release
-        Counts = 8,
-        Discs = 9,
-        Labels = 10,
-        ReleaseEvents = 11,
-        Tracks = 12
-
-    }
-
     #endregion
-
-    public sealed class ReleaseInc : Inc
-    {
-        public ReleaseInc(ReleaseIncType type)
-            : base((int)type)
-        {
-            name = EnumUtil.EnumToString(type);
-        }
-
-        public static implicit operator ReleaseInc(ReleaseIncType type)
-        {
-            return new ReleaseInc(type);
-        }
-    }
 
     public sealed class ReleaseQueryParameters : ItemQueryParameters
     {
@@ -134,7 +98,7 @@ namespace MusicBrainzSharp
             }
             if(date != null) {
                 builder.Append("&date=");
-                AppendStringToBuilder(builder, date);
+                EncodeAndAppend(builder, date);
             }
             if(asin != null) {
                 builder.Append("&asin=");
@@ -156,37 +120,14 @@ namespace MusicBrainzSharp
     public sealed class Release : MusicBrainzItem
     {
         const string EXTENSION = "release";
-        protected override string url_extension { get { return EXTENSION; } }
-
-        public static ReleaseInc[] DefaultIncs = new ReleaseInc[] { };
-        protected override Inc[] default_incs
+        protected override string url_extension
         {
-            get { return DefaultIncs; }
+            get { return EXTENSION; }
         }
-        
-        Release(string mbid, params Inc[] incs)
-            : base(mbid, incs)
+
+        Release(string mbid)
+            : base(mbid)
         {
-            bool dont_attempt_labels = false;
-            foreach(Inc inc in incs)
-                switch(inc.Value) {
-                case (int)ReleaseIncType.Counts:
-                    dont_attempt_disc_count = true;
-                    break;
-                case (int)ReleaseIncType.Discs:
-                    dont_attempt_discs = true;
-                    break;
-                case (int)ReleaseIncType.ReleaseEvents:
-                    dont_attempt_events = true;
-                    break;
-                case (int)ReleaseIncType.Labels:
-                    dont_attempt_labels = true;
-                    break;
-                case (int)ReleaseIncType.Tracks:
-                    dont_attempt_tracks = true;
-                    break;
-                }
-            dont_attempt_event_label = dont_attempt_events && dont_attempt_labels;
         }
 
         internal Release(XmlReader reader)
@@ -194,17 +135,36 @@ namespace MusicBrainzSharp
         {
         }
 
-        protected override bool ProcessAttributes(XmlReader reader)
+        protected override void HandleCreateInc(StringBuilder builder)
+        {
+            builder.Append("+release-events+labels+discs+tracks+track-level-rels");
+            base.HandleCreateInc(builder);
+        }
+
+        public override void HandleLoadAllData()
+        {
+            Release release = Release.Get(MBID);
+            type = release.Type;
+            status = release.Status;
+            language = release.Language;
+            script = release.Script;
+            asin = release.Asin;
+            discs = release.Discs;
+            events = release.Events;
+            tracks = release.Tracks;
+        }
+
+        protected override bool HandleAttributes(XmlReader reader)
         {
             // How sure am I about getting the type and status in the "Type Status" format?
             // MB really ought to specify these two things seperatly.
-            string type_string = reader.GetAttribute("type");
+            string type_string = reader["type"];
             if(type_string != null) {
                 foreach(string token in type_string.Split(' ')) {
-                    if(this.type == ReleaseType.None) {
+                    if(!this.type.HasValue) {
                         bool found = false;
                         foreach(ReleaseType type in Enum.GetValues(typeof(ReleaseType)) as ReleaseType[])
-                            if(EnumUtil.EnumToString(type) == token) {
+                            if(type.ToString() == token) {
                                 this.type = type;
                                 found = true;
                                 break;
@@ -214,41 +174,35 @@ namespace MusicBrainzSharp
                     }
 
                     foreach(ReleaseStatus status in Enum.GetValues(typeof(ReleaseStatus)) as ReleaseStatus[])
-                        if(EnumUtil.EnumToString(status) == token) {
+                        if(status.ToString() == token) {
                             this.status = status;
                             break;
                         }
                 }
             }
-            return this.type != ReleaseType.None || this.status != ReleaseStatus.None;
+            return this.type.HasValue || this.status.HasValue;
         }
 
-        protected override bool ProcessXml(XmlReader reader)
+        protected override bool HandleXml(XmlReader reader)
         {
             reader.Read();
-            bool result = base.ProcessXml(reader);
+            bool result = base.HandleXml(reader);
             if(!result) {
                 result = true;
                 switch(reader.Name) {
                 case "text-representation":
-                    language = reader.GetAttribute("language");
-                    script = reader.GetAttribute("script");
+                    language = reader["language"];
+                    script = reader["script"];
                     break;
                 case "asin":
                     reader.Read();
                     asin = reader.ReadContentAsString();
                     break;
                 case "disc-list": {
-                        string count = reader.GetAttribute("count");
-                        if(count != null)
-                            disc_count = int.Parse(count);
-                        else {
-                            if(reader.ReadToDescendant("disc")) {
-                                discs = new List<Disc>();
-                                do discs.Add(new Disc(reader.ReadSubtree()));
-                                while(reader.ReadToNextSibling("disc"));
-                                disc_count = discs.Count;
-                            }
+                        if(reader.ReadToDescendant("disc")) {
+                            discs = new List<Disc>();
+                            do discs.Add(new Disc(reader.ReadSubtree()));
+                            while(reader.ReadToNextSibling("disc"));
                         }
                         break;
                     }
@@ -260,22 +214,17 @@ namespace MusicBrainzSharp
                     }
                     break;
                 case "track-list": {
-                        string offset = reader.GetAttribute("offset");
+                        string offset = reader["offset"];
                         if(offset != null)
                             track_number = int.Parse(offset) + 1;
-                        string count = reader.GetAttribute("count");
-                        if(count != null)
-                            track_count = int.Parse(count);
                         if(reader.ReadToDescendant("track")) {
+                            LoadAllData(); // just to be sure
                             tracks = new List<Track>();
-                            do tracks.Add(new Track(reader.ReadSubtree()));
+                            do tracks.Add(new Track(reader.ReadSubtree(), true));
                             while(reader.ReadToNextSibling("track"));
-                            track_count = tracks.Count;
                         }
                         break;
                     }
-                case "track-level-rels":
-                    break;
                 default:
                     result = false;
                     break;
@@ -287,143 +236,98 @@ namespace MusicBrainzSharp
 
         #region Properties
 
-        ReleaseType type = ReleaseType.None;
+        ReleaseType? type;
         public ReleaseType Type
         {
-            get { return type; }
+            get {
+                if(!type.HasValue)
+                    LoadAllData();
+                return type.HasValue ? type.Value : ReleaseType.None;
+            }
         }
 
-        ReleaseStatus status = ReleaseStatus.None;
+        ReleaseStatus? status;
         public ReleaseStatus Status
         {
-            get { return status; }
+            get {
+                if(!status.HasValue)
+                    LoadAllData();
+                return status.HasValue ? status.Value : ReleaseStatus.None;
+            }
         }
 
-        string language = string.Empty;
+        string language;
         public string Language
         {
-            get { return language; }
+            get {
+                if(language == null)
+                    LoadAllData();
+                return language;
+            }
         }
 
-        string script = string.Empty;
+        string script;
         public string Script
         {
-            get { return script; }
+            get {
+                if(script == null)
+                    LoadAllData();
+                return script;
+            }
         }
 
-        string asin = string.Empty;
+        string asin;
         public string Asin
         {
-            get { return asin; }
+            get {
+                if(asin == null)
+                    LoadAllData();
+                return asin;
+            }
         }
 
         List<Disc> discs;
-        bool dont_attempt_discs;
         public List<Disc> Discs
         {
             get {
                 if(discs == null)
-                    discs = dont_attempt_discs
-                        ? new List<Disc>()
-                        : new Release(MBID, ReleaseIncType.Discs).Discs;
-                return discs;
-            }
-        }
-
-        int? disc_count;
-        bool dont_attempt_disc_count;
-        public int DiscCount
-        {
-            get {
-                if(!disc_count.HasValue)
-                    disc_count = dont_attempt_disc_count
-                        ? 0
-                        : new Release(MBID, ReleaseIncType.Counts).DiscCount;
-                return disc_count.Value;
+                    LoadAllData();
+                return discs ?? new List<Disc>();
             }
         }
 
         List<Event> events;
-        bool dont_attempt_events;
         public List<Event> Events
         {
             get {
                 if(events == null)
-                    events = dont_attempt_events
-                        ? new List<Event>()
-                        : new Release(MBID, ReleaseIncType.ReleaseEvents).Events;
-                return events;
+                    LoadAllData();
+                return events ?? new List<Event>();
             }
-        }
-
-        bool dont_attempt_event_label;
-        internal void GetEventLabel()
-        {
-            if(dont_attempt_event_label)
-                return;
-            Release release = new Release(MBID, ReleaseIncType.ReleaseEvents, ReleaseIncType.Labels);
-            for(int i = 0; i < Events.Count; i++ ) {
-                Events[i].Label = release.Events[i].Label;
-            }
-            dont_attempt_event_label = true;
         }
 
         List<Track> tracks;
-        bool dont_attempt_tracks;
         public List<Track> Tracks
         {
             get {
                 if(tracks == null)
-                    tracks = dont_attempt_tracks
-                        ? new List<Track>()
-                        : new Release(MBID, ReleaseIncType.Tracks).Tracks;
-                return tracks; 
+                    LoadAllData();
+                return tracks ?? new List<Track>(); 
             }
         }
 
         int? track_number;
-        public int TrackNumber
+        internal int TrackNumber
         {
             get { return track_number.HasValue ? track_number.Value : -1; }
         }
 
-        int? track_count;
-        internal int TrackCount
-        {
-            get {
-                if(!track_count.HasValue)
-                    track_count = dont_attempt_tracks
-                    ? 0
-                    : new Release(MBID, ReleaseIncType.Tracks).TrackCount;
-                return track_count.Value;
-            }
-        }
-
         #endregion
-
-        #region Get
 
         public static Release Get(string mbid)
         {
-            return Get(mbid, (Inc[])DefaultIncs);
+            return new Release(mbid);
         }
-
-        public static Release Get(string mbid, params ReleaseInc[] incs)
-        {
-            return Get(mbid, (Inc[])incs);
-        }
-
-        static Release Get(string mbid, params Inc[] incs)
-        {
-            return new Release(mbid, incs);
-        }
-
-        protected override MusicBrainzObject ConstructObject(string mbid, params Inc[] incs)
-        {
-            return Get(mbid, incs);
-        }
-
-        #endregion
 
         #region Query
 

@@ -39,7 +39,7 @@
     <Compile Include="DiscWin32.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="MusicBrainzEntity.cs" />
-    <Compile Include="EnumUtil.cs" />
+    <Compile Include="Utilities.cs" />
     <Compile Include="Inc.cs" />
     <Compile Include="Label.cs" />
     <Compile Include="MusicBrainzException.cs" />

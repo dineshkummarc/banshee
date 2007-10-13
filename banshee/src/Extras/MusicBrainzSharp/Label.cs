@@ -5,21 +5,6 @@ using System.Xml;
 
 namespace MusicBrainzSharp
 {
-    #region Enums
-
-    public enum LabelIncType
-    {
-        // Object
-        ArtistRels = 0,
-        LabelRels = 1,
-        ReleaseRels = 2,
-        TrackRels = 3,
-        UrlRels = 4,
-
-        // Entity
-        Aliases = 5
-    }
-
     public enum LabelType
     {
         Distributor,
@@ -29,36 +14,17 @@ namespace MusicBrainzSharp
         ReissueProduction,
         Unspecified
     }
-
-    #endregion
-
-    public sealed class LabelInc : Inc
-    {
-        public LabelInc(LabelIncType type)
-            : base((int)type)
-        {
-            name = EnumUtil.EnumToString(type);
-        }
-
-        public static implicit operator LabelInc(LabelIncType type)
-        {
-            return new LabelInc(type);
-        }
-    }
     
     public sealed class Label : MusicBrainzEntity
     {
         const string EXTENSION = "label";
-        protected override string url_extension { get { return EXTENSION; } }
-
-        public static LabelInc[] DefaultIncs = new LabelInc[] { };
-        protected override Inc[] default_incs
+        protected override string url_extension
         {
-            get { return DefaultIncs; }
+            get { return EXTENSION; }
         }
-        
-        Label(string mbid, params Inc[] incs)
-            : base(mbid, incs)
+
+        Label(string mbid)
+            : base(mbid)
         {
         }
 
@@ -67,54 +33,46 @@ namespace MusicBrainzSharp
         {
         }
 
-        protected override bool ProcessAttributes(XmlReader reader)
+        public override void HandleLoadAllData()
         {
-            string type_string = reader.GetAttribute("type");
+            Label label = Label.Get(MBID);
+            type = label.Type;
+            base.HandleLoadAllData(label);
+        }
+
+        protected override bool HandleAttributes(XmlReader reader)
+        {
+            string type_string = reader["type"];
             foreach(LabelType type in Enum.GetValues(typeof(LabelType)) as LabelType[])
-                if(EnumUtil.EnumToString(type) == type_string) {
+                if(Utilities.EnumToString(type) == type_string) {
                     this.type = type;
                     break;
                 }
-            return this.type != LabelType.Unspecified;
+            return this.type.HasValue;
         }
 
-        protected override bool ProcessXml(XmlReader reader)
+        protected override bool HandleXml(XmlReader reader)
         {
             reader.Read();
-            bool result = base.ProcessXml(reader);
+            bool result = base.HandleXml(reader);
             reader.Close();
             return result;
         }
 
-        LabelType type = LabelType.Unspecified;
+        LabelType? type;
         public LabelType Type
         {
-            get { return type; }
+            get {
+                if(!type.HasValue)
+                    LoadAllData();
+                return type.HasValue ? type.Value : LabelType.Unspecified;
+            }
         }
-
-        #region Get
 
         public static Label Get(string mbid)
         {
-            return Get(mbid, (Inc[])DefaultIncs);
+            return new Label(mbid);
         }
-
-        public static Label Get(string mbid, params LabelInc[] incs)
-        {
-            return Get(mbid, (Inc[])incs);
-        }
-
-        static Label Get(string mbid, params Inc[] incs)
-        {
-            return new Label(mbid, incs);
-        }
-
-        protected override MusicBrainzObject ConstructObject(string mbid, params Inc[] incs)
-        {
-            return Get(mbid, incs);
-        }
-
-        #endregion
 
         #region Query
 

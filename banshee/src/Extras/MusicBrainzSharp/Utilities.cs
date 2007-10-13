@@ -5,7 +5,7 @@ using System.Reflection;
 namespace MusicBrainzSharp
 {
     // C# doesn't support string enums? Riiickeeeee!
-    internal static class EnumUtil
+    internal static class Utilities
     {
         static Dictionary<string, string> string_values = new Dictionary<string, string>();
         public static string EnumToString(Enum enumeration)
@@ -13,22 +13,21 @@ namespace MusicBrainzSharp
             Type type = enumeration.GetType();
 
             // If we've cached the value, return it!
-            if(string_values.ContainsKey(Enum.GetName(type, enumeration)))
-                return string_values[Enum.GetName(type, enumeration)];
+            if(string_values.ContainsKey(enumeration.ToString()))
+                return string_values[enumeration.ToString()];
 
             string output = null;
 
             // See if the enum has a super-special StringValueAttribute
             FieldInfo field_info = type.GetField(enumeration.ToString());
             StringValueAttribute[] attrs =
-                field_info.GetCustomAttributes(typeof(StringValueAttribute),
-                false) as StringValueAttribute[];
+                field_info.GetCustomAttributes(typeof(StringValueAttribute), false) as StringValueAttribute[];
             if(attrs.Length > 0)
                 output = attrs[0].Value;
             
             // If it doesn't, determin the string based on the enum's name
             else {
-                string enum_name = Enum.GetName(type, enumeration);
+                string enum_name = enumeration.ToString();
                 for(int i = 1; i < enum_name.Length; i++)
                     if(enum_name[i] >= 'A' && enum_name[i] <= 'Z')
                         enum_name = enum_name.Insert(i++, "-");
@@ -40,7 +39,7 @@ namespace MusicBrainzSharp
             }
             
             // Cache the result and return FTW!
-            string_values.Add(Enum.GetName(type, enumeration), output);
+            string_values.Add(enumeration.ToString(), output);
             return output;
         }
     }

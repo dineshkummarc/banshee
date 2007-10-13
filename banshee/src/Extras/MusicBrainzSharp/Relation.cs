@@ -6,8 +6,7 @@ namespace MusicBrainzSharp
     public enum RelationDirection
     {
         Forward,
-        Backward,
-        None
+        Backward
     }
     
     public abstract class RelationPrimative<T>
@@ -30,12 +29,34 @@ namespace MusicBrainzSharp
             this.attributes = attributes;
         }
 
-        public T Target { get { return target; } }
-        public string Type { get { return type; } }
-        public string[] Attributes { get { return attributes; } }
-        public RelationDirection Direction { get { return direction; } }
-        public string BeginDate { get { return begin; } }
-        public string EndDate { get { return end; } }
+        public T Target
+        {
+            get { return target; }
+        }
+
+        public string Type
+        {
+            get { return type; }
+        }
+
+        public string[] Attributes
+        {
+            get { return attributes; }
+        }
+
+        public RelationDirection Direction
+        {
+            get { return direction; }
+        }
+
+        public string BeginDate
+        {
+            get { return begin; }
+        }
+        public string EndDate
+        {
+            get { return end; }
+        }
     }
     
     public sealed class Relation<T> : RelationPrimative<T> where T : MusicBrainzObject

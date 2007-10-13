@@ -139,7 +139,7 @@ namespace Banshee.Base
 
             Status = AudioCdLookupStatus.SearchingMetadata;
 
-            Disc disc = null as Disc ?? Disc.GetFromDevice(device_node);
+            Disc disc = o as Disc ?? Disc.GetFromDevice(device_node);
             Query<Release> query = null;
 
             try {
@@ -149,13 +149,13 @@ namespace Banshee.Base
                 mb_querying = false;
                 return;
             }
-            if(query.ResultsWindow.Count == 0) {
+            if(query.ResultsWindow.Count == 0) { // no match
+                mb_querying = false;
                 return;
             }
             Release release = query.ResultsWindow[0].Result;
 
-            int min = tracks.Count < release.TrackCount
-                ? tracks.Count : release.TrackCount;
+            int min = tracks.Count < release.TrackCount ? tracks.Count : release.TrackCount;
 
             album_title = release.Title;
 

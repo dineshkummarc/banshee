@@ -19,10 +19,10 @@ namespace MusicBrainzSharp
         internal Disc(XmlReader reader)
         {
             reader.Read();
-            string sectors_string = reader.GetAttribute("sectors");
+            string sectors_string = reader["sectors"];
             if(sectors_string != null)
                 sectors = int.Parse(sectors_string);
-            id = reader.GetAttribute("id");
+            id = reader["id"];
             reader.Close();
         }
 
@@ -86,8 +86,10 @@ namespace MusicBrainzSharp
         public static Disc GetFromDevice(string device)
         {
             Disc result = null;
+
             if(Environment.OSVersion.Platform != PlatformID.Unix)
                 result = new DiscWin32(device);
+
             result.track_durations = new int[result.last_track];
             for(int i = 1; i <= result.last_track; i++) {
                 result.track_durations[i - 1] = i < result.last_track
