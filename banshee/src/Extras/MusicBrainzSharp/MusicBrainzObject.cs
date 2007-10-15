@@ -21,8 +21,13 @@ namespace MusicBrainzSharp
         static DateTime last_accessed;
         static readonly object server_mutex = new object();
 
-        bool all_data_loaded;
         bool all_rels_loaded;
+        bool all_data_loaded;
+        protected bool AllDataLoaded
+        {
+            get { return all_data_loaded; }
+        }
+
         protected abstract string url_extension { get; }
         
         protected MusicBrainzObject(string mbid)

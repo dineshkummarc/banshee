@@ -218,9 +218,8 @@ namespace MusicBrainzSharp
                         if(offset != null)
                             track_number = int.Parse(offset) + 1;
                         if(reader.ReadToDescendant("track")) {
-                            LoadAllData(); // just to be sure
                             tracks = new List<Track>();
-                            do tracks.Add(new Track(reader.ReadSubtree(), true));
+                            do tracks.Add(new Track(reader.ReadSubtree(), AllDataLoaded));
                             while(reader.ReadToNextSibling("track"));
                         }
                         break;
