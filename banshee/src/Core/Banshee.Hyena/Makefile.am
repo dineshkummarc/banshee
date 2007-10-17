@@ -19,7 +19,7 @@ all: $(HYENA_ASSEMBLY)
 $(HYENA_ASSEMBLY): $(HYENA_SOURCE_BUILD) $(HYENA_EXPANDED_RESOURCES)
 	$(BUILD_UI_BANSHEE) -out:$@ $(HYENA_EXPANDED_RESOURCES_BUILD) $(HYENA_SOURCE_BUILD)
 
-MONO_PATH = MONO_PATH=../../hal-sharp:../../burn-sharp:../Last.FM:../Gnome.Keyring:../MusicBrainz:../Banshee.Base:../Banshee.Widgets 
+MONO_PATH = MONO_PATH=../../hal-sharp:../../burn-sharp:../Last.FM:../Gnome.Keyring:../MusicBrainzSharp:../Banshee.Base:../Banshee.Widgets 
 	
 run: $(HYENA_ASSEMBLY) 
 	$(MONO_PATH) $(MONO) --debug --trace=disabled,N:Banshee.Base,Banshee,Banshee.Gui,Banshee.Source,Banshee.MediaEngine,Banshee.Gui.Dialogs $(HYENA_ASSEMBLY)

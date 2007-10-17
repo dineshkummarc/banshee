@@ -5,7 +5,7 @@ ASSEMBLIES = \
 	$(top_builddir)/hal-sharp/hal-sharp.dll \
 	$(top_builddir)/src/Banshee.Base/Banshee.Base.dll \
 	$(top_builddir)/src/Banshee.Widgets/Banshee.Widgets.dll \
-	$(top_builddir)/src/MusicBrainz/MusicBrainz.dll
+	$(top_builddir)/src/MusicBrainzSharp/MusicBrainzSharp.dll
 
 ASSEMBLIES_BUILD = $(foreach asm,$(ASSEMBLIES),$(addprefix -assembly:,$(asm)))
 

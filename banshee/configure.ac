@@ -143,7 +143,7 @@ src/Extras/Boo/Makefile
 src/Extras/BooBuddy/Makefile
 src/Extras/Gnome.Keyring/Makefile
 src/Extras/Last.FM/Makefile
-src/Extras/MusicBrainz/Makefile
+src/Extras/MusicBrainzSharp/Makefile
 
 src/Plugins/Makefile
 src/Plugins/Banshee.Plugins.Audioscrobbler/Makefile
