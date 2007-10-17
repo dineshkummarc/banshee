@@ -144,7 +144,6 @@ src/Extras/BooBuddy/Makefile
 src/Extras/Gnome.Keyring/Makefile
 src/Extras/Last.FM/Makefile
 src/Extras/MusicBrainz/Makefile
-src/Extras/MusicBrainz/MusicBrainz.dll.config
 
 src/Plugins/Makefile
 src/Plugins/Banshee.Plugins.Audioscrobbler/Makefile

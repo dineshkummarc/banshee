@@ -9,7 +9,7 @@ DIR_HAL = $(top_builddir)/ext/hal-sharp
 DIR_TAGLIB = $(top_builddir)/ext/taglib-sharp
 DIR_DBUS = $(top_builddir)/ext/dbus-sharp
 DIR_LAST_FM = $(top_builddir)/src/Extras/Last.FM
-DIR_MUSICBRAINZ = $(top_builddir)/src/Extras/MusicBrainz
+DIR_MUSICBRAINZ_SHARP = $(top_builddir)/src/Extras/MusicBrainzSharp
 DIR_GNOME_KEYRING = $(top_builddir)/src/Extras/Gnome.Keyring
 DIR_BANSHEE_WIDGETS = $(top_builddir)/src/Core/Banshee.Widgets
 DIR_BANSHEE_BASE = $(top_builddir)/src/Core/Banshee.Base
@@ -31,7 +31,7 @@ LINK_MONO_UNIX = -r:Mono.Posix
 LINK_HAL = -r:$(DIR_HAL)/Hal.dll
 LINK_TAGLIB = -r:$(DIR_TAGLIB)/TagLib.dll
 LINK_LAST_FM = -r:$(DIR_LAST_FM)/Last.FM.dll
-LINK_MUSICBRAINZ = -r:$(DIR_MUSICBRAINZ)/MusicBrainz.dll
+LINK_MUSICBRAINZ_SHARP = -r:$(DIR_MUSICBRAINZ)/MusicBrainzSharp.dll
 LINK_GNOME_KEYRING = -r:$(DIR_GNOME_KEYRING)/Gnome.Keyring.dll
 
 if EXTERNAL_NDESK_DBUS
@@ -82,7 +82,7 @@ BUILD_UI_BANSHEE = \
 
 ## Running ##
 
-MONO_BASE_PATH = $(DIR_HAL):$(DIR_TAGLIB):$(DIR_DBUS):$(DIR_LAST_FM):$(DIR_MUSICBRAINZ):$(DIR_GNOME_KEYRING):$(DIR_BANSHEE_WIDGETS):$(DIR_BANSHEE_BASE):$(DIR_BOO):$(DIR_BOOBUDDY)
+MONO_BASE_PATH = $(DIR_HAL):$(DIR_TAGLIB):$(DIR_DBUS):$(DIR_LAST_FM):$(DIR_MUSICBRAINZ_SHARP):$(DIR_GNOME_KEYRING):$(DIR_BANSHEE_WIDGETS):$(DIR_BANSHEE_BASE):$(DIR_BOO):$(DIR_BOOBUDDY)
 
 RUN_PATH = \
 	LD_LIBRARY_PATH=$(top_builddir)/libbanshee/.libs:$(RUN_DIR_DAP_NJB) \
