@@ -152,6 +152,7 @@ namespace MusicBrainzSharp
             discs = release.Discs;
             events = release.Events;
             tracks = release.Tracks;
+            base.HandleLoadAllData(release);
         }
 
         protected override bool HandleAttributes(XmlReader reader)
@@ -195,41 +196,43 @@ namespace MusicBrainzSharp
                     script = reader["script"];
                     break;
                 case "asin":
-                    reader.Read();
-                    asin = reader.ReadContentAsString();
+					reader.Read();
+					if(reader.NodeType == XmlNodeType.Text)
+						asin = reader.ReadContentAsString();
                     break;
                 case "disc-list": {
-                        if(reader.ReadToDescendant("disc")) {
-                            discs = new List<Disc>();
-                            do discs.Add(new Disc(reader.ReadSubtree()));
-                            while(reader.ReadToNextSibling("disc"));
-                        }
-                        break;
+                    if(reader.ReadToDescendant("disc")) {
+                        discs = new List<Disc>();
+                        do discs.Add(new Disc(reader.ReadSubtree()));
+                        while(reader.ReadToNextSibling("disc"));
                     }
+                    break;
+                }
                 case "release-event-list":
                     if(reader.ReadToDescendant("event")) {
                         events = new List<Event>();
-                        do events.Add(new Event(reader.ReadSubtree(), this));
-                        while(reader.ReadToNextSibling("event"));
+                        do events.Add(new Event(reader.ReadSubtree()));
+						while(reader.ReadToNextSibling("event"));
                     }
                     break;
                 case "track-list": {
-                        string offset = reader["offset"];
-                        if(offset != null)
-                            track_number = int.Parse(offset) + 1;
-                        if(reader.ReadToDescendant("track")) {
-                            tracks = new List<Track>();
-                            do tracks.Add(new Track(reader.ReadSubtree(), AllDataLoaded));
-                            while(reader.ReadToNextSibling("track"));
-                        }
-                        break;
+                    string offset = reader["offset"];
+                    if(offset != null)
+                        track_number = int.Parse(offset) + 1;
+                    if(reader.ReadToDescendant("track")) {
+                        tracks = new List<Track>();
+                        do tracks.Add(new Track(reader.ReadSubtree(), AllDataLoaded));
+                        while(reader.ReadToNextSibling("track"));
                     }
+                    break;
+                }
                 default:
-                    result = false;
+					reader.Skip(); // FIXME this is a workaround for a Mono bug :(
+					result = false;
                     break;
                 }
             }
-            reader.Close();
+			reader.Close();
             return result;
         }
 

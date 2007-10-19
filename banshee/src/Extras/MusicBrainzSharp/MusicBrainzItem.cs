@@ -65,7 +65,7 @@ namespace MusicBrainzSharp
             }
             if(release_type.HasValue) {
                 builder.Append("&releasetypes=");
-                builder.Append(Utilities.EnumToString(release_type));
+                builder.Append(Utilities.EnumToString(release_type.Value));
             }
             if(release_status.HasValue) {
                 builder.Append(release_type.HasValue ? "+" : "&releasetypes=");
@@ -113,8 +113,9 @@ namespace MusicBrainzSharp
             bool result = true;
             switch(reader.Name) {
             case "title":
-                reader.Read();
-                title = reader.ReadContentAsString();
+				reader.Read();
+				if(reader.NodeType == XmlNodeType.Text)
+					title = reader.ReadContentAsString();
                 break;
             case "artist":
                 artist = new Artist(reader.ReadSubtree());

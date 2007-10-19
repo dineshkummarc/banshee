@@ -121,8 +121,9 @@ namespace MusicBrainzSharp
                 result = true;
                 switch(reader.Name) {
                 case "duration":
-                    reader.Read();
-                    duration = uint.Parse(reader.ReadContentAsString());
+					reader.Read();
+					if(reader.NodeType == XmlNodeType.Text)
+						duration = uint.Parse(reader.ReadContentAsString());
                     break;
                 case "release-list":
                     if(reader.ReadToDescendant("release")) {
@@ -139,7 +140,8 @@ namespace MusicBrainzSharp
                     }
                     break;
                 default:
-                    result = false;
+					reader.Skip(); // FIXME this is a workaround for a Mono bug :(
+					result = false;
                     break;
                 }
             }

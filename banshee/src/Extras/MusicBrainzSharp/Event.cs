@@ -10,10 +10,9 @@ namespace MusicBrainzSharp
         string catalog_number;
         string barcode;
         Label label;
-        Release release;
         ReleaseFormat format = ReleaseFormat.None;
 
-        internal Event(XmlReader reader, Release release)
+        internal Event(XmlReader reader)
         {
             reader.Read();
             date = reader["date"];
@@ -27,11 +26,12 @@ namespace MusicBrainzSharp
                         this.format = format;
                         break;
                     }
-            if(reader.ReadToDescendant("label"))
-                label = new Label(reader.ReadSubtree());
+			if(reader.ReadToDescendant("label")) {
+				label = new Label(reader.ReadSubtree());
+				reader.Read(); // FIXME this is a workaround for a Mono bug :(
+			}
             reader.Close();
-            this.release = release;
-        }
+		}
 
         public string Date
         {
@@ -55,10 +55,7 @@ namespace MusicBrainzSharp
 
         public Label Label
         {
-            get {
-                return label;
-            }
-            internal set { label = value; }
+            get { return label; }
         }
 
         public ReleaseFormat Format

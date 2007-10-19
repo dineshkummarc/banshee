@@ -55,9 +55,28 @@ namespace MusicBrainzSharp
         {
             reader.Read();
             bool result = base.HandleXml(reader);
+			if(!result) {
+				if(reader.Name == "country") {
+					result = true;
+					reader.Read();
+					if(reader.NodeType == XmlNodeType.Text)
+						country = reader.ReadContentAsString();
+				} else
+					reader.Skip(); // FIXME this is a workaround for a Mono bug :(
+			}
             reader.Close();
             return result;
         }
+		
+		string country;
+		public string Country
+		{
+			get {
+				if(country == null)
+					LoadAllData();
+				return country;
+			}
+		}
 
         LabelType? type;
         public LabelType Type

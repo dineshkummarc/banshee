@@ -149,13 +149,13 @@ namespace Banshee.Base
                 mb_querying = false;
                 return;
             }
-            if(query.ResultsWindow.Count == 0) { // no match
+            if(query.Count == 0) { // no match
                 mb_querying = false;
                 return;
             }
-            Release release = query.ResultsWindow[0].Result;
+            Release release = query[0];
 
-            int min = tracks.Count < release.TrackCount ? tracks.Count : release.TrackCount;
+            int min = tracks.Count < release.Tracks.Count ? tracks.Count : release.Tracks.Count;
 
             album_title = release.Title;
 

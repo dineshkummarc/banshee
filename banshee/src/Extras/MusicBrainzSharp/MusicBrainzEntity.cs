@@ -66,16 +66,19 @@ namespace MusicBrainzSharp
             bool result = true;
             switch(reader.Name) {
             case "name":
-                reader.Read();
-                name = reader.ReadContentAsString();
+				reader.Read();
+				if(reader.NodeType == XmlNodeType.Text)
+					name = reader.ReadContentAsString();
                 break;
             case "sort-name":
-                reader.Read();
-                sort_name = reader.ReadContentAsString();
+				reader.Read();
+				if(reader.NodeType == XmlNodeType.Text)
+				   sort_name = reader.ReadContentAsString();
                 break;
-            case "disambiguation":
+			case "disambiguation":
                 reader.Read();
-                disambiguation = reader.ReadContentAsString();
+				if(reader.NodeType == XmlNodeType.Text)
+					disambiguation = reader.ReadContentAsString();
                 break;
             case "life-span":
                 begin_date = reader["begin"];
@@ -85,13 +88,14 @@ namespace MusicBrainzSharp
                 if(reader.ReadToDescendant("alias")) {
                     aliases = new List<string>();
                     do {
-                        reader.Read();
-                        aliases.Add(reader.ReadContentAsString());
+						reader.Read();
+						if(reader.NodeType == XmlNodeType.Text)
+							aliases.Add(reader.ReadContentAsString());
                     } while(reader.ReadToNextSibling("alias"));
                 }
                 break;
             default:
-                result = false;
+				result = false;
                 break;
             }
             return result;

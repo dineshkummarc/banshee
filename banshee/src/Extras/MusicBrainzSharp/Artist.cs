@@ -119,7 +119,8 @@ namespace MusicBrainzSharp
                     }
                     break;
                 default:
-                    result = false;
+					reader.Skip(); // FIXME this is a workaround for a Mono bug :(                  
+					result = false;
                     break;
                 }
             }

@@ -73,20 +73,20 @@ namespace MusicBrainzSharp
                 }
             );
         }
-        
+
         protected abstract bool HandleAttributes(XmlReader reader);
         protected abstract bool HandleXml(XmlReader reader);
         void CreateFromXml(XmlReader reader)
         {
-            reader.Read();
+			reader.Read();
             mbid = reader["id"];
             string score = reader["ext:score"];
             if(score != null)
                 this.score = byte.Parse(score);
             HandleAttributes(reader);
-            while(reader.Read() && reader.NodeType != XmlNodeType.EndElement)
-                if(reader.Name == "relation-list")
-                    switch(reader["target-type"]) {
+            while(reader.Read() && reader.NodeType != XmlNodeType.EndElement) {
+				if(reader.Name == "relation-list")                  
+					switch(reader["target-type"]) {
                     case "Artist":
                         artist_rels = new List<Relation<Artist>>();
                         CreateRelation<Artist>(reader.ReadSubtree(), artist_rels);
@@ -104,8 +104,8 @@ namespace MusicBrainzSharp
                         CreateRelation<Label>(reader.ReadSubtree(), label_rels);
                         break;
                     case "Url":
-                        if(!reader.ReadToDescendant("relation"))
-                            break;
+						if(!reader.ReadToDescendant("relation"))
+							break;
                         url_rels = new List<UrlRelation>();
                         do {
                             RelationDirection direction = RelationDirection.Forward;
@@ -125,11 +125,12 @@ namespace MusicBrainzSharp
                                 attributes));
                         } while(reader.ReadToNextSibling("relation"));
                         break;
-                    }
-                else
+				    }
+				else
                     HandleXml(reader.ReadSubtree());
+			}
             reader.Close();
-        }
+		}
 
         protected void LoadAllData()
         {
@@ -228,7 +229,7 @@ namespace MusicBrainzSharp
 
         #region Static Methods
 
-        static bool CreateRelation<T>(XmlReader reader, List<Relation<T>> relations) where T : MusicBrainzObject
+        static void CreateRelation<T>(XmlReader reader, List<Relation<T>> relations) where T : MusicBrainzObject
         {
             ConstructorInfo constructor = typeof(T).GetConstructor(
                 BindingFlags.NonPublic | BindingFlags.Instance,
@@ -236,9 +237,7 @@ namespace MusicBrainzSharp
                 new Type[] { typeof(XmlReader) },
                 null);
 
-            bool found = false;
             while(reader.ReadToFollowing("relation")) {
-                found = true;
                 string type = reader["type"];
                 RelationDirection direction = RelationDirection.Forward;
                 string direction_string = reader["direction"];
@@ -261,7 +260,6 @@ namespace MusicBrainzSharp
                     attributes));
             }
             reader.Close();
-            return found;
         }
         
         static string CreateParameters(string query)
@@ -311,8 +309,12 @@ namespace MusicBrainzSharp
                 Thread.Sleep(min_interval.Subtract(time).Milliseconds);
 
             HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
-            if(CachePolicy != null)
+            bool cache_implemented = false;
+            try {
                 request.CachePolicy = CachePolicy;
+                cache_implemented = true;
+            } catch(System.NotImplementedException) {
+            }
             HttpWebResponse response = null;
             try {
                 response = request.GetResponse() as HttpWebResponse;
@@ -332,17 +334,19 @@ namespace MusicBrainzSharp
                 throw new MusicBrainzNotFoundException();
             }
 
-            if(XmlRequest != null)
-                XmlRequest(url, response.IsFromCache);
+            bool from_cache = cache_implemented && response.IsFromCache;
 
-            if(response.IsFromCache)
+            if(XmlRequest != null)
+                XmlRequest(url, from_cache);
+
+            if(from_cache)
                 Monitor.Exit(server_mutex);
 
             // Should we read the stream into a memory stream and run the XmlReader off of that?
             code(new XmlTextReader(response.GetResponseStream()));
             response.Close();
 
-            if(!response.IsFromCache) {
+            if(!from_cache) {
                 last_accessed = DateTime.Now;
                 Monitor.Exit(server_mutex);
             }
