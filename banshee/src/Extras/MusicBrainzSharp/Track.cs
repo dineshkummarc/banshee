@@ -83,6 +83,11 @@ namespace MusicBrainzSharp
         {
         }
 
+        Track(string mbid, string parameters)
+            : base(mbid, parameters)
+        {
+        }
+
         internal Track(XmlReader reader)
             : base(reader)
         {
@@ -95,16 +100,21 @@ namespace MusicBrainzSharp
 
         protected override void HandleCreateInc(StringBuilder builder)
         {
-            builder.Append("+releases+puids");
+            if(releases == null)
+                AppendIncParameters(builder, "releases");
+            if(puids == null)
+                AppendIncParameters(builder, "puids");
             base.HandleCreateInc(builder);
         }
 
         public override void HandleLoadAllData()
         {
-            Track track = Track.Get(MBID);
+            Track track = new Track(MBID, CreateInc());
             duration = track.Duration;
-            releases = track.Releases;
-            puids = track.Puids;
+            if(releases == null)
+                releases = track.Releases;
+            if(puids == null)
+                puids = track.Puids;
             base.HandleLoadAllData(track);
         }
 
@@ -140,7 +150,7 @@ namespace MusicBrainzSharp
                     }
                     break;
                 default:
-					reader.Skip(); // FIXME this is a workaround for a Mono bug :(
+					reader.Skip(); // FIXME this is a workaround for Mono bug 334752
 					result = false;
                     break;
                 }

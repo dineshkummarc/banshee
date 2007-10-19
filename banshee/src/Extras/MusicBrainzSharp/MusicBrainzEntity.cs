@@ -47,7 +47,9 @@ namespace MusicBrainzSharp
 
         protected override void HandleCreateInc(StringBuilder builder)
         {
-            builder.Append("+aliases");
+            if(aliases == null)
+                AppendIncParameters(builder, "aliases");
+            base.HandleCreateInc(builder);
         }
 
         protected void HandleLoadAllData(MusicBrainzEntity entity)
@@ -57,7 +59,8 @@ namespace MusicBrainzSharp
             disambiguation = entity.Disambiguation;
             begin_date = entity.BeginDate;
             end_date = entity.EndDate;
-            aliases = entity.Aliases;
+            if(aliases == null)
+                aliases = entity.Aliases;
             base.HandleLoadAllData(entity);
         }
         

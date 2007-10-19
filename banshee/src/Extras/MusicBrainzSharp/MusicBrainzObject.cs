@@ -38,6 +38,7 @@ namespace MusicBrainzSharp
 
         protected MusicBrainzObject(string mbid, string parameters)
         {
+            all_data_loaded = true;
             CreateFromMbid(mbid, parameters);
         }
 
@@ -52,13 +53,30 @@ namespace MusicBrainzSharp
             CreateFromXml(reader);
         }
 
-        protected abstract void HandleCreateInc(StringBuilder builder);
-        string CreateInc()
+        protected string CreateInc()
         {
             StringBuilder builder = new StringBuilder(70);
-            builder.Append("&inc=artist-rels+release-rels+track-rels+label-rels+url-rels");
             HandleCreateInc(builder);
             return builder.ToString();
+        }
+
+        protected virtual void HandleCreateInc(StringBuilder builder)
+        {
+            if(!all_rels_loaded)
+                AppendIncParameters(builder,
+                    "artist-rels",
+                    "release-rels",
+                    "track-rels",
+                    "label-rels",
+                    "url-rels");
+        }
+
+        protected void AppendIncParameters(StringBuilder builder, params string[] parameters)
+        {
+            foreach(string parameter in parameters) {
+                builder.Append(builder.Length == 0 ? "&inc=" : "+");
+                builder.Append(parameter);
+            }
         }
 
         void CreateFromMbid(string mbid, string parameters)
@@ -85,8 +103,9 @@ namespace MusicBrainzSharp
                 this.score = byte.Parse(score);
             HandleAttributes(reader);
             while(reader.Read() && reader.NodeType != XmlNodeType.EndElement) {
-				if(reader.Name == "relation-list")                  
-					switch(reader["target-type"]) {
+                if(reader.Name == "relation-list") {
+                    all_rels_loaded = true;
+                    switch(reader["target-type"]) {
                     case "Artist":
                         artist_rels = new List<Relation<Artist>>();
                         CreateRelation<Artist>(reader.ReadSubtree(), artist_rels);
@@ -104,8 +123,8 @@ namespace MusicBrainzSharp
                         CreateRelation<Label>(reader.ReadSubtree(), label_rels);
                         break;
                     case "Url":
-						if(!reader.ReadToDescendant("relation"))
-							break;
+                        if(!reader.ReadToDescendant("relation"))
+                            break;
                         url_rels = new List<UrlRelation>();
                         do {
                             RelationDirection direction = RelationDirection.Forward;
@@ -125,8 +144,8 @@ namespace MusicBrainzSharp
                                 attributes));
                         } while(reader.ReadToNextSibling("relation"));
                         break;
-				    }
-				else
+                    }
+                } else
                     HandleXml(reader.ReadSubtree());
 			}
             reader.Close();
@@ -143,11 +162,13 @@ namespace MusicBrainzSharp
         public abstract void HandleLoadAllData();
         protected void HandleLoadAllData(MusicBrainzObject obj)
         {
-            artist_rels = obj.ArtistRelations;
-            release_rels = obj.ReleaseRelations;
-            track_rels = obj.TrackRelations;
-            label_rels = obj.LabelRelations;
-            url_rels = obj.UrlRelations;
+            if(!all_rels_loaded) {
+                artist_rels = obj.ArtistRelations;
+                release_rels = obj.ReleaseRelations;
+                track_rels = obj.TrackRelations;
+                label_rels = obj.LabelRelations;
+                url_rels = obj.UrlRelations;
+            }
         }
 
         #region Properties

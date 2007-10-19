@@ -28,7 +28,7 @@ namespace MusicBrainzSharp
                     }
 			if(reader.ReadToDescendant("label")) {
 				label = new Label(reader.ReadSubtree());
-				reader.Read(); // FIXME this is a workaround for a Mono bug :(
+				reader.Read(); // FIXME this is a workaround for Mono bug 334752
 			}
             reader.Close();
 		}

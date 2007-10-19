@@ -28,6 +28,11 @@ namespace MusicBrainzSharp
         {
         }
 
+        Label(string mbid, string parameters)
+            : base(mbid, parameters)
+        {
+        }
+
         internal Label(XmlReader reader)
             : base(reader)
         {
@@ -35,7 +40,7 @@ namespace MusicBrainzSharp
 
         public override void HandleLoadAllData()
         {
-            Label label = Label.Get(MBID);
+            Label label = new Label(MBID, CreateInc());
             type = label.Type;
             base.HandleLoadAllData(label);
         }
@@ -62,7 +67,7 @@ namespace MusicBrainzSharp
 					if(reader.NodeType == XmlNodeType.Text)
 						country = reader.ReadContentAsString();
 				} else
-					reader.Skip(); // FIXME this is a workaround for a Mono bug :(
+					reader.Skip(); // FIXME this is a workaround for Mono bug 334752
 			}
             reader.Close();
             return result;

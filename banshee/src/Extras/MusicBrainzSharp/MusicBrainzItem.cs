@@ -86,6 +86,11 @@ namespace MusicBrainzSharp
         {
         }
 
+        protected MusicBrainzItem(string mbid, string parameters)
+            : base(mbid, parameters)
+        {
+        }
+
         protected MusicBrainzItem(XmlReader reader)
             : base(reader)
         {
@@ -98,13 +103,16 @@ namespace MusicBrainzSharp
 
         protected override void HandleCreateInc(StringBuilder builder)
         {
-            builder.Append("+artist");
+            if(artist == null)
+                AppendIncParameters(builder, "artist");
+            base.HandleCreateInc(builder);
         }
 
         public void HandleLoadAllData(MusicBrainzItem item)
         {
             title = item.Title;
-            artist = item.Artist;
+            if(artist == null)
+                artist = item.Artist;
             base.HandleLoadAllData(item);
         }
 

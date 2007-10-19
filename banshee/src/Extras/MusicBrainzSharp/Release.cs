@@ -128,6 +128,13 @@ namespace MusicBrainzSharp
         Release(string mbid)
             : base(mbid)
         {
+            all_events_loaded = true;
+        }
+
+        Release(string mbid, string parameters)
+            : base(mbid, parameters)
+        {
+            all_events_loaded = true;
         }
 
         internal Release(XmlReader reader)
@@ -137,21 +144,31 @@ namespace MusicBrainzSharp
 
         protected override void HandleCreateInc(StringBuilder builder)
         {
-            builder.Append("+release-events+labels+discs+tracks+track-level-rels");
+            if(!all_events_loaded)
+                AppendIncParameters(builder, "release-events", "labels");
+            if(discs == null)
+                AppendIncParameters(builder, "discs");
+            if(tracks == null)
+                AppendIncParameters(builder, "tracks", "track-level-rels");
             base.HandleCreateInc(builder);
         }
 
         public override void HandleLoadAllData()
         {
-            Release release = Release.Get(MBID);
+            Release release = new Release(MBID, CreateInc());
             type = release.Type;
             status = release.Status;
             language = release.Language;
             script = release.Script;
             asin = release.Asin;
-            discs = release.Discs;
-            events = release.Events;
-            tracks = release.Tracks;
+            if(!all_events_loaded) {
+                events = release.Events;
+                all_events_loaded = true;
+            }
+            if(discs == null)
+                discs = release.Discs;
+            if(tracks == null)
+                tracks = release.Tracks;
             base.HandleLoadAllData(release);
         }
 
@@ -227,7 +244,7 @@ namespace MusicBrainzSharp
                     break;
                 }
                 default:
-					reader.Skip(); // FIXME this is a workaround for a Mono bug :(
+                    reader.Skip(); // FIXME this is a workaround for Mono bug 334752
 					result = false;
                     break;
                 }
@@ -298,11 +315,12 @@ namespace MusicBrainzSharp
             }
         }
 
+        bool all_events_loaded;
         List<Event> events;
         public List<Event> Events
         {
             get {
-                if(events == null)
+                if(events == null || !all_events_loaded)
                     LoadAllData();
                 return events ?? new List<Event>();
             }

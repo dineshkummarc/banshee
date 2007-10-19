@@ -65,6 +65,11 @@ namespace MusicBrainzSharp
         {
         }
 
+        Artist(string mbid, string parameters)
+            : base(mbid, parameters)
+        {
+        }
+
         Artist(string mbid, string parameters, Inc[] release_incs)
             : base(mbid, parameters)
         {
@@ -85,7 +90,7 @@ namespace MusicBrainzSharp
 
         public override void HandleLoadAllData()
         {
-            Artist artist = Artist.Get(MBID);
+            Artist artist = new Artist(MBID, CreateInc());
             type = artist.Type;
             base.HandleLoadAllData(artist);
         }
@@ -119,7 +124,7 @@ namespace MusicBrainzSharp
                     }
                     break;
                 default:
-					reader.Skip(); // FIXME this is a workaround for a Mono bug :(                  
+					reader.Skip(); // FIXME this is a workaround for Mono bug 334752                  
 					result = false;
                     break;
                 }
