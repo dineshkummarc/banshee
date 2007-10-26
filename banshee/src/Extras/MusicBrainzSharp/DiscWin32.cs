@@ -20,9 +20,9 @@ namespace MusicBrainzSharp
         {
             string device_string = device.Length == 0
                 ? "cdaudio"
-                : String.Format("{0} type cdaudio", device);
+                : string.Format("{0} type cdaudio", device);
 
-            string alias = String.Format("musicbrainz_cdio_{0}_{1}",
+            string alias = string.Format("musicbrainz_cdio_{0}_{1}",
                 Environment.TickCount, Thread.CurrentThread.ManagedThreadId);
 
             MciClosure(
@@ -34,12 +34,12 @@ namespace MusicBrainzSharp
                 });
 
             MciClosure(
-                String.Format("open {0} shareable alias {1} wait", device_string, alias),
-                String.Format("Could not open device {0}", device),
+                string.Format("open {0} shareable alias {1} wait", device_string, alias),
+                string.Format("Could not open device {0}", device),
                 null);
 
             MciClosure(
-                String.Format("status {0} number of tracks wait", alias),
+                string.Format("status {0} number of tracks wait", alias),
                 "Could not read number of tracks",
                 delegate(string result) {
                     FirstTrack = 1;
@@ -47,14 +47,14 @@ namespace MusicBrainzSharp
                 });
 
             MciClosure(
-                String.Format("set {0} time format msf wait", alias),
+                string.Format("set {0} time format msf wait", alias),
                 "Could not set time format",
                 null);
 
             for(int i = 1; i <= LastTrack; i++)
                 MciClosure(
-                    String.Format("status {0} position track {1} wait", alias, i),
-                    String.Format("Could not get position for track {0}", i),
+                    string.Format("status {0} position track {1} wait", alias, i),
+                    string.Format("Could not get position for track {0}", i),
                     delegate(string result) {
                         TrackOffsets[i] =
                             int.Parse(result.Substring(0,2)) * 4500 +
@@ -63,7 +63,7 @@ namespace MusicBrainzSharp
                     });
 
             MciClosure(
-                String.Format("status {0} length track {1} wait", alias, LastTrack),
+                string.Format("status {0} length track {1} wait", alias, LastTrack),
                 "Could not read the length of the last track",
                 delegate(string result) {
                     TrackOffsets[0] =
@@ -74,8 +74,8 @@ namespace MusicBrainzSharp
                 });
 
             MciClosure(
-                String.Format("close {0} wait", alias),
-                String.Format("Could not close device {0}", device),
+                string.Format("close {0} wait", alias),
+                string.Format("Could not close device {0}", device),
                 null);
         }
 
@@ -86,7 +86,7 @@ namespace MusicBrainzSharp
             int ret = mciSendString(command, mci_result, mci_result.Capacity, IntPtr.Zero);
             if(ret != 0) {
                 mciGetErrorString(ret, mci_error, mci_error.Capacity);
-                throw new Exception(String.Format("{0} : {1}", failure_message, mci_error.ToString()));
+                throw new Exception(string.Format("{0} : {1}", failure_message, mci_error.ToString()));
             } else if(code != null)
                 code(mci_result.ToString());
         }

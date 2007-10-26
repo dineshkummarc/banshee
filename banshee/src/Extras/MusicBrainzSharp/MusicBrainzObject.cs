@@ -55,7 +55,7 @@ namespace MusicBrainzSharp
 
         protected string CreateInc()
         {
-            StringBuilder builder = new StringBuilder(70);
+            StringBuilder builder = new StringBuilder();
             HandleCreateInc(builder);
             return builder.ToString();
         }
@@ -151,16 +151,16 @@ namespace MusicBrainzSharp
             reader.Close();
 		}
 
-        protected void LoadAllData()
+        protected void LoadMissingData()
         {
             if(!all_data_loaded) {
-                HandleLoadAllData();
+                HandleLoadMissingData();
                 all_data_loaded = true;
             }
         }
 
-        public abstract void HandleLoadAllData();
-        protected void HandleLoadAllData(MusicBrainzObject obj)
+        public abstract void HandleLoadMissingData();
+        protected void HandleMissingAllData(MusicBrainzObject obj)
         {
             if(!all_rels_loaded) {
                 artist_rels = obj.ArtistRelations;
@@ -190,7 +190,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(artist_rels == null && !all_rels_loaded)
-                    LoadAllData();
+                    LoadMissingData();
                 return artist_rels ?? new List<Relation<Artist>>();
             }
         }
@@ -200,7 +200,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(release_rels == null && !all_rels_loaded)
-                    LoadAllData();
+                    LoadMissingData();
                 return release_rels ?? new List<Relation<Release>>();
             }
         }
@@ -210,7 +210,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(track_rels == null && !all_rels_loaded)
-                    LoadAllData();
+                    LoadMissingData();
                 return track_rels ?? new List<Relation<Track>>();
             }
         }
@@ -220,7 +220,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(label_rels == null && !all_rels_loaded)
-                    LoadAllData();
+                    LoadMissingData();
                 return label_rels ?? new List<Relation<Label>>();
             }
         }
@@ -230,7 +230,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(url_rels == null && !all_rels_loaded)
-                    LoadAllData();
+                    LoadMissingData();
                 return url_rels ?? new List<UrlRelation>();
             }
         }

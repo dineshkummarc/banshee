@@ -12,6 +12,7 @@ namespace MusicBrainzSharp
         Unspecified
     }
 
+    // FIXME this stuff needs to be cleaned up!
     public enum ArtistReleasesIncType
     {
         [StringValue("sa-")] SingleArtist,
@@ -88,7 +89,7 @@ namespace MusicBrainzSharp
             this.release_incs = release_incs;
         }
 
-        public override void HandleLoadAllData()
+        public override void HandleLoadMissingData()
         {
             Artist artist = new Artist(MBID, CreateInc());
             type = artist.Type;
@@ -140,7 +141,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(!type.HasValue)
-                    LoadAllData();
+                    LoadMissingData();
                 return type.HasValue ? type.Value : ArtistType.Unspecified;
             }
         }

@@ -63,10 +63,10 @@ namespace MusicBrainzSharp
         void GenerateId()
         {
             SHA1MusicBrainz sha1 = new SHA1MusicBrainz();
-            sha1.Update(String.Format("{0:X2}", FirstTrack));
-            sha1.Update(String.Format("{0:X2}", LastTrack));
+            sha1.Update(string.Format("{0:X2}", FirstTrack));
+            sha1.Update(string.Format("{0:X2}", LastTrack));
             for(int i = 0; i < 100; i++)
-                sha1.Update(String.Format("{0:X8}", track_offsets[i]));
+                sha1.Update(string.Format("{0:X8}", track_offsets[i]));
 
             // MB uses a slightly modified RFC822 for reasons of URL happiness.
             string base64 = Convert.ToBase64String(sha1.Final());

@@ -18,7 +18,7 @@ namespace MusicBrainzSharp
                 else {
                     builder.Append('%');
                     foreach(byte b in Encoding.UTF8.GetBytes(new char[] { c }))
-                        builder.Append(String.Format("{0:X}", b));
+                        builder.Append(string.Format("{0:X}", b));
                 } 
             }
         }

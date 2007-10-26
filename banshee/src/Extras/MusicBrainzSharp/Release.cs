@@ -128,13 +128,11 @@ namespace MusicBrainzSharp
         Release(string mbid)
             : base(mbid)
         {
-            all_events_loaded = true;
         }
 
         Release(string mbid, string parameters)
             : base(mbid, parameters)
         {
-            all_events_loaded = true;
         }
 
         internal Release(XmlReader reader)
@@ -144,8 +142,7 @@ namespace MusicBrainzSharp
 
         protected override void HandleCreateInc(StringBuilder builder)
         {
-            if(!all_events_loaded)
-                AppendIncParameters(builder, "release-events", "labels");
+            AppendIncParameters(builder, "release-events", "labels");
             if(discs == null)
                 AppendIncParameters(builder, "discs");
             if(tracks == null)
@@ -153,7 +150,7 @@ namespace MusicBrainzSharp
             base.HandleCreateInc(builder);
         }
 
-        public override void HandleLoadAllData()
+        public override void HandleLoadMissingData()
         {
             Release release = new Release(MBID, CreateInc());
             type = release.Type;
@@ -161,10 +158,7 @@ namespace MusicBrainzSharp
             language = release.Language;
             script = release.Script;
             asin = release.Asin;
-            if(!all_events_loaded) {
-                events = release.Events;
-                all_events_loaded = true;
-            }
+            events = release.Events;
             if(discs == null)
                 discs = release.Discs;
             if(tracks == null)
@@ -260,7 +254,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(!type.HasValue)
-                    LoadAllData();
+                    LoadMissingData();
                 return type.HasValue ? type.Value : ReleaseType.None;
             }
         }
@@ -270,7 +264,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(!status.HasValue)
-                    LoadAllData();
+                    LoadMissingData();
                 return status.HasValue ? status.Value : ReleaseStatus.None;
             }
         }
@@ -280,7 +274,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(language == null)
-                    LoadAllData();
+                    LoadMissingData();
                 return language;
             }
         }
@@ -290,7 +284,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(script == null)
-                    LoadAllData();
+                    LoadMissingData();
                 return script;
             }
         }
@@ -300,7 +294,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(asin == null)
-                    LoadAllData();
+                    LoadMissingData();
                 return asin;
             }
         }
@@ -310,18 +304,17 @@ namespace MusicBrainzSharp
         {
             get {
                 if(discs == null)
-                    LoadAllData();
+                    LoadMissingData();
                 return discs ?? new List<Disc>();
             }
         }
 
-        bool all_events_loaded;
         List<Event> events;
         public List<Event> Events
         {
             get {
-                if(events == null || !all_events_loaded)
-                    LoadAllData();
+                if(events == null)
+                    LoadMissingData();
                 return events ?? new List<Event>();
             }
         }
@@ -331,7 +324,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(tracks == null)
-                    LoadAllData();
+                    LoadMissingData();
                 return tracks ?? new List<Track>(); 
             }
         }

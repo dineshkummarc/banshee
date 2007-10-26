@@ -38,7 +38,7 @@ namespace MusicBrainzSharp
         {
         }
 
-        public override void HandleLoadAllData()
+        public override void HandleLoadMissingData()
         {
             Label label = new Label(MBID, CreateInc());
             type = label.Type;
@@ -78,7 +78,7 @@ namespace MusicBrainzSharp
 		{
 			get {
 				if(country == null)
-					LoadAllData();
+					LoadMissingData();
 				return country;
 			}
 		}
@@ -88,7 +88,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(!type.HasValue)
-                    LoadAllData();
+                    LoadMissingData();
                 return type.HasValue ? type.Value : LabelType.Unspecified;
             }
         }

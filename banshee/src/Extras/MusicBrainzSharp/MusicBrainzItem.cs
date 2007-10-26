@@ -113,7 +113,7 @@ namespace MusicBrainzSharp
             title = item.Title;
             if(artist == null)
                 artist = item.Artist;
-            base.HandleLoadAllData(item);
+            base.HandleMissingAllData(item);
         }
 
         protected override bool HandleXml(XmlReader reader)
@@ -140,7 +140,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(title == null)
-                    LoadAllData();
+                    LoadMissingData();
                 return title;
             }
         }
@@ -150,7 +150,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(artist == null)
-                    LoadAllData();
+                    LoadMissingData();
                 return artist;
             }
         }

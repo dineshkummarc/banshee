@@ -107,7 +107,7 @@ namespace MusicBrainzSharp
             base.HandleCreateInc(builder);
         }
 
-        public override void HandleLoadAllData()
+        public override void HandleLoadMissingData()
         {
             Track track = new Track(MBID, CreateInc());
             duration = track.Duration;
@@ -172,7 +172,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(releases == null)
-                    LoadAllData();
+                    LoadMissingData();
                 return releases ?? new List<Release>();
             }
         }
@@ -182,7 +182,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(puids == null)
-                    LoadAllData();
+                    LoadMissingData();
                 return puids ?? new List<string>();
             }
         }

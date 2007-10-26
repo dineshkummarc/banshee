@@ -61,7 +61,7 @@ namespace MusicBrainzSharp
             end_date = entity.EndDate;
             if(aliases == null)
                 aliases = entity.Aliases;
-            base.HandleLoadAllData(entity);
+            base.HandleMissingAllData(entity);
         }
         
         protected override bool HandleXml(XmlReader reader)
@@ -111,7 +111,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(name == null)
-                    LoadAllData();
+                    LoadMissingData();
                 return name;
             }
         }
@@ -121,7 +121,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(sort_name == null)
-                    LoadAllData();
+                    LoadMissingData();
                 return sort_name;
             }
         }
@@ -131,7 +131,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(disambiguation == null)
-                    LoadAllData();
+                    LoadMissingData();
                 return disambiguation;
             }
         }
@@ -141,7 +141,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(begin_date == null)
-                    LoadAllData();
+                    LoadMissingData();
                 return begin_date;
             }
         }
@@ -151,7 +151,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(end_date == null)
-                    LoadAllData();
+                    LoadMissingData();
                 return end_date;
             }
         }
@@ -161,7 +161,7 @@ namespace MusicBrainzSharp
         {
             get {
                 if(aliases == null)
-                    LoadAllData();
+                    LoadMissingData();
                 return aliases ?? new List<string>();
             }
         }
