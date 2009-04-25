@@ -1,5 +1,5 @@
 dnl Automake setup
-AC_INIT([banshee-1], [1.4.4-beta1])
+AC_INIT([banshee-1], [1.4.4beta1])
 DISPLAY_VERSION="1.4.4 Beta 1"
 API_VERSION="1.4"
 ASM_VERSION="$API_VERSION.0.0"
