@@ -192,7 +192,7 @@ namespace Banshee.Daap
                    body += "<ul>";
                    foreach(DAAP.Database database in (ArrayList)databases.Clone()) {
                        body += String.Format("<li><a href=\"/{0}\">{1} ({2} Tracks)</a></li>",
-                           database.GetHashCode(), database.Name, database.TrackCount);
+                           database.GetHashCode(), Escape (database.Name), database.TrackCount);
                    }
                    body += "</ul>";
                }
@@ -209,7 +209,7 @@ namespace Banshee.Daap
                         continue;
                     }
                     
-                    body = GetHtmlHeader("Tracks in " + database.Name);
+                    body = GetHtmlHeader("Tracks in " + Escape (database.Name));
                     
                     if(database.TrackCount == 0) {
                         body += "<blockquote><p><em>No songs in this database.</em></p></blockquote>";
@@ -217,7 +217,7 @@ namespace Banshee.Daap
                         body += "<p>Showing all " + database.TrackCount + " songs:</p><ul>";
                         foreach(DAAP.Track song in database.Tracks) {
                             body += String.Format("<li><a href=\"/{0}/{1}\">{2} - {3}</a> ({4}:{5})</li>",
-                                database.GetHashCode(), song.Id, song.Artist, song.Title, 
+                                database.GetHashCode(), song.Id, Escape (song.Artist), Escape (song.Title), 
                                 song.Duration.Minutes, song.Duration.Seconds.ToString("00"));
                         }
                         body += "</ul>";
@@ -275,7 +275,7 @@ namespace Banshee.Daap
                code = HttpStatusCode.BadRequest;
                body = GetHtmlHeader("Invalid Request");
                body += String.Format("<p>The request '{0}' could not be processed by server.</p>",
-                   split_request[1]);
+                   Escape (split_request[1]));
             }
 
             WriteResponse(client, code, body + GetHtmlFooter());
@@ -350,6 +350,11 @@ namespace Banshee.Daap
                     }
                 }
             }
+        }
+
+        private static string Escape (string input)
+        {
+            return String.IsNullOrEmpty (input) ? "" : System.Web.HttpUtility.HtmlEncode (input);
         }
         
         private static string GetHtmlHeader(string title)
