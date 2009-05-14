@@ -194,6 +194,8 @@ namespace Banshee.Dap
         {
             if (Enabled) {
                 Log.InformationFormat ("Syncing {0}, in main thread? {1}", library, Banshee.Base.ThreadAssist.InMainThread);
+                CalculateSync ();
+
                 if (to_remove.Count > 0) {
                     Log.DebugFormat ("deleting items for {0} - {1} items; to_remove is smartplaylist {2}, with cachid {3}", library.Name, to_remove.Count, to_remove.DbId, to_remove.DatabaseTrackModel.CacheId);
                     sync.Dap.DeleteAllTracks (to_remove);
