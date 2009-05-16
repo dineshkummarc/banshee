@@ -111,7 +111,7 @@ namespace Hyena.Widgets
         protected override void OnRealized ()
         {
             base.OnRealized ();
-            theme = Hyena.Gui.Theming.ThemeEngine.CreateTheme (this);
+            theme = new GtkTheme (this);
         }
         
         protected override void OnSizeAllocated (Gdk.Rectangle allocation)
