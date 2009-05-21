@@ -1,5 +1,5 @@
 ===============================================================================
-WELCOME TO BANSHEE 1.4.3 - Released March 4, 2009
+WELCOME TO BANSHEE 1.4.4 - Released May 22, 2009
 ===============================================================================
 
   * Banshee is a multimedia management and playback application for GNOME.
@@ -10,28 +10,24 @@ WELCOME TO BANSHEE 1.4.3 - Released March 4, 2009
     experience automatic cover art fetching as you listen; and easily browse,
     search, and control your media collection."
 
-  * Learn More: http://banshee-project.org/download/archives/1.4.3/
+  * Learn More: http://banshee-project.org/download/archives/1.4.4/
 
 
 ===============================================================================
 NEW AWESOME FEATURES AND ENHANCEMENTS
 ===============================================================================
 
-    Banshee 1.4.3 is primarily a bug fix release, and is considered stable.
+    Banshee 1.4.4 is primarily a bug fix release, and is considered stable.
     
     Notable bug fixes:
 
-      * Common freeze triggered by column resizing
-      * Vastly improved MTP support
-      * Occasional freeze when loading some devices
-      * Playing internet radio playlists blocking the UI
-      * Device playlist sync
-      * Some podcast files not downloadable due to illegal filename
-      * Show Recommendations check box state set properly
-      * Crash on delete from File System Queue
-      * Minor recommendations theming issue
-
-      * 17 bugs were FIXED since 1.4.2
+      * Fix bug in DAP syncing, ensuring changes to library accounted for
+      * Fix playlists menu screen-grab/freeze
+      * Fix album art for MTP devices and libmtp8
+      * Faster startup time
+      * Allow setting the scrobble API url, to support Libre.fm
+      * Fix bug in indexer that would cause endless indexing attempts
+      * Fix for XSPF playlist parsing, particularly for OS X
 
 
 ===============================================================================
@@ -41,9 +37,9 @@ SOURCES / PACKAGES
 Sources
 -------
 
-    * Banshee 1.4.3 Tarballs:
-      http://download.banshee-project.org/banshee/banshee-1-1.4.3.tar.bz2
-      http://download.banshee-project.org/banshee/banshee-1-1.4.3.tar.gz
+    * Banshee 1.4.4 Tarballs:
+      http://download.banshee-project.org/banshee/banshee-1-1.4.4.tar.bz2
+      http://download.banshee-project.org/banshee/banshee-1-1.4.4.tar.gz
 
 Packages
 --------
@@ -59,13 +55,13 @@ Packages
 
     Binaries for Mac OS X 10.4 and 10.5:
 
-    * http://download.banshee-project.org/banshee/banshee-1-1.4.3.macosx.intel.dmg
+    * http://download.banshee-project.org/banshee/banshee-1-1.4.4.macosx.intel.dmg
 
 ChangeLogs & Checksums
 ----------------------
 
-    * http://download.banshee-project.org/banshee/banshee-1-1.4.3.changes
-    * http://download.banshee-project.org/banshee/banshee-1-1.4.3.sha1sum
+    * http://download.banshee-project.org/banshee/banshee-1-1.4.4.changes
+    * http://download.banshee-project.org/banshee/banshee-1-1.4.4.sha1sum
 
 
 ===============================================================================
@@ -80,14 +76,14 @@ DEPENDENCIES
     * NDesk DBus (ndesk-dbus) 0.5
     * NDesk DBus GLib (ndesk-dbus-glib) 0.3
     * Mono.Addins (mono-addins) 0.3.1
-    * TagLib# (taglib-sharp) 2.0.3.1
+    * TagLib# (taglib-sharp) 2.0.3.1 (2.0.3.2 recommended)
 
     * Required to build default feature stack:
       * libmtp >= 0.2.0 
         * Note to packagers: since libmtp has different .so files for
           different versions, you need to require in your package the same
           version of libmtp you used to build Banshee.
-      * ipod-sharp >= 0.8.1
+      * ipod-sharp >= 0.8.1 (0.8.2 recommended)
       * mono-zeroconf >= 0.8.0
       * boo >= 0.8.1
 
@@ -126,7 +122,7 @@ REPORT BUGS - HELP THE PROJECT - GROW THE COMMUNITY
     hesitate to file bugs!
 
     * http://banshee-project.org/contribute/file-bugs
-    * http://bugzilla.gnome.org/enter_bug.cgi?product=banshee&version=1.4.3
+    * http://bugzilla.gnome.org/enter_bug.cgi?product=banshee&version=1.4.4
 
 
 ===============================================================================
@@ -139,9 +135,8 @@ Contributors For This Release
     The following people directly contributed to the release of this version
     of Banshee. Without their help, there would be no release!
 
-      Aaron Bockover, Andrés G. Aragoneses, Bertrand Lorentz, Chris Jones,
-      Christian Krause, Eoin Hennessy, Félix Velasco, Gabriel Burt,
-      John Millikin, William Pettersson
+      Aaron Bockover, Alex Launi, Andrés G. Aragoneses, Eoin Hennessy,
+      Gabriel Burt
 
 Contributors In Past Releases
 -----------------------------
