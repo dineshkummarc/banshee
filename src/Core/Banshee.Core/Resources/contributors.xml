@@ -4,32 +4,45 @@
   <author role="Developer">Scott Peterson</author>
   <contributor>Alan McGovern</contributor>
   <contributor>Alex Kloss</contributor>
+  <contributor>Alex Launi</contributor>
   <contributor>Alexander Hixon</contributor>
   <contributor>Alexandros Frantzis</contributor>
   <contributor>Alp Toker</contributor>
+  <contributor>Andrés G. Aragoneses</contributor>
   <contributor>Andrew Conkling</contributor>
   <contributor>Andy Midgette</contributor>
+  <contributor>Arthur Carli</contributor>
   <contributor>Aydemir Ulaş Şahin</contributor>
   <contributor>Ben Maurer</contributor>
+  <contributor>Benjamín Valero Espinosa</contributor>
   <contributor>Bertrand Lorentz</contributor>
   <contributor>Bill Dawson</contributor>
   <contributor>Bob Copeland</contributor> 
   <contributor>Bojan Rajkovic</contributor>
   <contributor>Brad Taylor</contributor>
+  <contributor>Brandon Perry</contributor>
   <contributor>Brian Nickel</contributor>
+  <contributor>Brian Teague</contributor>
+  <contributor>Chris Howie</contributor>
+  <contributor>Chris Jones</contributor>
   <contributor>Chris Lahey</contributor>
   <contributor>Chris Toshok</contributor>
   <contributor>Chris Turchin</contributor>
   <contributor>Christian Krause</contributor>
+  <contributor>Christoph Burgdorf</contributor>
   <contributor>Christopher Halse Rogers</contributor>
   <contributor>Dan Wilson</contributor>
   <contributor>Dan Winship</contributor>
   <contributor>Daniel Munkton</contributor>
   <contributor>David Spreen</contributor>
+  <contributor>Eoin Hennessy</contributor>
   <contributor>Eric Butler</contributor>
+  <contributor>Erik Schmidt</contributor>
+  <contributor>Fabian Jost</contributor>
   <contributor>Fredrik Hedberg</contributor>
   <contributor>Félix Velasco</contributor>
   <contributor>Hans Petter Jansson</contributor>
+  <contributor>Iain Lane</contributor>
   <contributor>Igor Guerrero Fonseca</contributor>
   <contributor>Ilya Konstantinov</contributor>
   <contributor>Ivan N. Zlatev</contributor>
@@ -37,17 +50,22 @@
   <contributor>Jan Arne Petersen</contributor>
   <contributor>Jason Conti</contributor>
   <contributor>Jeff Tickle</contributor>
+  <contributor>Jo Shields</contributor>
+  <contributor>John Millikin</contributor>
   <contributor>Jorge Castro</contributor>
   <contributor>Juri Pakaste</contributor>
   <contributor>Ken Vandine</contributor>
   <contributor>Larry Ewing</contributor>
   <contributor>Lauri Kotilainen</contributor>
+  <contributor>Michael Kaiser</contributor>
   <contributor>Michael Monreal</contributor>
   <contributor>Miguel de Icaza</contributor>
   <contributor>Mike Urbanski</contributor>
   <contributor>Nathan Palmer</contributor>
+  <contributor>Nicholas Doyle</contributor>
   <contributor>Nicholas Parker</contributor>
   <contributor>Oscar Forero</contributor>
+  <contributor>Pacho Ramos</contributor>
   <contributor>Patrick van Staveren</contributor> 
   <contributor>Pepijn van de Geer</contributor>
   <contributor>Peter de Kraker</contributor>
@@ -55,8 +73,10 @@
   <contributor>Sandy Armstrong</contributor>
   <contributor>Sebastian Dröge</contributor>
   <contributor>Tim Yamin</contributor>
+  <contributor>Todd Berman</contributor>
   <contributor>Trey Ethridge</contributor>
   <contributor>Will Farrington</contributor>
+  <contributor>William Pettersson</contributor>
   <contributor>Wouter Bolsterlee</contributor>
   <!-- Artists have their own markup because of the GtkAboutBox design -->
   <artist>Garrett LeSage</artist>
