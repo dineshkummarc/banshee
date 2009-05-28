@@ -1,5 +1,5 @@
 ===============================================================================
-WELCOME TO BANSHEE 1.4.4 - Released May 22, 2009
+WELCOME TO BANSHEE 1.4.4 - Released May ??, 2009
 ===============================================================================
 
   * Banshee is a multimedia management and playback application for GNOME.
@@ -21,13 +21,15 @@ NEW AWESOME FEATURES AND ENHANCEMENTS
     
     Notable bug fixes:
 
-      * Fix bug in DAP syncing, ensuring changes to library accounted for
-      * Fix playlists menu screen-grab/freeze
-      * Fix album art for MTP devices and libmtp8
+      * Fix bug in DAP syncing, ensuring changes to library accounted for (BGO #581122)
+      * Fix playlists menu screen-grab/freeze (BGO #524706)
+      * Fix album art for MTP devices and libmtp8 (BGO #560520)
       * Faster startup time
       * Allow setting the scrobble API url, to support Libre.fm
       * Fix bug in indexer that would cause endless indexing attempts
       * Fix for XSPF playlist parsing, particularly for OS X
+      * Avoid an infinite loop in cover art downloader (BGO #548131)
+      * Fix remote queueing of songs (BGO #582790)
 
 
 ===============================================================================
