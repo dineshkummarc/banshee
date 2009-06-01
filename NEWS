@@ -1,5 +1,5 @@
 ===============================================================================
-WELCOME TO BANSHEE 1.4.4 - Released May ??, 2009
+WELCOME TO BANSHEE 1.4.4 - Released June 1, 2009
 ===============================================================================
 
   * Banshee is a multimedia management and playback application for GNOME.
@@ -40,8 +40,8 @@ Sources
 -------
 
     * Banshee 1.4.4 Tarballs:
-      http://download.banshee-project.org/banshee/banshee-1-1.4.4.tar.bz2
-      http://download.banshee-project.org/banshee/banshee-1-1.4.4.tar.gz
+      http://download.banshee-project.org/banshee/stable/1.4.4/banshee-1-1.4.4.tar.bz2
+      http://download.banshee-project.org/banshee/stable/1.4.4/banshee-1-1.4.4.tar.gz
 
 Packages
 --------
@@ -57,13 +57,13 @@ Packages
 
     Binaries for Mac OS X 10.4 and 10.5:
 
-    * http://download.banshee-project.org/banshee/banshee-1-1.4.4.macosx.intel.dmg
+    * http://download.banshee-project.org/banshee/stable/1.4.4/banshee-1-1.4.4.macosx.intel.dmg
 
 ChangeLogs & Checksums
 ----------------------
 
-    * http://download.banshee-project.org/banshee/banshee-1-1.4.4.changes
-    * http://download.banshee-project.org/banshee/banshee-1-1.4.4.sha1sum
+    * http://download.banshee-project.org/banshee/stable/1.4.4/banshee-1-1.4.4.changes
+    * http://download.banshee-project.org/banshee/stable/1.4.4/banshee-1-1.4.4.sha1sum
 
 
 ===============================================================================
