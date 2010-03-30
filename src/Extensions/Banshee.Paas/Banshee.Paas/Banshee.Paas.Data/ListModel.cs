@@ -33,6 +33,7 @@ using Migo2.Collections;
 using Hyena.Data;
 using Hyena.Collections;
 
+using Hyena;
 using Banshee.Base;
 using Banshee.Paas.Utils;
 
@@ -165,6 +166,11 @@ namespace Banshee.Paas.Data
             selection.Clear ();
 
             OnReloaded ();
+        }
+
+        public object GetItem(int index)
+        {
+            return GetIndex(index);
         }
 
         private T GetIndex (int index)

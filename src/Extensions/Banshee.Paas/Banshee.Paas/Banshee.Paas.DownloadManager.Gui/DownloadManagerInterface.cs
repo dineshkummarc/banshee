@@ -32,6 +32,7 @@ using Gtk;
 using Migo2.Async;
 using Migo2.DownloadService;
 
+using Hyena;
 using Banshee.Base;
 using Banshee.ServiceStack;
 

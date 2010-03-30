@@ -164,6 +164,7 @@ namespace Nereid
             search_entry.FilterChanged += OnSearchEntryFilterChanged;
             search_entry.ActivateFilter ((int)TrackFilterType.None);
 
+            RestoreDefaultSearchEntry ();
             OnSearchEntryFilterChanged (search_entry, EventArgs.Empty);
         }
 
@@ -183,6 +184,38 @@ namespace Nereid
             Editable editable = search_entry.InnerEntry as Editable;
             if (editable != null) {
                 editable.Position = search_entry.Query.Length;
+            }
+        }
+
+                private void ClearSearchEntryBox ()
+        {
+            if (search_entry_box.Child != null) {
+                search_entry_box.Remove (search_entry_box.Child);
+            }
+        }
+
+        private void ClearSearchEntryBox ()
+        {
+            if (search_entry_box.Child != null) {
+                search_entry_box.Remove (search_entry_box.Child);
+            }
+        }
+
+        public void RestoreDefaultSearchEntry ()
+        {
+            SetSearchEntry (DefaultSearchEntry);
+        }
+
+        public void SetSearchEntry (SearchEntry searchEntry)
+        {
+            if (searchEntry != null && current_search_entry != searchEntry) {
+                ClearSearchEntryBox ();
+
+                current_search_entry = searchEntry;
+                search_entry_box.Add (current_search_entry);
+
+                current_search_entry.Show ();
+                search_entry_box.Show ();
             }
         }
 

@@ -397,6 +397,15 @@ namespace Nereid
                 }
 
                 view_container.Title = source.Name;
+
+                if (source is IImplementsCustomSearch) {
+                    view_container.SetSearchEntry ((source as IImplementsCustomSearch).SearchEntry);
+                } else {
+                    view_container.RestoreDefaultSearchEntry ();
+                }
+
+                view_container.SearchSensitive = source.CanSearch || source is IImplementsCustomSearch;
+
                 view_container.SearchEntry.Ready = false;
                 view_container.SearchEntry.CancelSearch ();
 
