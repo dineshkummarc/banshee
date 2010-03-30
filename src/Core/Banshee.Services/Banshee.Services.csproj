@@ -304,6 +304,7 @@
     <Compile Include="Banshee.Metrics\BansheeMetrics.cs" />
     <Compile Include="Banshee.Metrics\Configuration.cs" />
     <Compile Include="Banshee.Collection.Database\RandomByOff.cs" />
+    <Compile Include="Banshee.Database\Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Banshee.Services.addin.xml">

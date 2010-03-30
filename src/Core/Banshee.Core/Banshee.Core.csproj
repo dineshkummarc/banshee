@@ -148,6 +148,7 @@
     <Compile Include="Banshee.IO\ExtensionSet.cs" />
     <Compile Include="Banshee.Base\Tests\CoverArtSpecTests.cs" />
     <Compile Include="Banshee.Collection\IPodcastInfo.cs" />
+    <Compile Include="Banshee.IO\Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\contributors.xml">

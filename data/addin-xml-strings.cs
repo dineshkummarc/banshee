@@ -146,6 +146,11 @@ internal static class AddinXmlStringCatalog
         Catalog.GetString (@"Now Playing");
         Catalog.GetString (@"Provides a source that displays embedded video and provides fullscreen video playback and controls.");
 
+        // ../src/Extensions/Banshee.Paas/Banshee.Paas.addin.xml
+        Catalog.GetString (@"Podcasting");
+        Catalog.GetString (@"Subscribe to and manage your podcasts!");
+        Catalog.GetString (@"User Interface");
+
         // ../src/Extensions/Banshee.PlayerMigration/Banshee.PlayerMigration.addin.xml
         Catalog.GetString (@"Importers for Amarok, Rhythmbox and iTunes");
         Catalog.GetString (@"Import your library from Amarok, Rhythmbox or iTunes.");

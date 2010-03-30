@@ -45,7 +45,7 @@ AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 
 dnl How to configure for distcheck
-DISTCHECK_CONFIGURE_FLAGS="--disable-docs --enable-mtp --enable-daap --enable-podcast --enable-release"
+DISTCHECK_CONFIGURE_FLAGS="--disable-docs --enable-mtp --enable-daap --enable-podcast --enable-podcast-ng --enable-release"
 AC_SUBST(DISTCHECK_CONFIGURE_FLAGS)
 
 dnl Export Version Info
@@ -181,6 +181,12 @@ AC_ARG_ENABLE(podcast,
 	, enable_podcast="yes")
 AM_CONDITIONAL(ENABLE_PODCAST, test "x$enable_podcast" = "xyes")
 
+AC_ARG_ENABLE(podcast-ng, 
+	AC_HELP_STRING([--disable-podcast-ng], 
+		[Disable Podcast NG support]), 
+	, enable_podcast_ng="yes")
+AM_CONDITIONAL(ENABLE_PODCAST_NG, test "x$enable_podcast_ng" = "xyes")
+
 AC_ARG_ENABLE(release,
 	AC_HELP_STRING([--enable-release],
 		[Use release configuration]),
@@ -284,6 +290,7 @@ src/Libraries/Hyena.Gui/Makefile
 src/Libraries/Lastfm/Makefile
 src/Libraries/Lastfm.Gui/Makefile
 src/Libraries/Migo/Makefile
+src/Libraries/Migo2/Makefile
 src/Libraries/Mono.Data.Sqlite/Makefile
 src/Libraries/Mono.Media/Makefile
 src/Libraries/Mtp/Makefile
@@ -318,6 +325,7 @@ src/Extensions/Banshee.NotificationArea/Makefile
 src/Extensions/Banshee.NowPlaying/Makefile
 src/Extensions/Banshee.PlayQueue/Makefile
 src/Extensions/Banshee.PlayerMigration/Makefile
+src/Extensions/Banshee.Paas/Makefile
 src/Extensions/Banshee.Podcasting/Makefile
 src/Extensions/Banshee.SqlDebugConsole/Makefile
 src/Extensions/Banshee.Sample/Makefile
@@ -365,6 +373,7 @@ ${PACKAGE}-${VERSION}
     GIO Backend:       ${enable_gio} (requires glib >= 2.22, gtk-sharp-beans, and gio-sharp)
     Library Watcher:   ${HAVE_MONO_2_4_3} (requires Mono >= 2.4.3)
     Podcasts:          ${enable_podcast}
+    Podcast NG:        ${enable_podcast_ng}
     Wikipedia:         ${enable_webkit} (requires webkit-sharp)
     Gapless playback:  ${ENABLE_GAPLESS} (requires gstreamer-plugins-base > 0.10.25.2)
     YouTube extension: ${enable_youtube} (requires gdata-sharp >= 1.4)

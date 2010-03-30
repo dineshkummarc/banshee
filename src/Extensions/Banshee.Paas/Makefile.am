@@ -1,6 +1,6 @@
 ASSEMBLY = Banshee.Paas
 TARGET = library
-LINK = $(REF_EXTENSION_PAAS)
+LINK = $(REF_EXTENSION_PODCAST_NG)
 INSTALL_DIR = $(EXTENSIONS_INSTALL_DIR)
 
 SOURCES =  \
@@ -115,7 +115,7 @@ RESOURCES =  \
 	Resources/GlobalUI.xml \
 	Resources/MiroGuideUI.xml
 
-if ENABLE_PAAS
+if ENABLE_PODCAST_NG
 include $(top_srcdir)/build/build.mk
 else
 EXTRA_DIST = $(SOURCES) $(RESOURCES)

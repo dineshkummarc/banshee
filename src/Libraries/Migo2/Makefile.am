@@ -47,7 +47,7 @@ SOURCES =  \
 	Migo2.Utils/UnitUtils.cs \
 	Migo2.Utils/XmlUtils.cs
 
-if ENABLE_PAAS
+if ENABLE_PODCAST_NG
 include $(top_srcdir)/build/build.mk
 else
 EXTRA_DIST = $(SOURCES) $(RESOURCES)
