@@ -34,6 +34,8 @@ using Gtk;
 
 using Mono.Unix;
 
+using Hyena;
+
 using Banshee.Gui;
 using Banshee.Base;
 using Banshee.Sources;

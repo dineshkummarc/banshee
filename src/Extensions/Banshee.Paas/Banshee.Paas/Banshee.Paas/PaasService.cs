@@ -467,10 +467,10 @@ namespace Banshee.Paas
         private void InitializeInterface ()
         {
             ServiceManager.SourceManager.AddSource (source);
-
+/*
             mg_interface_manager = new MiroGuideInterfaceManager ();
             mg_interface_manager.Initialize (mg_client);
-
+*/
             download_manager_interface = new DownloadManagerInterface (source, download_manager);
         }
 
@@ -811,7 +811,8 @@ namespace Banshee.Paas
 
         public static string ArtworkIdFor (string id)
         {
-            return String.Format ("paas-{0}", Banshee.Base.CoverArtSpec.EscapePart (id));
+            string digest = Banshee.Base.CoverArtSpec.Digest (id);
+            return digest == null ? null : String.Format ("podcast-ng-{0}", digest);
         }
 
         public static readonly SchemaEntry<string> MiroGuideUsername = new SchemaEntry<string> (

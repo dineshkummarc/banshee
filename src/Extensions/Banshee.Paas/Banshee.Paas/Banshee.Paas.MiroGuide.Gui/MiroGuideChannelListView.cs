@@ -48,7 +48,7 @@ namespace Banshee.Paas.MiroGuide.Gui
             column_controller.Add (new Column ("Channels", renderer, 1.0));
 
             ColumnController  = column_controller;
-            RowHeightProvider = renderer.ComputeRowHeight;
+//            RowHeightProvider = renderer.ComputeRowHeight;
         }
 
         protected override bool OnPopupMenu ()

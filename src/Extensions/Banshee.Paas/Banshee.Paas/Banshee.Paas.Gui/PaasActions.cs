@@ -362,36 +362,32 @@ namespace Banshee.Paas.Gui
 
         private void RunSubscribeDialog ()
         {
-            string url = null;
-            Uri feedUri = null;
-            FeedAutoDownload syncPreference;
-
-            PodcastSubscribeDialog subscribeDialog = new PodcastSubscribeDialog ();
-            ResponseType response = (ResponseType) subscribeDialog.Run ();
-
-            syncPreference = subscribeDialog.SyncPreference;
+            SubscribeDialog dialog = new SubscribeDialog ();
+            ResponseType response = (ResponseType) dialog.Run ();
+            dialog.Destroy ();
 
             if (response == ResponseType.Ok) {
-                url = subscribeDialog.Url.Trim ().Trim ('/');
-            }
+                if (String.IsNullOrEmpty (dialog.Url)) {
+                    return;
+                }
 
-            subscribeDialog.Destroy ();
+                string url = dialog.Url.Trim ().Trim ('/');
+                DownloadPreference download_pref = dialog.DownloadPreference;;
 
-            if (String.IsNullOrEmpty (url)) {
-                return;
-            }
+                try {
+                    service.SyndicationClient.SubscribeToChannel (url, download_pref);
+                } catch (Exception e) {
+                    Hyena.Log.Exception (e);
 
-            if (!TryParseUrl (url, out feedUri)) {
-                HigMessageDialog.RunHigMessageDialog (
-                    null,
-                    DialogFlags.Modal,
-                    MessageType.Warning,
-                    ButtonsType.Ok,
-                    Catalog.GetString ("Invalid URL"),
-                    Catalog.GetString ("Podcast URL is invalid.")
-                );
-            } else {
-                SubscribeToPodcast (feedUri, syncPreference);
+                    HigMessageDialog.RunHigMessageDialog (
+                        null,
+                        DialogFlags.Modal,
+                        MessageType.Warning,
+                        ButtonsType.Ok,
+                        Catalog.GetString ("Invalid URL"),
+                        Catalog.GetString ("Podcast URL is invalid.")
+                    );
+                }
             }
         }
 

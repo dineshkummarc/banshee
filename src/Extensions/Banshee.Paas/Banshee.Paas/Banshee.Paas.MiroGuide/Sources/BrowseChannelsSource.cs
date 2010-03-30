@@ -31,6 +31,7 @@ using Mono.Unix;
 
 using Gtk;
 
+using Hyena;
 using Banshee.Base;
 
 using Banshee.Paas.Data;

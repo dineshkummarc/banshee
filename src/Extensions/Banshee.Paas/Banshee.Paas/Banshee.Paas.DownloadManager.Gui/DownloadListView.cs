@@ -44,11 +44,11 @@ namespace Banshee.Paas.DownloadManager.Gui
 {
     public class DownloadListView : ListView<HttpFileDownloadTask>
     {
-        private PaasDownloadManager manager;
+        //private PaasDownloadManager manager;
 
         public DownloadListView (PaasDownloadManager manager)
         {
-            this.manager = manager;
+            //this.manager = manager;
 
             IsReorderable = true;
             IsEverReorderable = true;
@@ -93,6 +93,7 @@ namespace Banshee.Paas.DownloadManager.Gui
 
         protected override bool OnDragDrop (Gdk.DragContext context, int x, int y, uint time_)
         {
+/*
             y = TranslateToListY (y);
 
             if (Gtk.Drag.GetSourceWidget (context) == this) {
@@ -118,6 +119,8 @@ namespace Banshee.Paas.DownloadManager.Gui
                 }
             }
 
+            return false;
+*/
             return false;
         }
 #endregion

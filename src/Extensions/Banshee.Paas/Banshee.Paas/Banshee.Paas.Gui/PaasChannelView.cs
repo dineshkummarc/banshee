@@ -54,7 +54,7 @@ namespace Banshee.Paas.Gui
             column_controller.Add (new Column ("Channels", renderer, 1.0));
 
             ColumnController  = column_controller;
-            RowHeightProvider = renderer.ComputeRowHeight;
+            //RowHeightProvider = renderer.ComputeRowHeight;
         }
 
         public void SetChannelDataHelper (ColumnCellDataHelper dataHelper)
@@ -73,6 +73,13 @@ namespace Banshee.Paas.Gui
             ServiceManager.Get<InterfaceActionService> ().FindAction ("Paas.PaasChannelPopupAction").Activate ();
 
             return true;
+        }
+
+        protected override Gdk.Size OnMeasureChild ()
+        {
+            return ViewLayout != null
+                ? base.OnMeasureChild ()
+                : new Gdk.Size (0, renderer.ComputeRowHeight (this));
         }
     }
 }
