@@ -39,6 +39,13 @@ namespace Banshee.Collection.Gui
         private static Color cover_border_dark_color = new Color (0.0, 0.0, 0.0, 0.65);
 
         public static void RenderThumbnail (Cairo.Context cr, ImageSurface image, bool dispose,
+            double x, double y, double width, double height, bool drawBorder, double radius, bool sensitive)
+        {
+            RenderThumbnail (cr, image, dispose, x, y, width, height,
+                drawBorder, radius, false, cover_border_light_color, sensitive);
+        }
+
+        public static void RenderThumbnail (Cairo.Context cr, ImageSurface image, bool dispose,
             double x, double y, double width, double height, bool drawBorder, double radius)
         {
             RenderThumbnail (cr, image, dispose, x, y, width, height,
@@ -50,12 +57,20 @@ namespace Banshee.Collection.Gui
             bool fill, Color fillColor)
         {
             RenderThumbnail (cr, image, dispose, x, y, width, height, drawBorder, radius,
-                fill, fillColor, CairoCorners.All);
+                fill, fillColor, CairoCorners.All, true);
         }
 
         public static void RenderThumbnail (Cairo.Context cr, ImageSurface image, bool dispose,
             double x, double y, double width, double height, bool drawBorder, double radius,
-            bool fill, Color fillColor, CairoCorners corners)
+            bool fill, Color fillColor, bool sensitive)
+        {
+            RenderThumbnail (cr, image, dispose, x, y, width, height, drawBorder, radius,
+                fill, fillColor, CairoCorners.All, sensitive);
+        }
+
+        public static void RenderThumbnail (Cairo.Context cr, ImageSurface image, bool dispose,
+            double x, double y, double width, double height, bool drawBorder, double radius,
+            bool fill, Color fillColor, CairoCorners corners, bool sensitive)
         {
             if (image == null || image.Handle == IntPtr.Zero) {
                 image = null;
@@ -80,7 +95,15 @@ namespace Banshee.Collection.Gui
 
                 CairoExtensions.RoundedRectangle (cr, p_x, p_y, image.Width, image.Height, radius, corners);
                 cr.SetSource (image, p_x, p_y);
-                cr.Fill ();
+
+                if (!sensitive) {
+                    cr.Save ();
+                    cr.Clip ();
+                    cr.PaintWithAlpha (0.5);
+                    cr.Restore ();
+                } else {
+                    cr.Fill ();
+                }
             } else {
                 CairoExtensions.RoundedRectangle (cr, x, y, width, height, radius, corners);
 
