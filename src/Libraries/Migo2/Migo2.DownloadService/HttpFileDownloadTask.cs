@@ -51,7 +51,7 @@ namespace Migo2.DownloadService
         private long lastTotalBytes;
         private long lastTotalBytesReceived;
 
-        private int timeout = (60 * 1000); // One minute
+        private int timeout = (5 * 60 * 1000); // One minute
         private string userAgent;
 
         private HttpStatusCode httpStatus;

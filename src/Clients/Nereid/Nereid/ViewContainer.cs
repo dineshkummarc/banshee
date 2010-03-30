@@ -187,13 +187,6 @@ namespace Nereid
             }
         }
 
-                private void ClearSearchEntryBox ()
-        {
-            if (search_entry_box.Child != null) {
-                search_entry_box.Remove (search_entry_box.Child);
-            }
-        }
-
         private void ClearSearchEntryBox ()
         {
             if (search_entry_box.Child != null) {
