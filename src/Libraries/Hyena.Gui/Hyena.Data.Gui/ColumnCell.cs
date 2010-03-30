@@ -38,6 +38,7 @@ namespace Hyena.Data.Gui
     public abstract class ColumnCell
     {
         private bool expand;
+        private bool sensitive;
         private string property, sub_property;
         private PropertyInfo property_info, sub_property_info;
         private object bound_object;
@@ -57,6 +58,7 @@ namespace Hyena.Data.Gui
         {
             Property = property;
             Expand = expand;
+            Sensitive = true;
         }
 
         public void BindListItem (object item)
@@ -148,6 +150,11 @@ namespace Hyena.Data.Gui
                     }
                 }
             }
+        }
+
+        public bool Sensitive {
+            get { return sensitive; }
+            set { sensitive = value; }
         }
 
         public string SubProperty {
