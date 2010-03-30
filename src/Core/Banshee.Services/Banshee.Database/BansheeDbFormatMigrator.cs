@@ -56,7 +56,7 @@ namespace Banshee.Database
         // NOTE: Whenever there is a change in ANY of the database schema,
         //       this version MUST be incremented and a migration method
         //       MUST be supplied to match the new version number
-        protected const int CURRENT_VERSION = 41;
+        protected const int CURRENT_VERSION = 42;
         protected const int CURRENT_METADATA_VERSION = 7;
 
 #region Migration Driver
@@ -924,6 +924,13 @@ namespace Banshee.Database
             return true;
         }
 
+        [DatabaseVersion (42)]
+        private bool Migrate_42 ()
+        {
+            Execute ("CREATE INDEX IF NOT EXISTS CoreAlbumIDIndex ON CoreAlbums (AlbumID, ArtistID)");
+            Execute ("CREATE INDEX IF NOT EXISTS CoreTracksArtistsAlbumIDIndex ON CoreTracks (AlbumID, ArtistID, ExternalID, PrimarySourceID)");
+            return true;
+        }
 
 #pragma warning restore 0169
 
