@@ -48,7 +48,6 @@ namespace Banshee.Paas.MiroGuide.Gui
             column_controller.Add (new Column ("Channels", renderer, 1.0));
 
             ColumnController  = column_controller;
-//            RowHeightProvider = renderer.ComputeRowHeight;
         }
 
         protected override bool OnPopupMenu ()
@@ -58,6 +57,13 @@ namespace Banshee.Paas.MiroGuide.Gui
             ).Activate ();
 
             return true;
+        }
+
+        protected override Gdk.Size OnMeasureChild ()
+        {
+            return ViewLayout != null
+                ? base.OnMeasureChild ()
+                : new Gdk.Size (0, renderer.ComputeRowHeight (this));
         }
     }
 }

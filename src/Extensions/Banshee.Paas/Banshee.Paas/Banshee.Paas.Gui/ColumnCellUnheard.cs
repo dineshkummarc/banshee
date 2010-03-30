@@ -48,7 +48,7 @@ namespace Banshee.Paas.Gui
             switch (val) {
                 case OldNewFilter.New:  return Catalog.GetString ("New Episodes");
                 case OldNewFilter.Both: return Catalog.GetString ("All");
-                case OldNewFilter.Old:  return Catalog.GetString ("Reruns");
+                case OldNewFilter.Old:  return Catalog.GetString ("Old Episodes");
             }
 
             return String.Empty;

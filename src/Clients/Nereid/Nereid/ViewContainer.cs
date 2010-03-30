@@ -95,7 +95,8 @@ namespace Nereid
 
             header.PackStart (title_box, true, true, 0);
             header.PackStart (header_box, false, false, 0);
-            header.PackStart (search_entry, false, false, 0);
+            //header.PackStart (search_entry, false, false, 0);
+            header.PackStart (search_entry_box, false, false, 0);
 
             InterfaceActionService uia = ServiceManager.Get<InterfaceActionService> ();
             if (uia != null) {
@@ -298,8 +299,8 @@ namespace Nereid
         public bool SearchSensitive {
             get { return search_entry.Sensitive; }
             set {
-                search_entry.Sensitive = value;
-                search_entry.Visible = value;
+                SearchEntry.Sensitive = value;
+                SearchEntry.Visible = value;
             }
         }
     }

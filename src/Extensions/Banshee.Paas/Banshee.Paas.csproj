@@ -191,4 +191,11 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <None Include="Banshee.Paas.addin.xml" />
+    <None Include="Resources\ActiveSourceUI.xml" />
+    <None Include="Resources\GlobalUI.xml" />
+    <None Include="Resources\MiroGuideActiveSourceUI.xml" />
+    <None Include="Resources\MiroGuideUI.xml" />
+  </ItemGroup>
 </Project>

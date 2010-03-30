@@ -467,10 +467,10 @@ namespace Banshee.Paas
         private void InitializeInterface ()
         {
             ServiceManager.SourceManager.AddSource (source);
-/*
+
             mg_interface_manager = new MiroGuideInterfaceManager ();
             mg_interface_manager.Initialize (mg_client);
-*/
+
             download_manager_interface = new DownloadManagerInterface (source, download_manager);
         }
 
