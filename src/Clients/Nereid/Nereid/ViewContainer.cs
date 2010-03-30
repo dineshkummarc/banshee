@@ -45,6 +45,10 @@ namespace Nereid
     public class ViewContainer : VBox
     {
         private SearchEntry search_entry;
+
+        private EventBox search_entry_box;
+        private SearchEntry current_search_entry;
+
         private HBox header;
         private EventBox header_box;
         private Label title_label;
@@ -65,6 +69,7 @@ namespace Nereid
         {
             header = new HBox ();
             footer = new VBox ();
+            search_entry_box = new EventBox ();
 
             EventBox title_box = new EventBox ();
             title_label = new Label ();
@@ -250,8 +255,13 @@ namespace Nereid
             get { return header; }
         }
 
-        public SearchEntry SearchEntry {
+        public SearchEntry DefaultSearchEntry
+        {
             get { return search_entry; }
+        }
+
+        public SearchEntry SearchEntry {
+            get { return current_search_entry; }
         }
 
         public ISourceContents Content {
