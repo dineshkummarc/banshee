@@ -39,17 +39,17 @@ namespace Banshee.Collection.Gui
         private static Color cover_border_dark_color = new Color (0.0, 0.0, 0.0, 0.65);
 
         public static void RenderThumbnail (Cairo.Context cr, ImageSurface image, bool dispose,
+            double x, double y, double width, double height, bool drawBorder, double radius)
+        {
+            RenderThumbnail (cr, image, dispose, x, y, width, height,
+                drawBorder, radius, false, cover_border_light_color, true);
+        }
+
+        public static void RenderThumbnail (Cairo.Context cr, ImageSurface image, bool dispose,
             double x, double y, double width, double height, bool drawBorder, double radius, bool sensitive)
         {
             RenderThumbnail (cr, image, dispose, x, y, width, height,
                 drawBorder, radius, false, cover_border_light_color, sensitive);
-        }
-
-        public static void RenderThumbnail (Cairo.Context cr, ImageSurface image, bool dispose,
-            double x, double y, double width, double height, bool drawBorder, double radius)
-        {
-            RenderThumbnail (cr, image, dispose, x, y, width, height,
-                drawBorder, radius, false, cover_border_light_color);
         }
 
         public static void RenderThumbnail (Cairo.Context cr, ImageSurface image, bool dispose,
@@ -95,15 +95,7 @@ namespace Banshee.Collection.Gui
 
                 CairoExtensions.RoundedRectangle (cr, p_x, p_y, image.Width, image.Height, radius, corners);
                 cr.SetSource (image, p_x, p_y);
-
-                if (!sensitive) {
-                    cr.Save ();
-                    cr.Clip ();
-                    cr.PaintWithAlpha (0.5);
-                    cr.Restore ();
-                } else {
-                    cr.Fill ();
-                }
+                SensitiveFill (cr, sensitive);
             } else {
                 CairoExtensions.RoundedRectangle (cr, x, y, width, height, radius, corners);
 
@@ -112,7 +104,7 @@ namespace Banshee.Collection.Gui
                     grad.AddColorStop (0, fillColor);
                     grad.AddColorStop (1, CairoExtensions.ColorShade (fillColor, 1.3));
                     cr.Pattern = grad;
-                    cr.Fill ();
+                    SensitiveFill (cr, sensitive);
                     grad.Destroy ();
                 }
 
@@ -145,6 +137,18 @@ namespace Banshee.Collection.Gui
 
             if (dispose && image != null) {
                 ((IDisposable)image).Dispose ();
+            }
+        }
+
+        private static void SensitiveFill (Context cr, bool sensitive)
+        {
+            if (!sensitive) {
+                cr.Save ();
+                cr.Clip ();
+                cr.PaintWithAlpha (0.5);
+                cr.Restore ();
+            } else {
+                cr.Fill ();
             }
         }
     }
