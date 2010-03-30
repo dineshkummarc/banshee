@@ -362,32 +362,36 @@ namespace Banshee.Paas.Gui
 
         private void RunSubscribeDialog ()
         {
+            string url = null;
+            DownloadPreference download_pref = DownloadPreference.One;
+            
             SubscribeDialog dialog = new SubscribeDialog ();
             ResponseType response = (ResponseType) dialog.Run ();
-            dialog.Destroy ();
 
             if (response == ResponseType.Ok) {
-                if (String.IsNullOrEmpty (dialog.Url)) {
-                    return;
-                }
+                download_pref = dialog.DownloadPreference;;
+                url = dialog.Url.Trim ().Trim ('/');
+            }
 
-                string url = dialog.Url.Trim ().Trim ('/');
-                DownloadPreference download_pref = dialog.DownloadPreference;;
+            dialog.Destroy ();
 
-                try {
-                    service.SyndicationClient.SubscribeToChannel (url, download_pref);
-                } catch (Exception e) {
-                    Hyena.Log.Exception (e);
+            if (String.IsNullOrEmpty (url)) {
+                return;
+            }
 
-                    HigMessageDialog.RunHigMessageDialog (
-                        null,
-                        DialogFlags.Modal,
-                        MessageType.Warning,
-                        ButtonsType.Ok,
-                        Catalog.GetString ("Invalid URL"),
-                        Catalog.GetString ("Podcast URL is invalid.")
-                    );
-                }
+            try {
+                service.SyndicationClient.SubscribeToChannel (url, download_pref);
+            } catch (Exception e) {
+                Hyena.Log.Exception (e);
+
+                HigMessageDialog.RunHigMessageDialog (
+                    null,
+                    DialogFlags.Modal,
+                    MessageType.Warning,
+                    ButtonsType.Ok,
+                    Catalog.GetString ("Invalid URL"),
+                    Catalog.GetString ("Podcast URL is invalid.")
+                );
             }
         }
 
