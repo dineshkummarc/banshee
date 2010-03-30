@@ -33,6 +33,8 @@ using Mono.Unix;
 using Gtk;
 
 using Migo2.Async;
+
+using Hyena.Widgets;
 using Hyena.Collections;
 
 using Banshee.Gui;
