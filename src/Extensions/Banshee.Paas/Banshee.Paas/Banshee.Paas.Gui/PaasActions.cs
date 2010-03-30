@@ -360,32 +360,36 @@ namespace Banshee.Paas.Gui
 
         private void RunSubscribeDialog ()
         {
-            SubscribeDialog dialog = new SubscribeDialog ();
-            ResponseType response = (ResponseType) dialog.Run ();
-            dialog.Destroy ();
+            string url = null;
+            Uri feedUri = null;
+            FeedAutoDownload syncPreference;
+
+            PodcastSubscribeDialog subscribeDialog = new PodcastSubscribeDialog ();
+            ResponseType response = (ResponseType) subscribeDialog.Run ();
+
+            syncPreference = subscribeDialog.SyncPreference;
 
             if (response == ResponseType.Ok) {
-                if (String.IsNullOrEmpty (dialog.Url)) {
-                    return;
-                }
+                url = subscribeDialog.Url.Trim ().Trim ('/');
+            }
 
-                string url = dialog.Url.Trim ().Trim ('/');
-                DownloadPreference download_pref = dialog.DownloadPreference;;
+            subscribeDialog.Destroy ();
 
-                try {
-                    service.SyndicationClient.SubscribeToChannel (url, download_pref);
-                } catch (Exception e) {
-                    Hyena.Log.Exception (e);
+            if (String.IsNullOrEmpty (url)) {
+                return;
+            }
 
-                    HigMessageDialog.RunHigMessageDialog (
-                        null,
-                        DialogFlags.Modal,
-                        MessageType.Warning,
-                        ButtonsType.Ok,
-                        Catalog.GetString ("Invalid URL"),
-                        Catalog.GetString ("Podcast URL is invalid.")
-                    );
-                }
+            if (!TryParseUrl (url, out feedUri)) {
+                HigMessageDialog.RunHigMessageDialog (
+                    null,
+                    DialogFlags.Modal,
+                    MessageType.Warning,
+                    ButtonsType.Ok,
+                    Catalog.GetString ("Invalid URL"),
+                    Catalog.GetString ("Podcast URL is invalid.")
+                );
+            } else {
+                SubscribeToPodcast (feedUri, syncPreference);
             }
         }
 
