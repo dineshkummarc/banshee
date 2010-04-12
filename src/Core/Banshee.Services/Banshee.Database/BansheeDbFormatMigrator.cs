@@ -927,8 +927,8 @@ namespace Banshee.Database
         [DatabaseVersion (42)]
         private bool Migrate_42 ()
         {
-            Execute ("CREATE INDEX IF NOT EXISTS CoreAlbumIDIndex ON CoreAlbums (AlbumID, ArtistID)");
-            Execute ("CREATE INDEX IF NOT EXISTS CoreTracksArtistsAlbumIDIndex ON CoreTracks (AlbumID, ArtistID, ExternalID, PrimarySourceID)");
+            Execute ("CREATE INDEX IF NOT EXISTS CoreAlbumArtistIndex ON CoreAlbums (AlbumID, ArtistID)");
+            Execute ("CREATE INDEX IF NOT EXISTS CoreTracksArtistAlbumSourceIndex ON CoreTracks (AlbumID, ArtistID, ExternalID, PrimarySourceID)");
             return true;
         }
 
