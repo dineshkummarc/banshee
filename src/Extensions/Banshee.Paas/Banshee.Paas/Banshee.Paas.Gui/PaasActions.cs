@@ -316,8 +316,10 @@ namespace Banshee.Paas.Gui
             bool show_download = GetItemDownloadSelectionStatus (items);
             bool show_cancel   = GetItemDownloadSelectionStatus (items, TaskState.CanCancel) != SelectionInfo.None;
             bool show_resume   = GetItemDownloadSelectionStatus (items, TaskState.Paused)    != SelectionInfo.None;
-            bool show_pause    = GetItemDownloadSelectionStatus (items, TaskState.CanPause)  != SelectionInfo.None;
 
+            bool show_pause = false;
+            //bool show_pause    = GetItemDownloadSelectionStatus (items, TaskState.CanPause)  != SelectionInfo.None;
+            
             SelectionOldNewInfo selection = GetItemOldNewSelectionStatus (items);
             bool show_mark_new = ((selection & SelectionOldNewInfo.ShowNew) != SelectionOldNewInfo.Zero);
             bool show_mark_old = ((selection & SelectionOldNewInfo.ShowOld) != SelectionOldNewInfo.Zero);
