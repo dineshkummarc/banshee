@@ -145,10 +145,9 @@ namespace Banshee.Paas
                 MiroGuideServiceUri.Set (MiroGuideAccount.ServiceUri);
             };
 
-//            https://bugzilla.novell.com/show_bug.cgi?id=346561
-//            ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => {
-//                return true;
-//            };
+            ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => {
+                return true;
+            };
         }
 
         public PaasService ()
