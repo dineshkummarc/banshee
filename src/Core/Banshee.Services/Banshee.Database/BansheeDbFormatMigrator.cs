@@ -1033,6 +1033,7 @@ namespace Banshee.Database
             Execute("CREATE INDEX CoreTracksExternalIDIndex ON CoreTracks(PrimarySourceID, ExternalID)");
             Execute("CREATE INDEX CoreTracksUriIndex ON CoreTracks(PrimarySourceID, Uri)");
             Execute("CREATE INDEX CoreTracksCoverArtIndex ON CoreTracks (PrimarySourceID, AlbumID, DateUpdatedStamp)");
+            Execute("CREATE INDEX CoreTracksArtistAlbumSourceIndex ON CoreTracks(AlbumID, ArtistID, ExternalID, PrimarySourceID)");
 
             Execute(@"
                 CREATE TABLE CoreAlbums (
@@ -1062,6 +1063,7 @@ namespace Banshee.Database
             ");
             Execute ("CREATE INDEX CoreAlbumsIndex ON CoreAlbums(ArtistID, TitleSortKey)");
             Execute ("CREATE INDEX CoreAlbumsArtistIndex ON CoreAlbums(TitleSortKey, ArtistNameSortKey)");
+            Execute ("CREATE INDEX CoreAlbumArtistIndex ON CoreAlbums(AlbumID, ArtistID)");
 
             Execute(@"
                 CREATE TABLE CoreArtists (
