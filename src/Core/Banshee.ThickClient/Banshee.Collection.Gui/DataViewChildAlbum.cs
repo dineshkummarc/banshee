@@ -124,13 +124,14 @@ namespace Banshee.Collection.Gui
                 image_allocation.Y = Math.Round ((inner_allocation.Height - height) / 2.0);
             }
 
+            double allocated_image_size = Math.Max (image_allocation.Height, image_allocation.Width);
             if (IsGridLayout) {
-                first_line_allocation.Y = image_allocation.Height + ImageSpacing;
+                first_line_allocation.Y = allocated_image_size + ImageSpacing;
                 first_line_allocation.Width = second_line_allocation.Width = inner_allocation.Width;
             } else {
-                first_line_allocation.X = second_line_allocation.X = image_allocation.Width + ImageSpacing;
+                first_line_allocation.X = second_line_allocation.X = allocated_image_size + ImageSpacing;
                 first_line_allocation.Width = second_line_allocation.Width =
-                    inner_allocation.Width - image_allocation.Width - ImageSpacing;
+                    inner_allocation.Width - allocated_image_size - ImageSpacing;
             }
 
             second_line_allocation.Y = first_line_allocation.Bottom + TextSpacing;
@@ -154,7 +155,8 @@ namespace Banshee.Collection.Gui
                 grad.AddColorStop (0, new Color (0, 0, 0, 0.65 * a));
                 grad.AddColorStop (1, new Color (0, 0, 0, 0.15 * a));
                 cr.Pattern = grad;
-                cr.Rectangle ((Cairo.Rectangle)image_allocation);
+                CairoExtensions.RoundedRectangle (cr, image_allocation.X, image_allocation.Y,
+                    image_allocation.Width, image_allocation.Height, context.Theme.Context.Radius);
                 cr.Fill ();
                 grad.Destroy ();
 

@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using Mono.Unix;
 using Gtk;
 
@@ -104,6 +106,11 @@ namespace Banshee.Gui
                 new ActionEntry ("SortChildrenAction", Stock.SortDescending,
                     Catalog.GetString ("Sort Children by"), null, null,
                     OnSortChildrenMenu),
+
+                new ActionEntry ("OpenSourceSwitcher", null,
+                    Catalog.GetString ("Switch Source"), "G",
+                    Catalog.GetString ("Switch to a source by typing its name"),
+                    null),
 
                 new ActionEntry ("SourcePreferencesAction", null, Catalog.GetString ("Preferences"), null,
                     Catalog.GetString ("Edit preferences related to this source"), OnSourcePreferences),

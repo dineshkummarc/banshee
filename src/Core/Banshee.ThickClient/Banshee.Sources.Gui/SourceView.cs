@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using Gtk;
@@ -75,6 +76,7 @@ namespace Banshee.Sources.Gui
             store.SourceRowRemoved += OnSourceRowRemoved;
             store.RowChanged += OnRowChanged;
             Model = store;
+            EnableSearch = false;
 
             ConfigureDragAndDrop ();
             store.Refresh ();
@@ -139,6 +141,10 @@ namespace Banshee.Sources.Gui
                     QueueDrawArea (rect.X, rect.Y, rect.Width, rect.Height);
                 }
                 return true;
+            };
+
+            ServiceManager.Get<InterfaceActionService> ().SourceActions["OpenSourceSwitcher"].Activated += delegate {
+                new SourceSwitcherEntry (this);
             };
         }
 
@@ -337,6 +343,12 @@ namespace Banshee.Sources.Gui
         private void OnRowChanged (object o, RowChangedArgs args)
         {
             QueueDraw ();
+        }
+
+        internal void Expand (Source src)
+        {
+            Expand (store.FindSource (src));
+            src.Expanded = true;
         }
 
         private void Expand (TreeIter iter)

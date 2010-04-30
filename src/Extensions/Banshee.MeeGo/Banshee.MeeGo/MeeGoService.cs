@@ -56,8 +56,8 @@ namespace Banshee.MeeGo
             // We need to create the MeeGo panel connection as soon as possible
             // to keep mutter-moblin's toolbar from thinking we crashed (timing out).
             // The contents of the panel will be constructed later on.
-            if (ApplicationContext.CommandLine.Contains ("mutter-panel")) {
-                panel = new MeeGoPanel ();
+            if (MeeGoPanel.Instance.Enabled) {
+                panel = MeeGoPanel.Instance;
             }
 
             elements_service = ServiceManager.Get<GtkElementsService> ();
@@ -109,10 +109,8 @@ namespace Banshee.MeeGo
                 elements_service.PrimaryWindow.Maximize ();
             }
 
-            // Set the internal engine volume to 100%
-            ServiceManager.PlayerEngine.Volume = 100;
-
             if (panel == null) {
+                Log.Warning ("MeeGo extension initialized without a panel");
                 return;
             }
 

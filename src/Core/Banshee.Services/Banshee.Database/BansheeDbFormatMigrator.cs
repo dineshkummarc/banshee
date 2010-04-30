@@ -135,7 +135,9 @@ namespace Banshee.Database
         {
             try {
 
-                if (DatabaseVersion < CURRENT_VERSION) {
+                if (DatabaseVersion > CURRENT_VERSION) {
+                    throw new DatabaseVersionTooHigh (CURRENT_VERSION, DatabaseVersion);
+                } else if (DatabaseVersion < CURRENT_VERSION) {
                     Execute ("BEGIN");
                     InnerMigrate ();
                     Execute ("COMMIT");
@@ -148,6 +150,8 @@ namespace Banshee.Database
                 if (DatabaseVersion == CURRENT_VERSION && metadata_version < CURRENT_METADATA_VERSION) {
                     ServiceManager.ServiceStarted += OnServiceStarted;
                 }
+            } catch (DatabaseVersionTooHigh) {
+                throw;
             } catch (Exception) {
                 Log.Warning ("Rolling back database migration");
                 Execute ("ROLLBACK");
@@ -734,7 +738,7 @@ namespace Banshee.Database
                         WHERE UriType = 1
                           AND PrimarySourceID != ?", library_path, podcast_src_id);
 
-                    string podcast_path = Banshee.Base.Paths.Combine (library_path, "Podcasts");
+                    string podcast_path = Paths.Combine (library_path, "Podcasts");
                     connection.Execute (@"
                         UPDATE CoreTracks SET Uri = BANSHEE_MIGRATE_PARTIAL(?, Uri)
                         WHERE UriType = 1
@@ -1421,6 +1425,20 @@ namespace Banshee.Database
 
 #endregion
 
+        class DatabaseVersionTooHigh : ApplicationException
+        {
+            internal DatabaseVersionTooHigh (int currentVersion, int databaseVersion)
+                : base (String.Format (
+                "This version of Banshee was prepared to work with older database versions (=< {0}) thus it is too old to support the current version of the database ({1}).",
+                currentVersion, databaseVersion))
+            {
+            }
+
+            private DatabaseVersionTooHigh ()
+            {
+            }
+        }
+
     }
 
     [SqliteFunction (Name = "BANSHEE_MIGRATE_PARTIAL", FuncType = FunctionType.Scalar, Arguments = 2)]
@@ -1430,7 +1448,7 @@ namespace Banshee.Database
         {
             string library_path = (string)args[0];
             string filename_fragment = (string)args[1];
-            string full_path = Banshee.Base.Paths.Combine (library_path, filename_fragment);
+            string full_path = Paths.Combine (library_path, filename_fragment);
             return Banshee.Base.SafeUri.FilenameToUri (full_path);
         }
     }

@@ -31,35 +31,45 @@ using MeeGo.Panel;
 
 using Hyena;
 using Banshee.Base;
+using Banshee.ServiceStack;
 
 namespace Banshee.MeeGo
 {
     public class MeeGoPanel : IDisposable
     {
-        private bool waiting_for_embedded;
+        public static MeeGoPanel Instance { get; private set; }
+
         private PanelGtk embedded_panel;
         private Window window_panel;
 
         public MediaPanelContents Contents { get; private set; }
+        public bool Enabled { get; private set; }
 
         public MeeGoPanel ()
         {
+            if (Instance != null) {
+                throw new InvalidOperationException ("Only one MeeGoPanel instance should exist");
+            }
+
+            Instance = this;
+            Enabled = true;
+
+            Hyena.Gui.Theming.ThemeEngine.SetCurrentTheme<MeeGoTheme> ();
+
             var timer = Log.DebugTimerStart ();
 
             try {
-                waiting_for_embedded = true;
+                Log.Debug ("Attempting to create MeeGo toolbar panel");
                 embedded_panel = new PanelGtk ("banshee", "media", null, "media-button", true);
-                embedded_panel.ReadyEvent += (o, e) => {
-                    lock (this) {
-                        waiting_for_embedded = false;
-                        BuildContents ();
-                    }
-                };
+                embedded_panel.ShowBeginEvent += (o, e) =>
+                    ServiceManager.SourceManager.SetActiveSource (ServiceManager.SourceManager.MusicLibrary);
+                while (Gtk.Application.EventsPending ()) {
+                    Gtk.Application.RunIteration ();
+                }
             } catch (Exception e) {
                 if (!(e is DllNotFoundException)) {
                     Log.Exception ("Could not bind to MeeGo panel", e);
                 }
-                waiting_for_embedded = false;
                 window_panel = new Gtk.Window ("MeeGo Media Panel");
             }
 
@@ -72,28 +82,26 @@ namespace Banshee.MeeGo
 
         public void BuildContents ()
         {
-            lock (this) {
-                if (waiting_for_embedded) {
-                    return;
-                }
+            if (!Enabled) {
+                return;
+            }
 
-                var timer = Log.DebugTimerStart ();
-                Contents = new MediaPanelContents ();
-                Contents.ShowAll ();
-                Log.DebugTimerPrint (timer, "MeeGo panel contents created: {0}");
+            var timer = Log.DebugTimerStart ();
+            Contents = new MediaPanelContents ();
+            Contents.ShowAll ();
+            Log.DebugTimerPrint (timer, "MeeGo panel contents created: {0}");
 
-                if (embedded_panel != null) {
-                    embedded_panel.SetChild (Contents);
-                } else if (window_panel != null) {
-                    window_panel.Add (Contents);
-                    window_panel.SetDefaultSize (1000, 500);
-                    window_panel.WindowPosition = WindowPosition.Center;
-                    window_panel.Show ();
-                    GLib.Timeout.Add (1000, () => {
-                        window_panel.Present ();
-                        return false;
-                    });
-                }
+            if (embedded_panel != null) {
+                embedded_panel.SetChild (Contents);
+            } else if (window_panel != null) {
+                window_panel.Add (Contents);
+                window_panel.SetDefaultSize (1000, 500);
+                window_panel.WindowPosition = WindowPosition.Center;
+                window_panel.Show ();
+                GLib.Timeout.Add (1000, () => {
+                    window_panel.Present ();
+                    return false;
+                });
             }
         }
 

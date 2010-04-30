@@ -73,6 +73,10 @@ namespace Banshee.Widgets
             get { return menu; }
         }
 
+        protected SearchEntry (IntPtr raw) : base (raw)
+        {
+        }
+
         public SearchEntry()
         {
             ChangeTimeoutMs = 25;
