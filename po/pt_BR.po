@@ -5872,10 +5872,8 @@ msgid "Quick access panel for your media"
 msgstr ""
 
 #: ../src/Extensions/Banshee.MeeGo/meego-panel-banshee.desktop.in.in.h:2
-#, fuzzy
-#| msgid "Media"
 msgid "media"
-msgstr "Mídia"
+msgstr "mídia"
 
 #: ../src/Extensions/Banshee.MiniMode/Banshee.MiniMode/MiniModeService.cs:25
 msgid "_Mini Mode"
