@@ -1,6 +1,9 @@
 <ui>
     <toolbar name="HeaderToolbar">
         <placeholder name="SourceActions">
+        	<placeholder name="ContextActions">
+        	</placeholder>
+        	<separator />
             <toolitem action="FullScreenAction" />
         </placeholder>
     </toolbar>

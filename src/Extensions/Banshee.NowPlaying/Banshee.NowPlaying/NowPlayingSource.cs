@@ -44,8 +44,20 @@ namespace Banshee.NowPlaying
     {
         private TrackInfo transitioned_track;
         private NowPlayingInterface now_playing_interface;
-        
+
+        private UIManager ui_manager;
         private Widget substitute_audio_display;
+
+        private const string button_xml = @"
+            <ui>
+                <toolbar name=""HeaderToolbar"">
+                    <placeholder name=""SourceActions"">
+                        <placeholder name=""ContextActions"">
+                            <toolitem action=""{0}"" />
+                        </placeholder>
+                    </placeholder>
+                </toolbar>
+            </ui>";
 
         public NowPlayingSource () : base ("now-playing", Catalog.GetString ("Now Playing"), 10, "now-playing")
         {
@@ -59,6 +71,13 @@ namespace Banshee.NowPlaying
             ServiceManager.PlaybackController.TrackStarted += OnPlaybackControllerTrackStarted;
             ServiceManager.PlayerEngine.ConnectEvent (OnTrackInfoUpdated, PlayerEvent.TrackInfoUpdated);
             ServiceManager.PlayerEngine.ConnectEvent (OnCreateVideoWindow, PlayerEvent.PrepareVideoWindow);
+
+            Actions = new Actions ();
+
+            ui_manager = ((InterfaceActionService) ServiceManager.Get<InterfaceActionService> ()).UIManager;
+            ui_manager.AddUiFromString (string.Format (button_xml, "StandardNpOpen"));
+            ui_manager.AddUiFromString (string.Format (button_xml, "LastFmOpen"));
+            ui_manager.AddUiFromString (string.Format (button_xml, "WikipediaOpen"));
         }
 
         private void OnCreateVideoWindow (PlayerEventArgs args)
@@ -141,5 +160,7 @@ namespace Banshee.NowPlaying
                 now_playing_interface.RelinquishFullscreen ();
             }
         }
+
+        public Actions Actions { get; private set; }
     }
 }
