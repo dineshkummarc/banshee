@@ -52,8 +52,7 @@ namespace Banshee.NowPlaying
 
         public NowPlayingInterface ()
         {
-            GtkElementsService service = ServiceManager.Get<GtkElementsService> ();
-            primary_window = service.PrimaryWindow;
+            primary_window = (ServiceManager.Get<GtkElementsService> ()).PrimaryWindow;
 
             Contents = new NowPlayingContents ();
             Contents.ButtonPressEvent += (o, a) => {
@@ -71,7 +70,7 @@ namespace Banshee.NowPlaying
             // widget from being completely destroyed, causing problems with
             // its internal windowing and GstXOverlay. It's also conveniently
             // the window that is used to do fullscreen video. Sweeeeeeeeeet.
-            video_window = new FullscreenWindow (service.PrimaryWindow);
+            video_window = new FullscreenWindow (primary_window);
             video_window.Hidden += OnFullscreenWindowHidden;
             video_window.Realize ();
             video_window.Add (Contents);
