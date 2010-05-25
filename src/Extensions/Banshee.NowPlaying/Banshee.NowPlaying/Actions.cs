@@ -44,19 +44,22 @@ namespace Banshee.NowPlaying
     {
         public Actions () : base ("NowPlaying")
         {
-            RadioAction act = new RadioAction ("StandardNpOpen", null, "Now Playing", null, 0);
-            act.IconName = "applications-multimedia";
-            Add (act);
+            Add (new RadioActionEntry [] {
+                new RadioActionEntry ("StandardNpOpen", null, null, null, "Now Playing"),
+                new RadioActionEntry ("LastFmOpen", null, null, null, "Last.fm recommendations"),
+                new RadioActionEntry ("WikipediaOpen", null, null, null, "Wikipedia")
+            }, 2, OnChanged);
 
-            act = new RadioAction ("LastFmOpen", null, "Last.fm recommendations", null, 1);
-            act.IconName = "lastfm-audioscrobbler";
-            Add (act);
-
-            act = new RadioAction ("WikipediaOpen", null, "Wikipedia", null, 2);
-            act.IconName = "wikipedia";
-            Add (act);
+            this["StandardNpOpen"].IconName = "applications-multimedia";
+            this["LastFmOpen"].IconName = "lastfm-audioscrobbler";
+            this["WikipediaOpen"].IconName = "wikipedia";
 
             Register ();
+        }
+
+        public void OnChanged (System.Object o, ChangedArgs args)
+        {
+            Log.DebugFormat ("Changed to {0}", args.Current.CurrentValue);
         }
     }
 }
