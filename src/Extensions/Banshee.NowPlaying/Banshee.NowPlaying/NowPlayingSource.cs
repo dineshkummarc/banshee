@@ -66,6 +66,7 @@ namespace Banshee.NowPlaying
             Properties.SetString ("ActiveSourceUIResource", "ActiveSourceUI.xml");
 
             ServiceManager.SourceManager.AddSource (this);
+            ServiceManager.SourceManager.ActiveSourceChanged += OnActiveSourceChanged;
 
             ServiceManager.PlaybackController.Transition += OnPlaybackControllerTransition;
             ServiceManager.PlaybackController.TrackStarted += OnPlaybackControllerTrackStarted;
@@ -73,11 +74,17 @@ namespace Banshee.NowPlaying
             ServiceManager.PlayerEngine.ConnectEvent (OnCreateVideoWindow, PlayerEvent.PrepareVideoWindow);
 
             Actions = new Actions ();
+            Actions.Visible = ServiceManager.SourceManager.ActiveSource == this;
 
             ui_manager = ((InterfaceActionService) ServiceManager.Get<InterfaceActionService> ()).UIManager;
             ui_manager.AddUiFromString (string.Format (button_xml, "StandardNpOpen"));
             ui_manager.AddUiFromString (string.Format (button_xml, "LastFmOpen"));
             ui_manager.AddUiFromString (string.Format (button_xml, "WikipediaOpen"));
+        }
+
+        void OnActiveSourceChanged (SourceEventArgs args)
+        {
+            Actions.Visible = args.Source == this;
         }
 
         private void OnCreateVideoWindow (PlayerEventArgs args)
