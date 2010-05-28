@@ -36,30 +36,45 @@ using Hyena.Widgets;
 
 using Banshee.ServiceStack;
 using Banshee.Collection.Database;
+using Banshee.ContextPane;
 using Banshee.Gui;
 
 namespace Banshee.NowPlaying
 {
     public class Actions : BansheeActionGroup
     {
-        public Actions () : base ("NowPlaying")
+        private NowPlayingSource now_playing_source;
+
+        public Actions (NowPlayingSource nowPlayingSource) : base ("NowPlaying")
         {
+            now_playing_source = nowPlayingSource;
+
             Add (new RadioActionEntry [] {
-                new RadioActionEntry ("StandardNpOpen", null, null, null, "Now Playing"),
-                new RadioActionEntry ("LastFmOpen", null, null, null, "Last.fm recommendations"),
-                new RadioActionEntry ("WikipediaOpen", null, null, null, "Wikipedia")
-            }, 2, OnChanged);
+                new RadioActionEntry ("StandardNpOpen", null, null, null, "Now Playing", 0),
+                new RadioActionEntry ("LastFmOpen", null, null, null, "Last.fm recommendations", 1),
+                new RadioActionEntry ("WikipediaOpen", null, null, null, "Wikipedia", 2)
+            }, 0, OnChanged);
 
             this["StandardNpOpen"].IconName = "applications-multimedia";
             this["LastFmOpen"].IconName = "lastfm-audioscrobbler";
             this["WikipediaOpen"].IconName = "wikipedia";
 
             Register ();
+
+            ContextPane = new ContextPane.ContextPane ();
         }
 
         public void OnChanged (System.Object o, ChangedArgs args)
         {
-            Log.DebugFormat ("Changed to {0}", args.Current.CurrentValue);
+            Log.DebugFormat ("There are {0} actions. {1} is current", this.ListActions().Count (), args.Current.CurrentValue);
+
+            if (args.Current.CurrentValue == 0) {
+                now_playing_source.SetSubstituteAudioDisplay (null);
+            } else {
+                now_playing_source.SetSubstituteAudioDisplay (ContextPane);
+            }
         }
+
+        private ContextPane.ContextPane ContextPane { get; set; }
     }
 }

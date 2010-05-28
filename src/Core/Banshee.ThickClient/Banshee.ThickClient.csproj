@@ -61,18 +61,23 @@
   <ItemGroup>
     <Reference Include="atk-sharp">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="glib-sharp">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -87,26 +92,32 @@
     <Reference Include="Mono.Addins">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\bin\Mono.Addins.dll</HintPath>
+      <Package>mono-addins</Package>
     </Reference>
     <Reference Include="Mono.Addins.Gui">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\bin\Mono.Addins.Gui.dll</HintPath>
+      <Package>mono-addins-gui</Package>
     </Reference>
     <Reference Include="Mono.Addins.Setup">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\bin\Mono.Addins.Setup.dll</HintPath>
+      <Package>mono-addins-setup</Package>
     </Reference>
     <Reference Include="NDesk.DBus">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\bin\NDesk.DBus.dll</HintPath>
+      <Package>ndesk-dbus-1.0</Package>
     </Reference>
     <Reference Include="NDesk.DBus.GLib">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\bin\NDesk.DBus.GLib.dll</HintPath>
+      <Package>ndesk-dbus-glib-1.0</Package>
     </Reference>
     <Reference Include="taglib-sharp">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\bin\taglib-sharp.dll</HintPath>
+      <Package>taglib-sharp</Package>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <SpecificVersion>False</SpecificVersion>

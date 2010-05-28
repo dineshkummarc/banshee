@@ -52,7 +52,7 @@ namespace Banshee.NowPlaying
 
         public NowPlayingInterface ()
         {
-            primary_window = (ServiceManager.Get<GtkElementsService> ()).PrimaryWindow;
+            primary_window = ServiceManager.Get<GtkElementsService> ().PrimaryWindow;
 
             Contents = new NowPlayingContents ();
             Contents.ButtonPressEvent += (o, a) => {

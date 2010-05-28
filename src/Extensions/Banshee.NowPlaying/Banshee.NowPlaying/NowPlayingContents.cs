@@ -29,6 +29,7 @@
 using System;
 using Gtk;
 
+using Banshee.ContextPane;
 using Banshee.Gui.Widgets;
 
 namespace Banshee.NowPlaying
