@@ -43,25 +43,48 @@ namespace Banshee.NowPlaying
 {
     public class Actions : BansheeActionGroup
     {
+        public const string TrackInfoId = "StandardNpOpen";
+
+        private Dictionary<int, BaseContextPage> pages;
         private NowPlayingSource now_playing_source;
 
         public Actions (NowPlayingSource nowPlayingSource) : base ("NowPlaying")
         {
+            int i = 0;
             now_playing_source = nowPlayingSource;
+            pages = new Dictionary<int, BaseContextPage> ();
+            ContextPane = new ContextPane.ContextPane ();
+            List<RadioActionEntry> actions = new List<RadioActionEntry> ();
 
-            Add (new RadioActionEntry [] {
-                new RadioActionEntry ("StandardNpOpen", null, null, null, "Now Playing", 0),
-                new RadioActionEntry ("LastFmOpen", null, null, null, "Last.fm recommendations", 1),
-                new RadioActionEntry ("WikipediaOpen", null, null, null, "Wikipedia", 2)
-            }, 0, OnChanged);
+            actions.Add (new RadioActionEntry (TrackInfoId, null, null, null, "Track Information", i));
 
-            this["StandardNpOpen"].IconName = "applications-multimedia";
-            this["LastFmOpen"].IconName = "lastfm-audioscrobbler";
-            this["WikipediaOpen"].IconName = "wikipedia";
+            foreach (BaseContextPage page in ContextPane.Pages) {
+                i++;
+                actions.Add (new RadioActionEntry (page.Id, null, null, null, page.Name, i));
+                pages.Add (i, page);
+            }
+
+            Add (actions.ToArray (), 0, OnChanged);
+
+            this[TrackInfoId].IconName = "applications-multimedia";
+            foreach (BaseContextPage page in ContextPane.Pages) {
+                foreach (string icon in page.IconNames) {
+                    if (IconThemeUtils.HasIcon (icon)) {
+                        this[page.Id].IconName = icon;
+                        break;
+                    }
+                }
+            }
 
             Register ();
+        }
 
-            ContextPane = new ContextPane.ContextPane ();
+        // We've got 1 hard coded action available and the rest come from the context pane.
+        // so we loop through our pages and get their ids and return an IEnumerable with them all.
+        public IEnumerable<string> PageIds {
+            get {
+                return new string [] { TrackInfoId }.Concat (pages.Values.Select (p => p.Id));
+            }
         }
 
         public void OnChanged (System.Object o, ChangedArgs args)
@@ -71,6 +94,7 @@ namespace Banshee.NowPlaying
             if (args.Current.CurrentValue == 0) {
                 now_playing_source.SetSubstituteAudioDisplay (null);
             } else {
+                ContextPane.SetActivePage (pages[args.Current.CurrentValue]);
                 now_playing_source.SetSubstituteAudioDisplay (ContextPane);
             }
         }

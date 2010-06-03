@@ -77,9 +77,9 @@ namespace Banshee.NowPlaying
             Actions.Visible = ServiceManager.SourceManager.ActiveSource == this;
 
             ui_manager = ServiceManager.Get<InterfaceActionService> ().UIManager;
-            ui_manager.AddUiFromString (String.Format (button_xml, "StandardNpOpen"));
-            ui_manager.AddUiFromString (String.Format (button_xml, "LastFmOpen"));
-            ui_manager.AddUiFromString (String.Format (button_xml, "WikipediaOpen"));
+            foreach (string pageId in Actions.PageIds) {
+                ui_manager.AddUiFromString (String.Format (button_xml, pageId));
+            }
         }
 
         void OnActiveSourceChanged (SourceEventArgs args)

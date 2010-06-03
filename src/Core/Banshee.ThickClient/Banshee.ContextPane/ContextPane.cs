@@ -70,6 +70,10 @@ namespace Banshee.ContextPane
             set { expand_handler = value; }
         }
 
+        public List<BaseContextPage> Pages {
+            get { return pages; }
+        }
+
         public bool Large {
             get { return large; }
         }
@@ -223,7 +227,7 @@ namespace Banshee.ContextPane
             vbox.Visible = true;//enabled && npages > 1;
         }
 
-        private void SetActivePage (BaseContextPage page)
+        public void SetActivePage (BaseContextPage page)
         {
             if (page == null || page == active_page)
                 return;
