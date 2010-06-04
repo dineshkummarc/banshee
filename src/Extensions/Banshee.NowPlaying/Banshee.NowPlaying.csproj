@@ -116,6 +116,7 @@
     <Compile Include="Banshee.NowPlaying\NowPlayingTrackInfoDisplay.cs" />
     <Compile Include="Banshee.NowPlaying\IVideoDisplay.cs" />
     <Compile Include="Banshee.NowPlaying\Actions.cs" />
+    <Compile Include="Banshee.NowPlaying\ContextView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

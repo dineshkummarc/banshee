@@ -53,34 +53,16 @@ namespace Banshee.ContextPane
         public BaseContextView ()
         {
             pane_pages = new Dictionary<BaseContextPage, Widget> ();
+            CreateContextNotebook ();
+
+            Manager = new ContextPageManager ();
+            Manager.PageAdded += OnPageAdded;
+            Manager.PageRemoved += OnPageRemoved;
+
             ServiceManager.PlayerEngine.ConnectEvent (OnPlayerEvent, PlayerEvent.StartOfStream | PlayerEvent.TrackInfoUpdated);
         }
 
         public ContextPageManager Manager { get; protected set; }
-
-        protected void CreateContextNotebook ()
-        {
-            notebook = new Notebook () {
-                ShowBorder = false,
-                ShowTabs = false
-            };
-
-            // 'No active track' and 'Loading' widgets
-            no_active = new RoundedFrame ();
-            no_active.Add (new Label () {
-                Markup = String.Format ("<b>{0}</b>", Catalog.GetString ("Waiting for playback to begin..."))
-            });
-            no_active.ShowAll ();
-            notebook.Add (no_active);
-
-            loading = new RoundedFrame ();
-            loading.Add (new Label () { Markup = String.Format ("<b>{0}</b>", Catalog.GetString ("Loading...")) });
-            loading.ShowAll ();
-            notebook.Add (loading);
-
-            PackStart (notebook, true, true, 0);
-            notebook.Show ();
-        }
 
         public virtual void SetActivePage (BaseContextPage page)
         {
@@ -99,6 +81,29 @@ namespace Banshee.ContextPane
         }
 
         protected abstract bool Enabled { get; set; }
+
+        protected virtual void OnPageAdded (BaseContextPage page)
+        {
+            Hyena.Log.DebugFormat ("Adding context page {0}", page.Id);
+
+            // TODO delay adding the page.Widget until the page is first activated,
+            // that way we don't even create those objects unless used
+            var frame = new Hyena.Widgets.RoundedFrame ();
+            frame.Add (page.Widget);
+            frame.Show ();
+
+            page.Widget.Show ();
+            notebook.AppendPage (frame, null);
+            pane_pages[page] = frame;
+        }
+
+        protected virtual void OnPageRemoved (BaseContextPage page)
+        {
+            Hyena.Log.DebugFormat ("Removing context page {0}", page.Id);
+            // Remove the notebook page
+            notebook.RemovePage (notebook.PageNum (pane_pages[page]));
+            pane_pages.Remove (page);
+        }
 
         protected virtual void OnActivePageStateChanged (ContextState state)
         {
@@ -128,5 +133,30 @@ namespace Banshee.ContextPane
                 active_page.SetTrack (track);
             }
         }
+
+        private void CreateContextNotebook ()
+        {
+            notebook = new Notebook () {
+                ShowBorder = false,
+                ShowTabs = false
+            };
+
+            // 'No active track' and 'Loading' widgets
+            no_active = new RoundedFrame ();
+            no_active.Add (new Label () {
+                Markup = String.Format ("<b>{0}</b>", Catalog.GetString ("Waiting for playback to begin..."))
+            });
+            no_active.ShowAll ();
+            notebook.Add (no_active);
+
+            loading = new RoundedFrame ();
+            loading.Add (new Label () { Markup = String.Format ("<b>{0}</b>", Catalog.GetString ("Loading...")) });
+            loading.ShowAll ();
+            notebook.Add (loading);
+
+            PackStart (notebook, true, true, 0);
+            notebook.Show ();
+        }
+
     }
 }

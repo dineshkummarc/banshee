@@ -71,12 +71,8 @@ namespace Banshee.ContextPane
         {
             HeightRequest = 200;
 
-            CreateContextNotebook ();
             CreateTabButtonBox ();
 
-            Manager = new ContextPageManager ();
-            Manager.PageAdded += OnPageAdded;
-            Manager.PageRemoved += OnPageRemoved;
             Manager.Init ();
 
             initialized = true;
@@ -173,15 +169,9 @@ namespace Banshee.ContextPane
             vbox.Visible = true;//enabled && npages > 1;
         }
 
-        private void OnPageAdded (BaseContextPage page)
+        protected override void OnPageAdded (BaseContextPage page)
         {
-            Hyena.Log.DebugFormat ("Adding context page {0}", page.Id);
-
-            // TODO delay adding the page.Widget until the page is first activated,
-            // that way we don't even create those objects unless used
-            var frame = new Hyena.Widgets.RoundedFrame ();
-            frame.Add (page.Widget);
-            frame.Show ();
+            base.OnPageAdded (page);
 
             // TODO implement DnD?
             /*if (page is ITrackContextPage) {
@@ -191,10 +181,6 @@ namespace Banshee.ContextPane
                 frame.DragDataReceived += delegate(object o, DragDataReceivedArgs args) {
                 };
             }*/
-
-            page.Widget.Show ();
-            notebook.AppendPage (frame, null);
-            pane_pages[page] = frame;
 
             // Setup the tab-like button that switches the notebook to this page
             var tab_image = new Image (IconThemeUtils.LoadIcon (22, page.IconNames));
@@ -224,12 +210,9 @@ namespace Banshee.ContextPane
             UpdateVisibility ();
         }
 
-        private void OnPageRemoved (BaseContextPage page)
+        protected override void OnPageRemoved (BaseContextPage page)
         {
-            Hyena.Log.DebugFormat ("Removing context page {0}", page.Id);
-            // Remove the notebook page
-            notebook.RemovePage (notebook.PageNum (pane_pages[page]));
-            pane_pages.Remove (page);
+            base.OnPageRemoved (page);
 
             // Remove the tab button
             bool was_active = pane_tabs[page].Active;

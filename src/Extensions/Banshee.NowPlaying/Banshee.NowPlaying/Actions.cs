@@ -53,13 +53,9 @@ namespace Banshee.NowPlaying
             now_playing_source = nowPlayingSource;
             pages = new Dictionary<int, BaseContextPage> ();
 
-            Manager = new ContextPageManager ();
-            Manager.Init ();
-            Manager.PageAdded += OnContextPagesChanged;
-            Manager.PageRemoved += OnContextPagesChanged;
+            ContextView = new ContextView ();
 
             LoadActions ();
-
             Register ();
         }
 
@@ -71,7 +67,12 @@ namespace Banshee.NowPlaying
             }
         }
 
-        private ContextPageManager Manager { get; set; }
+        private ContextView ContextView { get; set; }
+        private ContextPageManager Manager {
+            get {
+                return ContextView.Manager;
+            }
+        }
 
         private void LoadActions ()
         {
@@ -109,15 +110,9 @@ namespace Banshee.NowPlaying
             if (args.Current.CurrentValue == 0) {
                 now_playing_source.SetSubstituteAudioDisplay (null);
             } else {
-                Widget widget = pages[args.Current.CurrentValue].Widget;
-                now_playing_source.SetSubstituteAudioDisplay (widget);
-                widget.Show ();
+                ContextView.SetActivePage (pages[args.Current.CurrentValue]);
+                now_playing_source.SetSubstituteAudioDisplay (ContextView);
             }
-        }
-
-        private void OnContextPagesChanged (BaseContextPage page)
-        {
-            LoadActions ();
         }
     }
 }
