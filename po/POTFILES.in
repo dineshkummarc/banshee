@@ -95,6 +95,7 @@ src/Core/Banshee.ThickClient/Banshee.Collection.Gui/ColumnCellTrackAndCount.cs
 src/Core/Banshee.ThickClient/Banshee.Collection.Gui/CoverArtEditor.cs
 src/Core/Banshee.ThickClient/Banshee.Collection.Gui/DefaultColumnController.cs
 src/Core/Banshee.ThickClient/Banshee.Collection.Gui/TrackListView.cs
+src/Core/Banshee.ThickClient/Banshee.ContextPane/BaseContextView.cs
 src/Core/Banshee.ThickClient/Banshee.ContextPane/ContextPane.cs
 src/Core/Banshee.ThickClient/Banshee.Equalizer.Gui/EqualizerWindow.cs
 src/Core/Banshee.ThickClient/Banshee.Gui/BaseClientWindow.cs
