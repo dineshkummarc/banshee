@@ -36,30 +36,50 @@ namespace Banshee.ContextPane
 {
     public class ContextPageManager
     {
-        private ContextPane pane;
         private Dictionary<string, BaseContextPage> pages = new Dictionary<string, BaseContextPage> ();
 
-        public ContextPageManager (ContextPane pane)
+        public event Action<BaseContextPage> PageAdded;
+        public event Action<BaseContextPage> PageRemoved;
+
+        public ContextPageManager ()
         {
-            this.pane = pane;
+        }
+
+        public void Init ()
+        {
             Mono.Addins.AddinManager.AddExtensionNodeHandler ("/Banshee/ThickClient/ContextPane", OnExtensionChanged);
+        }
+
+        public IEnumerable<BaseContextPage> Pages {
+            get {
+                return pages.Values;
+            }
         }
 
         private void OnExtensionChanged (object o, ExtensionNodeEventArgs args)
         {
-            TypeExtensionNode node = (TypeExtensionNode)args.ExtensionNode;
+            TypeExtensionNode node = (TypeExtensionNode) args.ExtensionNode;
 
             if (args.Change == ExtensionChange.Add) {
                 var page = (BaseContextPage) node.CreateInstance ();
-                pane.AddPage (page);
                 pages.Add (node.Id, page);
-            } else {
-                if (pages.ContainsKey (node.Id)) {
-                    var page = pages[node.Id];
-                    pane.RemovePage (page);
-                    page.Dispose ();
-                    pages.Remove (node.Id);
+                var handler = PageAdded;
+                if (handler != null) {
+                    handler (page);
                 }
+            } else {
+                if (!pages.ContainsKey (node.Id)) {
+                    return;
+                }
+
+                var page = pages[node.Id];
+                var handler = PageRemoved;
+                if (handler != null) {
+                    PageRemoved (page);
+                }
+
+                page.Dispose ();
+                pages.Remove (node.Id);
             }
         }
     }

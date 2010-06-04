@@ -310,6 +310,7 @@
     <Compile Include="Banshee.Gui.Widgets\CoverArtDisplay.cs" />
     <Compile Include="Banshee.CairoGlyphs\BansheeLineLogo.cs" />
     <Compile Include="Banshee.Gui\IGlobalUIActions.cs" />
+    <Compile Include="Banshee.ContextPane\BaseContextView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

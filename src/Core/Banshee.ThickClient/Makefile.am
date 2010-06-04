@@ -39,6 +39,7 @@ SOURCES =  \
 	Banshee.Collection.Gui/TrackListView.cs \
 	Banshee.Collection.Gui/XmlColumnController.cs \
 	Banshee.ContextPane/BaseContextPage.cs \
+	Banshee.ContextPane/BaseContextView.cs \
 	Banshee.ContextPane/ContextPageManager.cs \
 	Banshee.ContextPane/ContextPane.cs \
 	Banshee.Equalizer.Gui/EqualizerBandScale.cs \

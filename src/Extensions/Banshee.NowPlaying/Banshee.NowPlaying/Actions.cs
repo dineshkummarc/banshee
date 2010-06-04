@@ -45,36 +45,20 @@ namespace Banshee.NowPlaying
     {
         public const string TrackInfoId = "StandardNpOpen";
 
-        private Dictionary<int, BaseContextPage> pages;
         private NowPlayingSource now_playing_source;
+        private Dictionary<int, BaseContextPage> pages;
 
         public Actions (NowPlayingSource nowPlayingSource) : base ("NowPlaying")
         {
-            int i = 0;
             now_playing_source = nowPlayingSource;
             pages = new Dictionary<int, BaseContextPage> ();
-            ContextPane = new ContextPane.ContextPane ();
-            List<RadioActionEntry> actions = new List<RadioActionEntry> ();
 
-            actions.Add (new RadioActionEntry (TrackInfoId, null, null, null, "Track Information", i));
+            Manager = new ContextPageManager ();
+            Manager.Init ();
+            Manager.PageAdded += OnContextPagesChanged;
+            Manager.PageRemoved += OnContextPagesChanged;
 
-            foreach (BaseContextPage page in ContextPane.Pages) {
-                i++;
-                actions.Add (new RadioActionEntry (page.Id, null, null, null, page.Name, i));
-                pages.Add (i, page);
-            }
-
-            Add (actions.ToArray (), 0, OnChanged);
-
-            this[TrackInfoId].IconName = "applications-multimedia";
-            foreach (BaseContextPage page in ContextPane.Pages) {
-                foreach (string icon in page.IconNames) {
-                    if (IconThemeUtils.HasIcon (icon)) {
-                        this[page.Id].IconName = icon;
-                        break;
-                    }
-                }
-            }
+            LoadActions ();
 
             Register ();
         }
@@ -87,18 +71,53 @@ namespace Banshee.NowPlaying
             }
         }
 
-        public void OnChanged (System.Object o, ChangedArgs args)
-        {
-            Log.DebugFormat ("There are {0} actions. {1} is current", this.ListActions().Count (), args.Current.CurrentValue);
+        private ContextPageManager Manager { get; set; }
 
-            if (args.Current.CurrentValue == 0) {
-                now_playing_source.SetSubstituteAudioDisplay (null);
-            } else {
-                ContextPane.SetActivePage (pages[args.Current.CurrentValue]);
-                now_playing_source.SetSubstituteAudioDisplay (ContextPane);
+        private void LoadActions ()
+        {
+            // remove all of the existing actions
+            foreach (Gtk.Action action in ListActions ()) {
+                Remove (action);
+            }
+
+            // then add them all.
+            int i = 0;
+            List<RadioActionEntry> actions = new List<RadioActionEntry> ();
+            actions.Add (new RadioActionEntry (TrackInfoId, null, null, null, "Track Information", i));
+
+            foreach (BaseContextPage page in Manager.Pages) {
+                i++;
+                actions.Add (new RadioActionEntry (page.Id, null, null, null, page.Name, i));
+                pages.Add (i, page);
+            }
+
+            Add (actions.ToArray (), 0, OnChanged);
+
+            this[TrackInfoId].IconName = "applications-multimedia";
+            foreach (BaseContextPage page in Manager.Pages) {
+                foreach (string icon in page.IconNames) {
+                    if (IconThemeUtils.HasIcon (icon)) {
+                        this[page.Id].IconName = icon;
+                        break;
+                    }
+                }
             }
         }
 
-        private ContextPane.ContextPane ContextPane { get; set; }
+        private void OnChanged (System.Object o, ChangedArgs args)
+        {
+            if (args.Current.CurrentValue == 0) {
+                now_playing_source.SetSubstituteAudioDisplay (null);
+            } else {
+                Widget widget = pages[args.Current.CurrentValue].Widget;
+                now_playing_source.SetSubstituteAudioDisplay (widget);
+                widget.Show ();
+            }
+        }
+
+        private void OnContextPagesChanged (BaseContextPage page)
+        {
+            LoadActions ();
+        }
     }
 }
