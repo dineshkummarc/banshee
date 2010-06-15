@@ -48,16 +48,19 @@ namespace Banshee.NowPlaying
         private UIManager ui_manager;
         private Widget substitute_audio_display;
 
+        uint? mergeId;
+
         private const string button_xml = @"
             <ui>
                 <toolbar name=""HeaderToolbar"">
                     <placeholder name=""SourceActions"">
                         <placeholder name=""ContextActions"">
-                            <toolitem action=""{0}"" />
+                            {0}
                         </placeholder>
                     </placeholder>
                 </toolbar>
             </ui>";
+        private const string toolitem_element = @"<toolitem action=""{0}"" />";
 
         public NowPlayingSource () : base ("now-playing", Catalog.GetString ("Now Playing"), 10, "now-playing")
         {
@@ -73,12 +76,35 @@ namespace Banshee.NowPlaying
             ServiceManager.PlayerEngine.ConnectEvent (OnTrackInfoUpdated, PlayerEvent.TrackInfoUpdated);
             ServiceManager.PlayerEngine.ConnectEvent (OnCreateVideoWindow, PlayerEvent.PrepareVideoWindow);
 
+            mergeId = null;
+            ui_manager = ServiceManager.Get<InterfaceActionService> ().UIManager;
+
             Actions = new Actions (this);
             Actions.Visible = ServiceManager.SourceManager.ActiveSource == this;
+            Actions.Changed += HandleActionsChanged;
 
-            ui_manager = ServiceManager.Get<InterfaceActionService> ().UIManager;
+            LoadContentButtons ();
+        }
+
+        void HandleActionsChanged (EventArgs obj)
+        {
+            LoadContentButtons ();
+        }
+        
+        private void LoadContentButtons ()
+        {
+            if (mergeId.HasValue) {
+                ui_manager.RemoveUi (mergeId.Value);
+            }
+
+            string toolitem = "";
             foreach (string pageId in Actions.PageIds) {
-                ui_manager.AddUiFromString (String.Format (button_xml, pageId));
+                string item = String.Format (toolitem_element, pageId);
+                toolitem += item;
+            }
+
+            if (toolitem != "") {
+                mergeId = ui_manager.AddUiFromString (String.Format (button_xml, toolitem));
             }
         }
 

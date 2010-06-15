@@ -74,12 +74,14 @@ namespace Banshee.ContextPane
 
                 var page = pages[node.Id];
                 var handler = PageRemoved;
+
+                pages.Remove (node.Id);
+
                 if (handler != null) {
                     PageRemoved (page);
                 }
 
                 page.Dispose ();
-                pages.Remove (node.Id);
             }
         }
     }

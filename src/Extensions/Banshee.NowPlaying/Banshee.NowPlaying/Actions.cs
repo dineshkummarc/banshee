@@ -48,15 +48,25 @@ namespace Banshee.NowPlaying
         private NowPlayingSource now_playing_source;
         private Dictionary<int, BaseContextPage> pages;
 
+        public event Action<EventArgs> Changed;
+
         public Actions (NowPlayingSource nowPlayingSource) : base ("NowPlaying")
         {
             now_playing_source = nowPlayingSource;
             pages = new Dictionary<int, BaseContextPage> ();
 
+            Register ();
+
             ContextView = new ContextView ();
+            ContextView.Manager.PageAdded += OnManagerPageAddedOrRemoved;
+            ContextView.Manager.PageRemoved += OnManagerPageAddedOrRemoved;
 
             LoadActions ();
-            Register ();
+        }
+
+        void OnManagerPageAddedOrRemoved (BaseContextPage obj)
+        {
+            LoadActions ();
         }
 
         // We've got 1 hard coded action available and the rest come from the context pane.
@@ -76,13 +86,16 @@ namespace Banshee.NowPlaying
 
         private void LoadActions ()
         {
+            int i = 0;
             // remove all of the existing actions
             foreach (Gtk.Action action in ListActions ()) {
                 Remove (action);
+                pages.Remove (i);
+                i++;
             }
 
             // then add them all.
-            int i = 0;
+            i = 0;
             List<RadioActionEntry> actions = new List<RadioActionEntry> ();
             actions.Add (new RadioActionEntry (TrackInfoId, null, null, null, "Track Information", i));
 
@@ -102,6 +115,11 @@ namespace Banshee.NowPlaying
                         break;
                     }
                 }
+            }
+
+            Action<EventArgs> handler = Changed;
+            if (handler != null) {
+                handler (new EventArgs ());
             }
         }
 
