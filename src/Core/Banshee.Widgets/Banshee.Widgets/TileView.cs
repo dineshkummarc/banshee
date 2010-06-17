@@ -111,7 +111,7 @@ namespace Banshee.Widgets
             }
 
             base.OnSizeAllocated(allocation);
-            SetSizeRequest (child.Allocation.Width, child.Allocation.Height);
+            SetSizeRequest (-1, -1);
             SetSize ((uint)child.Allocation.Width, (uint)child.Allocation.Height);
         }
 
