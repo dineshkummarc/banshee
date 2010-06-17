@@ -28,9 +28,15 @@
 
 using System;
 using System.Collections.Generic;
-using Mono.Addins;
+using System.Linq;
+
 using Gtk;
+using Mono.Addins;
+
+using Banshee.Collection;
 using Banshee.Gui;
+using Banshee.MediaEngine;
+using Banshee.ServiceStack;
 
 namespace Banshee.ContextPane
 {
@@ -48,12 +54,45 @@ namespace Banshee.ContextPane
         public void Init ()
         {
             Mono.Addins.AddinManager.AddExtensionNodeHandler ("/Banshee/ThickClient/ContextPane", OnExtensionChanged);
+            ServiceManager.PlayerEngine.ConnectEvent (OnPlayerEvent, PlayerEvent.StartOfStream | PlayerEvent.TrackInfoUpdated);
         }
 
         public IEnumerable<BaseContextPage> Pages {
             get {
-                return pages.Values;
+                return pages.Values.Where (p => !p.Hidden);
             }
+        }
+
+        private void UpdateAvailablePages ()
+        {
+            foreach (BaseContextPage page in Pages) {
+                bool hidden = page.Hidden;
+                SetPageVisibilityForTrack (page);
+
+                // If the visibility of the page changes we fire this signal
+                if (hidden != page.Hidden && !page.Hidden) {
+                    var handler = PageAdded;
+                    if (handler != null) {
+                       handler (page);
+                    }
+                } else if (hidden != page.Hidden && page.Hidden) {
+                    var handler = PageRemoved;
+                    if (handler != null) {
+                       handler (page);
+                    }
+                }
+            }
+        }
+
+        private void SetPageVisibilityForTrack (BaseContextPage page)
+        {
+            TrackInfo track = ServiceManager.PlayerEngine.CurrentTrack;
+            if (track == null) {
+                page.Hidden = false;
+                return;
+            }
+
+            page.Hidden = !track.HasAttribute (page.SupportedMediaAttributes);
         }
 
         private void OnExtensionChanged (object o, ExtensionNodeEventArgs args)
@@ -62,6 +101,7 @@ namespace Banshee.ContextPane
 
             if (args.Change == ExtensionChange.Add) {
                 var page = (BaseContextPage) node.CreateInstance ();
+                SetPageVisibilityForTrack (page);
                 pages.Add (node.Id, page);
                 var handler = PageAdded;
                 if (handler != null) {
@@ -83,6 +123,11 @@ namespace Banshee.ContextPane
 
                 page.Dispose ();
             }
+        }
+
+        private void OnPlayerEvent (PlayerEventArgs args)
+        {
+            UpdateAvailablePages ();
         }
     }
 }

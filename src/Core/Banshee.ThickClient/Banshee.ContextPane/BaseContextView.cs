@@ -124,6 +124,7 @@ namespace Banshee.ContextPane
             if (Enabled) {
                 SetCurrentTrackForActivePage ();
             }
+
         }
 
         protected void SetCurrentTrackForActivePage ()

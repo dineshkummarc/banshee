@@ -61,9 +61,14 @@ namespace Banshee.ContextPane
             }
         }
 
+
+        public bool Hidden { get; set; }
         public string Id { get; protected set; }
         public string Name { get; protected set;}
         public string [] IconNames { get; protected set;}
+        public virtual TrackMediaAttributes SupportedMediaAttributes {
+            get { return TrackMediaAttributes.Default; }
+        }
 
         public abstract Widget Widget { get; }
         public abstract void SetTrack (TrackInfo track);
