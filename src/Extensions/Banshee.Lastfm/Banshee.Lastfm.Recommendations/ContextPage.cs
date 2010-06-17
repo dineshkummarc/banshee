@@ -32,6 +32,7 @@ using Mono.Unix;
 
 using Gtk;
 
+using Banshee.Collection;
 using Banshee.ContextPane;
 
 namespace Banshee.Lastfm.Recommendations
@@ -59,5 +60,12 @@ namespace Banshee.Lastfm.Recommendations
         {
             recs.Artist = track.ArtistName;
         }
+
+        public override TrackMediaAttributes SupportedMediaAttributes {
+            get {
+                return TrackMediaAttributes.Music;
+            }
+        }
+
     }
 }
