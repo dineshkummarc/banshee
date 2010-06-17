@@ -136,6 +136,7 @@ struct BansheePlayer {
     gchar *cdda_device;
     gboolean in_gapless_transition;
     gboolean supports_stream_volume;
+    gboolean audiosink_has_volume;
     
     // Video State
     BpVideoDisplayContextType video_display_context_type;
