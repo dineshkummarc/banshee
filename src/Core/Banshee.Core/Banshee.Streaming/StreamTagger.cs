@@ -164,9 +164,10 @@ namespace Banshee.Streaming
                 track.ArtistNameSort = Choose (file.Tag.JoinedPerformersSort, track.ArtistNameSort, preferTrackInfo);
                 track.AlbumTitle = Choose (file.Tag.Album, track.AlbumTitle, preferTrackInfo);
                 track.AlbumTitleSort = Choose (file.Tag.AlbumSort, track.AlbumTitleSort, preferTrackInfo);
+                // AlbumArtist cannot be set until the track is marked as a compilation.
+                track.IsCompilation = preferTrackInfo ? track.IsCompilation : IsCompilation (file);
                 track.AlbumArtist = Choose (file.Tag.FirstAlbumArtist, track.AlbumArtist, preferTrackInfo);
                 track.AlbumArtistSort = Choose (file.Tag.FirstAlbumArtistSort, track.AlbumArtistSort, preferTrackInfo);
-                track.IsCompilation = preferTrackInfo ? track.IsCompilation : IsCompilation (file);
 
                 track.TrackTitle = Choose (file.Tag.Title, track.TrackTitle, preferTrackInfo);
                 track.TrackTitleSort = Choose (file.Tag.TitleSort, track.TrackTitleSort, preferTrackInfo);
