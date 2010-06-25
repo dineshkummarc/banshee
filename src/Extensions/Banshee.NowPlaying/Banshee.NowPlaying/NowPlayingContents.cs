@@ -142,9 +142,10 @@ namespace Banshee.NowPlaying
                 return;
             }
 
-            video_display.Visible = !ivideo_display.IsIdle;
+            video_display.Visible = !ivideo_display.IsIdle && substitute_audio_display == null;
             track_info_display.Visible = false;
-            (substitute_audio_display ?? track_info_display).Visible = ivideo_display.IsIdle;
+            (substitute_audio_display ?? track_info_display).Visible = ivideo_display.IsIdle
+                || substitute_audio_display != null;
         }
 
         private void OnVideoDisplayIdleStateChanged (object o, EventArgs args)
