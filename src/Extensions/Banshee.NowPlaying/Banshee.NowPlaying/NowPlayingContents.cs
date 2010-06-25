@@ -137,10 +137,12 @@ namespace Banshee.NowPlaying
         private void CheckIdle ()
         {
             IVideoDisplay ivideo_display = video_display as IVideoDisplay;
-            if (ivideo_display != null) {
-                video_display.Visible = !ivideo_display.IsIdle;
+            if (ivideo_display == null) {
+                (substitute_audio_display ?? track_info_display).Visible = true;
+                return;
             }
-            
+
+            video_display.Visible = !ivideo_display.IsIdle;
             track_info_display.Visible = false;
             (substitute_audio_display ?? track_info_display).Visible = ivideo_display.IsIdle;
         }

@@ -66,6 +66,5 @@ namespace Banshee.Lastfm.Recommendations
                 return TrackMediaAttributes.Music;
             }
         }
-
     }
 }
