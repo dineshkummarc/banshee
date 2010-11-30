@@ -30,6 +30,7 @@ using System.Collections.Generic;
 
 using Migo2.Async;
 
+using Hyena;
 using Banshee.Base;
 using Banshee.ServiceStack;
 

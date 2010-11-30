@@ -81,12 +81,13 @@ namespace Banshee.Paas.Gui
                 if (pti == null) {
                     return;
                 }
-
+/*
                 if (track.IsPlaying || pti.IsDownloaded) {
                     text_cell.Sensitive = true;
                 } else {
                     text_cell.Sensitive = false;
                 }
+*/                
             }
         }
     }

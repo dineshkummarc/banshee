@@ -451,7 +451,7 @@ namespace Banshee.Paas.Gui
 
             if (selCount > 0) {
                 md = new HigMessageDialog (
-                    ServiceManager.Get<GtkElementsService> ("GtkElementsService").PrimaryWindow,
+                    ServiceManager.Get<GtkElementsService> ().PrimaryWindow,
                     DialogFlags.DestroyWithParent,
                     MessageType.Question,
                     ButtonsType.None, header,
@@ -466,7 +466,7 @@ namespace Banshee.Paas.Gui
                 md.AddButton (Stock.Delete, ResponseType.Yes, false);
             } else {
                 md = new HigMessageDialog (
-                    ServiceManager.Get<GtkElementsService> ("GtkElementsService").PrimaryWindow,
+                    ServiceManager.Get<GtkElementsService> ().PrimaryWindow,
                     DialogFlags.DestroyWithParent,
                     MessageType.Question,
                     ButtonsType.None, header,
@@ -499,7 +499,7 @@ namespace Banshee.Paas.Gui
             ResponseType response;
 
             HigMessageDialog md = new HigMessageDialog (
-                ServiceManager.Get<GtkElementsService> ("GtkElementsService").PrimaryWindow,
+                ServiceManager.Get<GtkElementsService> ().PrimaryWindow,
                 DialogFlags.DestroyWithParent,
                 MessageType.Question,
                 ButtonsType.None,

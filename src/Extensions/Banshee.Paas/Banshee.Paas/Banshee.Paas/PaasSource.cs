@@ -107,7 +107,7 @@ namespace Banshee.Paas
         }
 
 #region Constructors
-        public PaasSource (PaasService service) : base (Catalog.GetString ("Podcasts"), "PaasLibrary", 200)
+        public PaasSource (PaasService service) : base (Catalog.GetString ("Podcasts"), "PaasLibrary", 51)
         {
             actions = new PaasActions (service);
 

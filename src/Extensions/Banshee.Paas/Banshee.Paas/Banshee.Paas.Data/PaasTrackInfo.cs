@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 
+using Hyena;
 using Banshee.Collection;
 using Banshee.Collection.Database;
 
@@ -174,7 +175,7 @@ namespace Banshee.Paas.Data
             track.FileSize = item.Size;
             track.LicenseUri = item.Channel.License;
 
-            track.Uri = new Banshee.Base.SafeUri (item.LocalPath ?? item.Url);
+            track.Uri = new SafeUri (item.LocalPath ?? item.Url);
 
             if (!String.IsNullOrEmpty (item.LocalPath)) {
                 try {
