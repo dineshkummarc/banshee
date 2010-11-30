@@ -30,17 +30,24 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using Hyena;
 using Hyena.Collections;
-
-using Banshee.Base;
 
 namespace Banshee.IO
 {
     public class DirectoryScannerPipelineElement : QueuePipelineElement<string>
     {
+        public bool Debug { get; set; }
+
+        public DirectoryScannerPipelineElement ()
+        {
+            SkipHiddenChildren = true;
+        }
+
         protected override string ProcessItem (string item)
         {
             try {
+                if (Debug) Log.InformationFormat ("DirectoryScanner element processing {0}", item);
                 ScanForFiles (item, false);
             }
             finally {
@@ -48,6 +55,8 @@ namespace Banshee.IO
             }
             return null;
         }
+
+        public bool SkipHiddenChildren { get; set; }
 
         private readonly HashSet<string> visited_dirs = new HashSet<string> ();
         private void ScanForFiles (string source, bool skip_hidden)
@@ -62,13 +71,16 @@ namespace Banshee.IO
             try {
                 is_regular_file = Banshee.IO.File.Exists (source_uri);
                 is_directory = !is_regular_file && Banshee.IO.Directory.Exists (source);
-            } catch {
+                if (Debug) Log.InformationFormat ("  > item {0} is reg file? {1} is dir? {2}", source, is_regular_file, is_directory);
+            } catch (Exception e) {
+                if (Debug) Log.Exception ("Testing if path is file or dir", e);
+                if (Debug) Log.InformationFormat ("  > item {0} is reg file? {1} is dir? {2}", source, is_regular_file, is_directory);
                 return;
             }
 
             if (is_regular_file) {
                 try {
-                    if (!Path.GetFileName (source).StartsWith (".")) {
+                    if (!skip_hidden || !Path.GetFileName (source).StartsWith (".")) {
                         EnqueueDownstream (source);
                     }
                 } catch (System.ArgumentException) {
@@ -80,12 +92,12 @@ namespace Banshee.IO
                         visited_dirs.Add (source);
                         try {
                             foreach (string file in Banshee.IO.Directory.GetFiles (source)) {
-                                ScanForFiles (file, true);
+                                ScanForFiles (file, SkipHiddenChildren);
                             }
 
                             foreach (string directory in Banshee.IO.Directory.GetDirectories (source)) {
                                 if (!visited_dirs.Contains (directory)) {
-                                    ScanForFiles (directory, true);
+                                    ScanForFiles (directory, SkipHiddenChildren);
                                 }
                             }
                         } catch (Exception e) {

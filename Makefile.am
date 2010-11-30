@@ -1,6 +1,7 @@
 SUBDIRS = \
 	build \
 	data \
+	help \
 	libbanshee \
 	gstreamer \
 	src \
@@ -21,7 +22,7 @@ uninstall-hook:
 
 dist-hook:
 	@( \
-	  echo "`date +%Y-%m-%d`  The Banshee Project  <http://banshee-project.org>"; \
+	  echo "`date +%Y-%m-%d`  The Banshee Project  <http://banshee.fm>"; \
 	  echo; \
 	  echo "@Banshee $(VERSION)"; \
 	  echo; \
@@ -60,6 +61,9 @@ check-bootstrap-env:
 run: check-bootstrap-env $(MO_FILES)
 	(cd bin; $(MONO) --debug $(BANSHEE_DEV_MONO_OPTIONS) Nereid.exe --debug --uninstalled $(BANSHEE_DEV_OPTIONS))
 
+run-profiled: check-bootstrap-env $(MO_FILES)
+	(cd bin; LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):/usr/local/lib $(MONO) --debug $(BANSHEE_DEV_MONO_OPTIONS) --profile=log:time=fast,calls,noalloc,maxframes=5 Nereid.exe --uninstalled $(BANSHEE_DEV_OPTIONS))
+
 run-logged: check-bootstrap-env $(MO_FILES)
 	(cd bin; $(MONO) --debug $(BANSHEE_DEV_MONO_OPTIONS) Nereid.exe --debug --uninstalled $(BANSHEE_DEV_OPTIONS) | tee last-run-log)
 
@@ -71,7 +75,7 @@ run-perf: run-logged
 
 run-trace: $(MO_FILES)
 	(cd bin; $(MONO) \
-		--trace=$$(find . -name "*dll" | sed 's/\.\///' | sed 's/\.dll//' | sed 's/Mono.Data.Sqlite//' | sort | tr "\n" , | sed 's/,$$//') \
+		--trace=$$(find . -name "*dll" | sed 's/\.\///' | sed 's/\.dll//' | sort | tr "\n" , | sed 's/,$$//') \
 		Nereid.exe --uninstalled $(BANSHEE_DEV_OPTIONS) > ../banshee.trace)
 
 run-profile-heap: $(MO_FILES)
@@ -82,8 +86,11 @@ query-trace:
 	MONO_PID=$$(ps aux | grep mono | grep '\--uninstalled' | grep -v 'cd bin' | awk '{print$$2}'); \
 	kill -USR2 $$MONO_PID
 
-push-moblin:
-	@extras/push-moblin
+push-meego:
+	@extras/push-meego
+
+monitor-meego:
+	@extras/monitor-meego
 
 gdb:
 	@pushd bin; \
@@ -122,6 +129,31 @@ update-docs:
 merge-docs:
 	make -C docs/Hyena merge; \
 	make -C docs/Banshee merge;
+
+check-since:
+	@if [ -z '$(SINCE)' ]; then echo 'Specify a SINCE (e.g. make package-patch SINCE=1.6.0)'; exit 1; fi;
+
+package-patch: check-since
+	@if [ -f 'since-$(SINCE).patch' ]; then echo 'since-$(SINCE).patch already exists'; exit 1; fi;
+	@git diff-tree -p "$(SINCE).." | filterdiff \
+		-x 'a/Makefile.am' \
+		-x 'a/profile-configure' \
+		-x 'a/po/*' \
+		-x 'a/banshee.doap' \
+		-x \*.csproj \
+		-x \*.sln \
+		-x \*extras/\* &> 'since-$(SINCE).patch'
+	@echo 'since-$(SINCE).patch is ready'
+
+package-po: check-since
+	@if [ -f 'po-since-$(SINCE).tar.bz2' ]; then echo 'po-since-$(SINCE).tar.bz2 already exists'; exit 1; fi;
+	@git diff-tree -p '$(SINCE)..' po \
+		| awk -F / '{if ($$0 ~ /^+++ b\/po\/.+\.po$$/) print $$2 "/" $$3}' \
+		| xargs tar cfj po-since-$(SINCE).tar.bz2 2>/dev/null; \
+	if [ $$? -eq 123 ]; then \
+		echo 'No po changes since $(SINCE)'; \
+		exit 0; \
+	fi
 
 EXTRA_DIST = \
 	intltool-extract.in \

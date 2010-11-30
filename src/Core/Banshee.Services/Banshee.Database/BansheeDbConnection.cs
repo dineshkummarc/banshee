@@ -27,12 +27,14 @@
 //
 
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.IO;
-using System.Data;
 using System.Threading;
 
 using Hyena;
 using Hyena.Data;
+using Hyena.Jobs;
 using Hyena.Data.Sqlite;
 
 using Banshee.Base;
@@ -45,12 +47,14 @@ namespace Banshee.Database
     {
         private BansheeDbFormatMigrator migrator;
         private DatabaseConfigurationClient configuration;
+        private bool validate_schema = false;
         public DatabaseConfigurationClient Configuration {
             get { return configuration; }
         }
 
         public BansheeDbConnection () : this (DatabaseFile)
         {
+            validate_schema = ApplicationContext.CommandLine.Contains ("validate-db-schema");
         }
 
         internal BansheeDbConnection (string db_path) : base (db_path)
@@ -62,10 +66,12 @@ namespace Banshee.Database
             Execute ("PRAGMA temp_store = MEMORY");
             Execute ("PRAGMA count_changes = OFF");
 
-            // don't want this on because it breaks searching/smart playlists.  See BGO #526371
+            // TODO didn't want this on b/c smart playlists used to rely on it, but
+            // now they shouldn't b/c we have smart custom functions we use for sorting/searching.
+            // See BGO #603665 for discussion about turning this back on.
             //Execute ("PRAGMA case_sensitive_like=ON");
 
-            Log.DebugFormat ("Opened SQLite connection to {0}", db_path);
+            Log.DebugFormat ("Opened SQLite (version {1}) connection to {0}", db_path, ServerVersion);
 
             migrator = new BansheeDbFormatMigrator (this);
             configuration = new DatabaseConfigurationClient (this);
@@ -74,6 +80,11 @@ namespace Banshee.Database
                 Hyena.Data.Sqlite.HyenaSqliteCommand.LogAll = true;
                 WarnIfCalledFromThread = ThreadAssist.MainThread;
             }
+        }
+
+        internal IEnumerable<string> SortedTableColumns (string table)
+        {
+            return GetSchema (table).Keys.OrderBy (n => n);
         }
 
         void IInitializeService.Initialize ()
@@ -100,6 +111,10 @@ namespace Banshee.Database
 
             if (Banshee.Metrics.BansheeMetrics.EnableCollection.Get ()) {
                 Banshee.Metrics.BansheeMetrics.Start ();
+            }
+
+            if (validate_schema) {
+                ValidateSchema ();
             }
         }
 
@@ -138,6 +153,55 @@ namespace Banshee.Database
 
         public BansheeDbFormatMigrator Migrator {
             get { lock (this) { return migrator; } }
+        }
+
+        public bool ValidateSchema ()
+        {
+            bool is_valid = true;
+            var new_db_path = Paths.GetTempFileName (Paths.TempDir);
+            var new_db = new BansheeDbConnection (new_db_path);
+            ((IInitializeService)new_db).Initialize ();
+
+            Hyena.Log.DebugFormat ("Validating db schema for {0}", DbPath);
+
+            var tables = new_db.QueryEnumerable<string> (
+                "select name from sqlite_master where type='table' order by name"
+            );
+
+            foreach (var table in tables) {
+                if (!TableExists (table)) {
+                    Log.ErrorFormat ("Table {0} does not exist!", table);
+                    is_valid = false;
+                } else {
+                    var a = new_db.SortedTableColumns (table);
+                    var b = SortedTableColumns (table);
+
+                    a.Except (b).ForEach (c => { is_valid = false; Hyena.Log.ErrorFormat ("Table {0} should contain column {1}", table, c); });
+                    b.Except (a).ForEach (c => Hyena.Log.DebugFormat ("Table {0} has extra (probably obsolete) column {1}", table, c));
+                }
+            }
+
+            using (var reader = new_db.Query (
+                "select name,sql from sqlite_master where type='index' AND name NOT LIKE 'sqlite_autoindex%' order by name")) {
+                while (reader.Read ()) {
+                    string name = (string)reader[0];
+                    string sql = (string)reader[1];
+                    if (!IndexExists (name)) {
+                        Log.ErrorFormat ("Index {0} does not exist!", name);
+                        is_valid = false;
+                    } else {
+                        string our_sql = Query<string> ("select sql from sqlite_master where type='index' and name=?", name);
+                        if (our_sql != sql) {
+                            Log.ErrorFormat ("Index definition of {0} differs, should be `{1}` but is `{2}`", name, sql, our_sql);
+                            is_valid = false;
+                        }
+                    }
+                }
+            }
+
+            Hyena.Log.DebugFormat ("Done validating db schema for {0}", DbPath);
+            System.IO.File.Delete (new_db_path);
+            return is_valid;
         }
 
         public static string DatabaseFile {

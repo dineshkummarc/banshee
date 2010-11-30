@@ -28,7 +28,6 @@
 //
 
 using System;
-using System.Data;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,7 +57,7 @@ namespace Banshee.Collection.Database
         private long count;
 
         private long filtered_count;
-        private TimeSpan filtered_duration;
+        private TimeSpan filtered_duration, duration;
         private long filtered_filesize, filesize;
 
         private ISortableColumn sort_column;
@@ -78,7 +77,17 @@ namespace Banshee.Collection.Database
             this.connection = connection;
             this.provider = provider;
             this.source = source;
+
+            SelectAggregates = "SUM(CoreTracks.Duration), SUM(CoreTracks.FileSize)";
+
+            Selection.Changed += delegate {
+                if (SelectionAggregatesHandler != null) {
+                    cache.UpdateSelectionAggregates (SelectionAggregatesHandler);
+                }
+            };
         }
+
+        protected Action<IDataReader> SelectionAggregatesHandler { get; set; }
 
         protected HyenaSqliteConnection Connection {
             get { return connection; }
@@ -168,8 +177,8 @@ namespace Banshee.Collection.Database
 
         private void HandleCacheAggregatesUpdated (IDataReader reader)
         {
-            filtered_duration = TimeSpan.FromMilliseconds (reader.IsDBNull (1) ? 0 : Convert.ToInt64 (reader[1]));
-            filtered_filesize = reader.IsDBNull (2) ? 0 : Convert.ToInt64 (reader[2]);
+            filtered_duration = TimeSpan.FromMilliseconds (reader[1] == null ? 0 : Convert.ToInt64 (reader[1]));
+            filtered_filesize = reader[2] == null ? 0 : Convert.ToInt64 (reader[2]);
         }
 
         public override void Clear ()
@@ -177,6 +186,7 @@ namespace Banshee.Collection.Database
             cache.Clear ();
             count = 0;
             filesize = 0;
+            duration = TimeSpan.Zero;
             filtered_count = 0;
             OnCleared ();
         }
@@ -230,12 +240,13 @@ namespace Banshee.Collection.Database
         public virtual void UpdateUnfilteredAggregates ()
         {
             HyenaSqliteCommand count_command = new HyenaSqliteCommand (String.Format (
-                "SELECT COUNT(*), SUM(CoreTracks.FileSize) {0}", UnfilteredQuery
+                "SELECT COUNT(*), SUM(CoreTracks.FileSize), SUM(CoreTracks.Duration) {0}", UnfilteredQuery
             ));
 
             using (HyenaDataReader reader = new HyenaDataReader (connection.Query (count_command))) {
                 count = reader.Get<long> (0);
                 filesize = reader.Get<long> (1);
+                duration = reader.Get<TimeSpan> (2);
             }
         }
 
@@ -291,6 +302,10 @@ namespace Banshee.Collection.Database
 
                 cache.UpdateAggregates ();
                 cache.RestoreSelection ();
+
+                if (SelectionAggregatesHandler != null) {
+                    cache.UpdateSelectionAggregates (SelectionAggregatesHandler);
+                }
 
                 filtered_count = cache.Count;
 
@@ -408,6 +423,10 @@ namespace Banshee.Collection.Database
 
         public long UnfilteredFileSize {
             get { return filesize; }
+        }
+
+        public TimeSpan UnfilteredDuration {
+            get { return duration; }
         }
 
         public int UnfilteredCount {
@@ -560,9 +579,7 @@ namespace Banshee.Collection.Database
             get { return RowsInView > 0 ? RowsInView * 5 : 100; }
         }
 
-        public string SelectAggregates {
-            get { return "SUM(CoreTracks.Duration), SUM(CoreTracks.FileSize)"; }
-        }
+        public string SelectAggregates { get; protected set; }
 
         // Implement IDatabaseModel
         public string ReloadFragment {

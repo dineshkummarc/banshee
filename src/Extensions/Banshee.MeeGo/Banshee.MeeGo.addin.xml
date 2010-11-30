@@ -7,7 +7,7 @@
     name="MeeGo Support"
     description="Provides MeeGo integration, including a custom media panel."
     author="Aaron Bockover"
-    url="http://banshee-project.org/"
+    url="http://banshee.fm/"
     defaultEnabled="true">
 
   <Dependencies>
@@ -18,9 +18,9 @@
   <Extension path="/Banshee/ServiceManager/Service">
     <Service class="Banshee.MeeGo.MeeGoService"/>
   </Extension>
-  
+
   <Extension path="/Banshee/ThickClient/GtkBaseClient/PostInitializeGtk">
-    <PostInitializeGtk class="Banshee.MeeGo.MeeGoPanel"/>
+    <PostInitializeGtk class="Banshee.MeeGo.MeeGoThemeLoader"/>
   </Extension>
    
 </Addin>

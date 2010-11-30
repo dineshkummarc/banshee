@@ -73,6 +73,8 @@ namespace Booter
     {
         public static void Main ()
         {
+            Paths.ApplicationName = Application.InternalName;
+
             if (CheckHelpVersion ()) {
                 return;
             }
@@ -97,7 +99,11 @@ namespace Booter
             } else if (ApplicationContext.CommandLine.Contains ("client")) {
                 BootClient (Path.GetFileNameWithoutExtension (ApplicationContext.CommandLine["client"]));
             } else {
-                BootClient ("Nereid");
+                if (PlatformDetection.IsMeeGo) {
+                    BootClient ("MeeGo");
+                } else {
+                    BootClient ("Nereid");
+                }
             }
         }
 
@@ -253,7 +259,7 @@ namespace Booter
 
         private static void ShowVersion ()
         {
-            Console.WriteLine ("Banshee {0} ({1}) http://banshee-project.org", Application.DisplayVersion, Application.Version);
+            Console.WriteLine ("Banshee {0} ({1}) http://banshee.fm", Application.DisplayVersion, Application.Version);
             Console.WriteLine ("Copyright 2005-{0} Novell, Inc. and Contributors.", DateTime.Now.Year);
         }
     }

@@ -159,7 +159,8 @@ namespace Banshee.Dap
             src_mgr.SourceAdded   += OnSourceAdded;
             src_mgr.SourceRemoved += OnSourceRemoved;
 
-            foreach (var src in src_mgr.Sources) {
+            var sources = src_mgr.Sources.ToList ();
+            foreach (var src in sources) {
                 AddLibrary (src, false);
             }
 
@@ -368,7 +369,7 @@ namespace Banshee.Dap
                     string message = Catalog.GetString ("Are you sure you want to continue?");
 
                     HigMessageDialog md = new HigMessageDialog (
-                        ServiceManager.Get<GtkElementsService> ("GtkElementsService").PrimaryWindow,
+                        ServiceManager.Get<GtkElementsService> ().PrimaryWindow,
                         DialogFlags.DestroyWithParent, MessageType.Warning,
                         ButtonsType.None, header, message
                     );

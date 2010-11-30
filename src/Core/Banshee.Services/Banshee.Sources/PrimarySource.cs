@@ -81,23 +81,10 @@ namespace Banshee.Sources
     {
         #region Functions that let us override some behavior of our DatabaseTrackInfos
 
-        private TrackEqualHandler track_equal_handler;
-        public TrackEqualHandler TrackEqualHandler {
-            get { return track_equal_handler; }
-            protected set { track_equal_handler = value; }
-        }
-
-        private TrackExternalObjectHandler track_external_object_handler;
-        public TrackExternalObjectHandler TrackExternalObjectHandler {
-            get { return track_external_object_handler; }
-            protected set { track_external_object_handler = value; }
-        }
-
-        private TrackArtworkIdHandler track_artwork_id_handler;
-        public TrackArtworkIdHandler TrackArtworkIdHandler {
-            get { return track_artwork_id_handler; }
-            protected set { track_artwork_id_handler = value; }
-        }
+        public TrackEqualHandler TrackEqualHandler { get; protected set; }
+        public TrackInfo.IsPlayingHandler TrackIsPlayingHandler { get; protected set; }
+        public TrackExternalObjectHandler TrackExternalObjectHandler { get; protected set; }
+        public TrackArtworkIdHandler TrackArtworkIdHandler { get; protected set; }
 
         #endregion
 
@@ -215,7 +202,7 @@ namespace Banshee.Sources
 
         protected PrimarySource (string generic_name, string name, string id, int order) : base (generic_name, name, id, order)
         {
-            Properties.SetString ("SortChildrenActionLabel", Catalog.GetString ("Sort Playlists by"));
+            Properties.SetString ("SortChildrenActionLabel", Catalog.GetString ("Sort Playlists By"));
             PrimarySourceInitialize ();
         }
 
@@ -236,7 +223,10 @@ namespace Banshee.Sources
 
         public override bool Expanded {
             get { return ExpandedSchema.Get (); }
-            set { ExpandedSchema.Set (value); }
+            set {
+                ExpandedSchema.Set (value);
+                base.Expanded = value;
+            }
         }
 
         public PathPattern PathPattern { get; private set; }
@@ -324,6 +314,10 @@ namespace Banshee.Sources
                 "UPDATE CorePrimarySources SET CachedCount = ? WHERE PrimarySourceID = ?",
                 Count, DbId
             );
+        }
+
+        public virtual void UpdateMetadata (DatabaseTrackInfo track)
+        {
         }
 
         public virtual void CopyTrackTo (DatabaseTrackInfo track, SafeUri uri, BatchUserJob job)
@@ -450,14 +444,6 @@ namespace Banshee.Sources
             );
         }
 
-        public void DeleteSelectedTracksFromChild (DatabaseSource source)
-        {
-            if (source.Parent != this)
-                return;
-
-            DeleteSelectedTracks (source.TrackModel as DatabaseTrackListModel);
-        }
-
         public void DeleteAllTracks (AbstractPlaylistSource source)
         {
             if (source.PrimarySource != this) {
@@ -468,20 +454,20 @@ namespace Banshee.Sources
             if (source.Count < 1)
                 return;
 
+            var list = CachedList<DatabaseTrackInfo>.CreateFromModel (source.DatabaseTrackModel);
             ThreadAssist.SpawnFromMain (delegate {
-                CachedList<DatabaseTrackInfo> list = CachedList<DatabaseTrackInfo>.CreateFromModel (source.DatabaseTrackModel);
                 DeleteTrackList (list);
             });
         }
 
-        protected override void DeleteSelectedTracks (DatabaseTrackListModel model)
+        public override void DeleteTracks (DatabaseTrackListModel model, Selection selection)
         {
             if (model == null || model.Count < 1) {
                 return;
             }
 
+            var list = CachedList<DatabaseTrackInfo>.CreateFromModelAndSelection (model, selection);
             ThreadAssist.SpawnFromMain (delegate {
-                CachedList<DatabaseTrackInfo> list = CachedList<DatabaseTrackInfo>.CreateFromModelSelection (model);
                 DeleteTrackList (list);
             });
         }
@@ -564,7 +550,7 @@ namespace Banshee.Sources
                 && !(source.Parent is Banshee.Library.LibrarySource);
         }
 
-        public override bool AddSelectedTracks (Source source)
+        public override bool AddSelectedTracks (Source source, Selection selection)
         {
             if (!AcceptsInputFromSource (source))
                 return false;
@@ -572,23 +558,7 @@ namespace Banshee.Sources
             DatabaseTrackListModel model = (source as ITrackModelSource).TrackModel as DatabaseTrackListModel;
 
             // Store a snapshot of the current selection
-            CachedList<DatabaseTrackInfo> cached_list = CachedList<DatabaseTrackInfo>.CreateFromModelSelection (model);
-            if (ThreadAssist.InMainThread) {
-                System.Threading.ThreadPool.QueueUserWorkItem (AddTrackList, cached_list);
-            } else {
-                AddTrackList (cached_list);
-            }
-            return true;
-        }
-
-        public override bool AddAllTracks (Source source)
-        {
-            if (!AcceptsInputFromSource (source) || source.Count == 0) {
-                return false;
-            }
-
-            DatabaseTrackListModel model = (source as ITrackModelSource).TrackModel as DatabaseTrackListModel;
-            CachedList<DatabaseTrackInfo> cached_list = CachedList<DatabaseTrackInfo>.CreateFromModel (model);
+            CachedList<DatabaseTrackInfo> cached_list = CachedList<DatabaseTrackInfo>.CreateFromModelAndSelection (model, selection);
             if (ThreadAssist.InMainThread) {
                 System.Threading.ThreadPool.QueueUserWorkItem (AddTrackList, cached_list);
             } else {

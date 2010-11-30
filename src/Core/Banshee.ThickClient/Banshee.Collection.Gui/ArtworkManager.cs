@@ -49,6 +49,7 @@ namespace Banshee.Collection.Gui
     {
         private Dictionary<int, SurfaceCache> scale_caches  = new Dictionary<int, SurfaceCache> ();
         private HashSet<int> cacheable_cover_sizes = new HashSet<int> ();
+        private HashSet<string> null_artwork_ids = new HashSet<string> ();
 
         private class SurfaceCache : LruCache<string, Cairo.ImageSurface>
         {
@@ -79,6 +80,18 @@ namespace Banshee.Collection.Gui
             } catch (Exception e) {
                 Log.Exception ("Could not migrate album artwork cache directory", e);
             }
+
+            Banshee.Metadata.MetadataService.Instance.ArtworkUpdated += OnArtworkUpdated;
+        }
+
+        public void Dispose ()
+        {
+            Banshee.Metadata.MetadataService.Instance.ArtworkUpdated -= OnArtworkUpdated;
+        }
+
+        private void OnArtworkUpdated (IBasicTrackInfo track)
+        {
+            ClearCacheFor (track.ArtworkId, true);
         }
 
         public Cairo.ImageSurface LookupSurface (string id)
@@ -104,8 +117,13 @@ namespace Banshee.Collection.Gui
                 return surface;
             }
 
+            if (null_artwork_ids.Contains (id)) {
+                return null;
+            }
+
             Pixbuf pixbuf = LookupScalePixbuf (id, size);
             if (pixbuf == null || pixbuf.Handle == IntPtr.Zero) {
+                null_artwork_ids.Add (id);
                 return null;
             }
 
@@ -145,12 +163,17 @@ namespace Banshee.Collection.Gui
                 return null;
             }
 
+            if (null_artwork_ids.Contains (id)) {
+                return null;
+            }
+
             // Find the scaled, cached file
             string path = CoverArtSpec.GetPathForSize (id, size);
             if (File.Exists (new SafeUri (path))) {
                 try {
                     return new Pixbuf (path);
                 } catch {
+                    null_artwork_ids.Add (id);
                     return null;
                 }
             }
@@ -167,6 +190,7 @@ namespace Banshee.Collection.Gui
                         Pixbuf pixbuf = new Pixbuf (unconverted_path);
                         if (pixbuf.Width < 50 || pixbuf.Height < 50) {
                             Hyena.Log.DebugFormat ("Ignoring cover art {0} because less than 50x50", unconverted_path);
+                            null_artwork_ids.Add (id);
                             return null;
                         }
 
@@ -207,14 +231,30 @@ namespace Banshee.Collection.Gui
                 } catch {}
             }
 
+            null_artwork_ids.Add (id);
             return null;
         }
 
         public void ClearCacheFor (string id)
         {
+            ClearCacheFor (id, false);
+        }
+
+        public void ClearCacheFor (string id, bool inMemoryCacheOnly)
+        {
+            if (String.IsNullOrEmpty (id)) {
+                return;
+            }
+
             // Clear from the in-memory cache
             foreach (int size in scale_caches.Keys) {
                 scale_caches[size].Remove (id);
+            }
+
+            null_artwork_ids.Remove (id);
+
+            if (inMemoryCacheOnly) {
+                return;
             }
 
             // And delete from disk

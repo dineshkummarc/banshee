@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 
+using Mono.Unix;
 using Mono.Addins;
 
 using Hyena;
@@ -66,12 +67,22 @@ namespace Banshee.Sources
         public event SourceEventHandler SourceRemoved;
         public event SourceEventHandler ActiveSourceChanged;
 
+        public class GroupSource : Source
+        {
+            public GroupSource (string name, int order) : base (name, name, order)
+            {
+                TypeUniqueId = order.ToString ();
+            }
+        }
+
         public void Initialize ()
         {
             // TODO should add library sources here, but requires changing quite a few
             // things that depend on being loaded before the music library is added.
             //AddSource (music_library = new MusicLibrarySource (), true);
             //AddSource (video_library = new VideoLibrarySource (), false);
+            AddSource (new GroupSource (Catalog.GetString ("Libraries"), 39));
+            AddSource (new GroupSource (Catalog.GetString ("Online Media"), 60));
         }
 
         internal void LoadExtensionSources ()
@@ -114,19 +125,19 @@ namespace Banshee.Sources
                 TypeExtensionNode node = (TypeExtensionNode)args.ExtensionNode;
 
                 if (args.Change == ExtensionChange.Add && !extension_sources.ContainsKey (node.Id)) {
-                    Source source = (Source)node.CreateInstance ();
-                    extension_sources.Add (node.Id, source);
-                    bool add_source = true;
-                    if (source.Properties.Contains ("AutoAddSource")) {
-                        add_source = source.Properties.GetBoolean ("AutoAddSource");
-                    }
-                    if (add_source) {
-                        AddSource (source);
-                    }
+                    try {
+                        Source source = (Source)node.CreateInstance ();
+                        extension_sources.Add (node.Id, source);
+                        if (source.Properties.Get<bool> ("AutoAddSource", true)) {
+                            AddSource (source);
+                        }
+                        Log.DebugFormat ("Extension source loaded: {0}", source.Name);
+                    } catch {}
                 } else if (args.Change == ExtensionChange.Remove && extension_sources.ContainsKey (node.Id)) {
                     Source source = extension_sources[node.Id];
                     extension_sources.Remove (node.Id);
                     RemoveSource (source, true);
+                    Log.DebugFormat ("Extension source unloaded: {0}", source.Name);
                 }
             }
         }
@@ -154,16 +165,16 @@ namespace Banshee.Sources
             source.ChildSourceAdded += OnChildSourceAdded;
             source.ChildSourceRemoved += OnChildSourceRemoved;
 
-            SourceAdded.SafeInvoke (new SourceAddedArgs () {
-                Position = position,
-                Source = source
-            });
-
             if (source is MusicLibrarySource) {
                 music_library = source as MusicLibrarySource;
             } else if (source is VideoLibrarySource) {
                 video_library = source as VideoLibrarySource;
             }
+
+            SourceAdded.SafeInvoke (new SourceAddedArgs () {
+                Position = position,
+                Source = source
+            });
 
             IDBusExportable exportable = source as IDBusExportable;
             if (exportable != null) {
@@ -219,7 +230,11 @@ namespace Banshee.Sources
 
             ThreadAssist.ProxyToMain (delegate {
                 if(source == active_source) {
-                    SetActiveSource(default_source);
+                    if (source.Parent != null && source.Parent.CanActivate) {
+                        SetActiveSource(source.Parent);
+                    } else {
+                        SetActiveSource(default_source);
+                    }
                 }
 
                 SourceEventHandler handler = SourceRemoved;
@@ -333,6 +348,9 @@ namespace Banshee.Sources
             }
 
             active_source = source;
+            if (source.Parent != null) {
+                source.Parent.Expanded = true;
+            }
 
             if(!notify) {
                 source.Activate();

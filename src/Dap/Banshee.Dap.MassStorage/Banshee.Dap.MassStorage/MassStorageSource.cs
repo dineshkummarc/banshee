@@ -144,8 +144,10 @@ namespace Banshee.Dap.MassStorage
         {
             import_reset_event = new System.Threading.ManualResetEvent (false);
 
-            importer = new DatabaseImportManager (this);
-            importer.KeepUserJobHidden = true;
+            importer = new DatabaseImportManager (this) {
+                KeepUserJobHidden = true,
+                SkipHiddenChildren = false
+            };
             importer.Finished += OnImportFinished;
 
             foreach (string audio_folder in BaseDirectories) {
@@ -198,7 +200,10 @@ namespace Banshee.Dap.MassStorage
 
         public override void Import ()
         {
-            LibraryImportManager importer = new LibraryImportManager (true);
+            var importer = new LibraryImportManager (true) {
+                SkipHiddenChildren = false
+            };
+
             foreach (string audio_folder in BaseDirectories) {
                 importer.Enqueue (audio_folder);
             }
@@ -484,7 +489,7 @@ namespace Banshee.Dap.MassStorage
             if (track.PrimarySourceId == DbId)
                 return;
 
-            SafeUri new_uri = new SafeUri (GetTrackPath (track, System.IO.Path.GetExtension (fromUri.LocalPath)));
+            SafeUri new_uri = new SafeUri (GetTrackPath (track, System.IO.Path.GetExtension (fromUri)));
             // If it already is on the device but it's out of date, remove it
             //if (File.Exists(new_uri) && File.GetLastWriteTime(track.Uri.LocalPath) > File.GetLastWriteTime(new_uri))
                 //RemoveTrack(new MassStorageTrackInfo(new SafeUri(new_uri)));

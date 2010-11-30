@@ -1,190 +1,87 @@
 ===============================================================================
-WELCOME TO BANSHEE 1.6.0 - Released March 31, 2010
+WELCOME TO BANSHEE 1.9.0 - Released November 10, 2010
 ===============================================================================
 
   * Banshee is a multimedia management and playback application for GNOME.
 
-    "Import, organize, and discover new music with Banshee through its simple
-    and powerful interface and wide array of innovative features. Create
-    your own radio stations or listen to a friends' through Last.fm integration;
-    experience automatic cover art fetching as you listen; and easily browse,
-    search, and control your media collection."
+    "Play your music and videos. Stay entertained and up to date with podcasts
+    and video podcasts.  Sync your Android, iPod, and other devices. We think
+    you'll love the new Banshee!"
 
-  * Learn More: http://banshee-project.org/download/archives/1.6.0
+  * Learn More: http://banshee.fm/download/archives/1.9.0
 
 
 ===============================================================================
 NEW AWESOME FEATURES AND ENHANCEMENTS
 ===============================================================================
 
-    Banshee 1.6 is a stable release, the culmination of a year's work.  There
-    are so many new features, bug fixes, and polish in this release, we won't
-    be able to do it all justice in these notes, but we'll try.  These notes
-    aggregate the highlights from the 1.5 series releases.
+    Banshee 1.9.0 is a development release, the first of the 1.9.x series
+    leading up to Banshee 2.0.
 
-    New Features Since 1.4:
+    New Features Since 1.8.0:
 
-      * Play Queue Auto DJ keeps the tunes coming
+      * Artist/Album Browser Track Actions
 
-          Keep your Play Queue filled with endless music, selected randomly
-          by artist, album, song, rating, or score mode.
+            Track actions (play, queue, remove, delete, edit, properties)
+            now work for the artist and album browser too!  Right click an
+            artist or album to act on it, or click an album and press 'q' to
+            queue it.
 
-      * Sync device from playlist option
+      * 'Play After' Queue Options
 
-          Either manually manage what files are added/removed to your device,
-          or choose a playlist to sync from.  You can make a size-limited smart
-          playlist to sync just the right amount to your device.
+            Want to listen to a track, album, or artist right after the playing
+            track, album, or artist?  The 'Play After' option will insert it
+            into the queue to make it happen.
 
-      * Grid View
+      * User Interface Improvements
 
-          We are debuting a new grid mode for our custom list widget, visible
-          in the modified Album browser.  It will be used for Videos,
-          Audiobooks, and more in future releases.
+            We have made several changes toward a cleaner and more usable UI.
+            We got rid of the active source's title bar.  Search is now beside
+            the volume button.  The source list has smaller icons, hidden
+            counts for the libraries, and named group-separators.  The seek
+            slider and search entry are resizable via their grips.
 
-      * Banshee Community Extensions
-
-          A new sub-project named Banshee Community Extensions has been
-          created.  Its code is hosted on Gitorious, and its bugs tracked
-          in bugzilla.gnome.org.  It already contains 15 extensions, including
-          Lyrics, Telepathy and Mirage, and has 19 maintainers.  Its releases
-          track Banshee's; for more information, see
-
-            http://banshee-project.org/download/extensions/
-
-      * Type-ahead find in track, artist, and album lists
-
-          An alternative to filtering, type-ahead find jumps you to the first
-          track to match your query.  Activate with shift+/, cancel with Esc,
-          and jump to next match with F3.  In track list it matches against
-          artist, album, or title.
-
-      * Automatic Scoring
-
-          Songs now have scores, updated as you play and skip.  The score
-          can be used in searches and smart playlists, and serve as a basis
-          for ratings.
-
-      * New Shuffle Modes
-
-          Shuffle by artist or album let you listen to everything by an artist
-          or on an album before jumping to a new random artist or album.
-
-          Shuffle by rating or score lets you shuffle through your songs, with
-          higher rated or scored tracks being more likely to play.
-
-      * Audiobooks library extension
-
-          Rough first version, main benefits are separating your books from
-          your music and defining a different file system organization.  In
-          future versions we plan to add intuitive bookmarking and a better
-          browsing experience.  Enable in Extensions tab of Preferences.
-
-      * Library-folder watcher extension
-
-          Watches your libraries' folders for added, renamed, or deleted
-          files, and updates your libraries appropriately.  Requires
-          Mono >= 2.4.3.  Enable in Extensions tab of Preferences.
-
-      * eMusic importer/downloader extension
-
-          If you have purchased music from eMusic and have a .emx file, Banshee
-          will download and import the music files for you.  Select
-          'eMusic Files' from the normal Media > Import Media dialog. Enable
-          in Extensions tab of Preferences.
-
-      * GIO file backend, supports non-local files
-
-          This backend uses the GIO library to support importing local files
-          and network-share files alike.  Requires glib >= 2.22 and Gio#.
-
-      * Internet Archive extension
-
-          Search and stream content from the Internet Archive's vast store of
-          media, including 70,000 concerts and 200,000 videos.  Enable it in
-          the Extensions tab of the Preferences dialog.
-
-      * YouTube Extension
-
-          This extension shows YouTube videos in the Context Pane related to
-          what you're playing, and lets you watch them within Banshee.  You
-          can enable it in the Extensions tab of the Preferences dialog.
-
-      * Improved Metadata Handling
-      
-          Banshee is now able to read and write rating and playcount
-          information contained in your media files. Enable this option
-          in Preferences.
-
-          Searching and smart playlists use unicode-aware case-insensitive
-          search; i.e. n matches Ñ and vice-versa, and similarly smart sorting.
-
-          Artist/album/track sort fields are now supported, the License URI
-          field is now exposed and Creative Commons aware, and the BPM field
-          is exposed with an option to calculate it for all songs.
-
-      * Gapless Playback
-      * Optional cover art in lower-left corner
-      * Cover art editable via drag-and-drop and right-click
-      * Playing song kept visible in the track list
-      * Separate library locations for Music, Video, and Podcast
-      * iTunes and Rhythmbox library/metadata importers
+            Podcasts episodes are now shown in a grid, with several lines of
+            description shown to help you find an appealing episode to enjoy.
 
     Enhancements:
 
-      * More devices supported:
-        - Android: Nexus One, Desire, Galaxy, Droid, Pulse
-        - Other: Palm Pre, Nokia N900
-      * Improve search responsiveness on large libraries
-      * Play Queue item count, size, duration now ignores old tracks
-      * Muinshee fixes: disable Auto-DJ, allow reordering, hide previous song
-      * Wikipedia context pane extension enabled by default
-      * Add tooltip to playback error column
-      * Enable 'Delete From Drive' action in File System Queue
-      * Cover art for unicode artist/albums now supported
-      * Dropped glade-sharp dep; GNOME 3.0 ready
-      * Add columns showing track sample rate and bits per sample
-      * Option to sort an artist's albums by year, not title
-      * Allow seeking in DAAP streams
-      * Additional tokens for file system organization (bgo#489861)
-      * Cleaner track change notification popup (bgo#565453)
-      * Move Last.fm settings to the preferences dialog
-      * Keyboard shortcut (ESC) to clear the search box (BGO #558938)
-      * Expose LAME's "preset" option (BGO #563303)
-      * Better support for devices running Rockbox
-      * Set video sync folder for Android and WebOS devices
-      * Auto-completion for composer, conductor, grouping and copyright (BGO #592129)
-      * Added the 'comment' search filter (BGO #380524)
-      * Selectable song properties (BGO #586106)
-      * Show a tooltip in track editor when the property is truncated (BGO #589782)
-      * Support importing/exporting XSPF playlists
-      * Support loading ASF playlists (BGO #545646)
-      * Whitelist .spx, 669, it, med, mod, mol, mtm, nst, s3m, stm, ult, wow, xm, and xnm (BGO #580014)
-      * Source-specific preferences, accessible via Preferences dialog and via sources' context menu
-      * Much improved child source sorting - live, persistent, with group-by-type option
-      * Podcast espisode details tabs in track information/editor
-      * Can rename podcasts
-      * Can unsubscribe/download/refresh multiple podcasts at a time
-      * New 'Creative Commons' default Last.fm station
-      * New Refresh button for Last.fm stations
-      * More accurate seeking with click/DnD, can use mouse scrollwheel
-      * Make it easier to edit and reset ratings
-      * Add mnemonics to track editor fields and import dialog
-      * Make previous button go back if less than 4 seconds into a song
+      * Album grid has tooltips for ellipsized text
+      * Subscribe to Internet Archive searches as podcasts
+      * MusicBrainz cover art search supports CDBaby and Jamendo
+      * Support Huawei Ideos Android phones
 
-    Notable Bugs Fixed (since 1.5.6):
+    Notable Bugs Fixed (51 fixed since 1.8.0):
 
-      * Fix device support on upcoming distros with DeviceKit rename
-      * Restore equalizer preset correctly (bgo#614313)
-      * Handle broken symlinks correctly (bgo#614065)
-      * Allow overriding Android, Maemo, WebOS default settings (bgo#611991)
-      * Fix crash deleting playlist on mass storage device (bgo#613734)
-      * Fix issue with iTunes importer dialog sizing (bgo#613607)
-      * Fix play count calculation with gapless enabled (bgo#613418)
-      * Handle exceptions thrown by old plugins (Mirage, etc)
-      * Use panel-specific (eg monochrome) icon in notification area
-      * OS X build/bundle improvements
-      * Fix Windows compilation issues
-      * Fix gettext locale selection on Windows
+      * Remove unused Mono.Addins.Gui dependency
+      * Fix checkbox hover prelight in Fixup
+      * Always grab search entry focus on ctrl+f
+      * [TrackEditor] Don't try to load metadata over HTTP
+      * [AppleDevice] Add a matching 'StopSync' call.  We had an unmatched StartSync call which meant that the Sync dialog would be displayed forever.
+      * bgo#587936: [AppleDevice] Sync the Sort* fields
+      * bgo#631172: [AppleDevice] Fix podcast support
+      * bgo#540503: Remove Jump... from context menu
+      * bgo#540525: Stop when the playing track is deleted
+      * bgo#545998: Sensitize and pluralize podcast actions appropriately
+      * bgo#609463: Equalizer distortion
+      * bgo#620010: Displaying random image for "All Albums"
+      * bgo#623441: Duplicates on import due to character encoding
+      * bgo#624734: Allow editing Radio stations again
+      * bgo#629005: Full-screen on multi-head displays
+      * bgo#629534: TaskStatusIcon missing-ctor crash
+      * bgo#630039: Concatenated and untranslatable string
+      * bgo#631277: Crash in when editing some tracks' metadata
+      * bgo#631687: Non-local tracks added to DAP without extensions
+      * bgo#631961: [Gio] Invalid cast exception
+      * bgo#632114: Hang when replaying video
+      * bgo#632246: Missing-ctor issue in SourceComboBox
+      * bgo#632420: [Booter] Use the MeeGo client if appropriate
+      * bgo#632715: [Bookmarks] UI not getting loaded
+      * bgo#633579: Fixup not getting reloaded correctly
+      * bgo#633764: [Dap] not transcoding some files when we should
+      * bgo#633841: Recognize webm as video
+      * bgo#634096: Empty track # in filename patterns
+      * bnc#642505: Insecure LD_LIBRARY_PATH
 
 ===============================================================================
 SOURCES / PACKAGES
@@ -193,18 +90,19 @@ SOURCES / PACKAGES
 Sources
 -------
 
-    * Banshee 1.6.0 Tarballs:
-      http://download.banshee-project.org/banshee/stable/1.6.0/banshee-1-1.6.0.tar.bz2
-      http://download.banshee-project.org/banshee/stable/1.6.0/banshee-1-1.6.0.tar.gz
+    * Banshee 1.9.0 Tarballs:
+      http://download.banshee.fm/banshee/unstable/1.9.0/banshee-1-1.9.0.tar.bz2
+      http://download.banshee.fm/banshee/unstable/1.9.0/banshee-1-1.9.0.tar.gz
+    * http://download.banshee.fm/banshee/unstable/1.9.0/banshee-1-1.9.0.sha256sum
 
 Packages
 --------
 
     Download and installation information is available here:
 
-    * http://banshee-project.org/download/
+    * http://banshee.fm/download/
 
-    Packages for openSUSE 11.2, openSUSE 11.1, openSUSE 11.0 and
+    Packages for openSUSE 11.3, openSUSE 11.2, openSUSE 11.1, openSUSE 11.0 and
     openSUSE Factory are available from the openSUSE Build Service in the
     Banshee project.
 
@@ -212,14 +110,7 @@ Packages
 
     Binaries for Mac OS X 10.5 and 10.6:
 
-    * http://download.banshee-project.org/banshee/banshee-1-1.6.0.macosx.intel.dmg
-
-ChangeLogs & Checksums
-----------------------
-
-    * http://download.banshee-project.org/banshee/stable/1.6.0/banshee-1-1.6.0.changes
-    * http://download.banshee-project.org/banshee/stable/1.6.0/banshee-1-1.6.0.sha256sum
-
+    * http://download.banshee.fm/banshee/stable/1.8.0/banshee-1-1.8.0.macosx.intel.dmg
 
 ===============================================================================
 DEPENDENCIES
@@ -240,19 +131,21 @@ DEPENDENCIES
         * Note to packagers: since libmtp has different .so files for
           different versions, you need to require in your package the same
           version of libmtp you used to build Banshee.
-      * ipod-sharp >= 0.8.5
       * mono-zeroconf >= 0.8.0
       * boo >= 0.8.1
       * GIO support requires glib >= 2.22, gio-sharp and gtk-sharp-beans
       * Library Watcher extension requires Mono >= 2.4.3
       * Accessibilty for ListView and Rating widgets requires Gtk# >= 2.12.10
-      * Wikipedia extensions requires webkit-sharp-1.0 >= 0.2
       * YouTube extension requires gdata-sharp-core and
         gdata-sharp-youtube >= 1.4
+      * Amazon MP3 Store, Wikipedia Context Pane, and Miro Guide require
+        webkit-1.0 >= 1.2.2
+      * GIO/udev-based hardware backend requires glib >= 2.22, gio-sharp,
+        gtk-sharp-beans, gudev-sharp and gkeyfile-sharp
+      * Apple Devices backend requires libgpod-sharp >= 0.7.95
 
     * Run-time requirements for default feature stack:
-      * HAL
-      * PodSleuth >= 0.6.6
+      * GIO/udev
       * Brasero >= 0.8.1
       * Avahi
       * gst-plugins-bad (providing the bpmdetect GStreamer plugin)
@@ -286,8 +179,8 @@ REPORT BUGS - HELP THE PROJECT - GROW THE COMMUNITY
     If you encounter any bad behavior with this release, please do not
     hesitate to file bugs!
 
-    * http://banshee-project.org/contribute/file-bugs
-    * http://bugzilla.gnome.org/enter_bug.cgi?product=banshee&version=1.6.0
+    * http://banshee.fm/contribute/file-bugs
+    * http://bugzilla.gnome.org/enter_bug.cgi?product=banshee&version=1.9.0
 
 
 ===============================================================================
@@ -300,52 +193,55 @@ Contributors For This Release
     The following people directly contributed to the release of this version
     of Banshee. Without their help, there would be no release!
 
-      Aaron Bockover, Alexander Kojevnikov, Bertrand Lorentz, Chow Loong Jin,
-      Gabriel Burt, Iain Lane, Jeroen Budts, Jordi Mas, Julien Moutte,
-      Ján Sokoly, Ruben Vermeersch
+      Aaron Bockover, Alan McGovern, Alex Launi, Alexander Kojevnikov,
+      Andreas Nilsson, Andrés G. Aragoneses, Aurélien Mino, Bertrand Lorentz,
+      Dougal Stanton, Gabriel Burt, Ghislain Lacroix, Kentaro KAZUHAMA,
+      Michał Sawicz, Pete Johanson, Raimo Radczewski, Tim Fisken, Zhou Ting
 
     The following people contributed updated translations to this release.
     Without them, our project's reach would be much more limited.
 
-      A S Alam, Andrej Žnidaršič, Aron Xu, Bruno Brouard, Christian Kirbach,
-      Daniel Nylander, Gabor Kelemen, Gianvito Cavasoli,
-      Inaki Larranaga Murgoitio, Joe Hansen, Jordi Mas, Leonid Kanter,
-      Marek Černocký, Mario Blättermann, Miloš Popović, Pablo Garrido,
-      Piotr Drąg, Wouter Bolsterlee, Žygimantas Beručka
+      Andrej Žnidaršič, Benjamín Valero Espinosa, Carles Ferrando,
+      Daniel Nylander, Inaki Larranaga Murgoitio, Joe Hansen, Jorge González,
+      Kjartan Maraas, Mario Blättermann, Matej Urbančič, Maxim V. Dziumanenko,
+      Michael Kotsarinis, Petr Kovar, Takayuki KUSANO, Χάρης Κουζινόπουλος
 
 Contributors In Past Releases
 -----------------------------
 
     Aaron Bockover, Alan McGovern, Alex Bennee, Alex Kloss, Alex Launi,
-    Alexander Hixon, Alexander Kojevnikov, Alexandros Frantzis, Alp Toker,
-    Anders Petersson, Andrea Cimitan, Andreas Neustifter, Andreas Nilsson,
-    Andrew Conkling, Andrés G. Aragoneses, Andy Midgette, Arthur Carli,
-    Arun Raghavan, Aydemir Ulaş Şahin, Ben Maurer, Benjamín Valero Espinosa,
-    Bertrand Lorentz, Bertrand Lorentz, Bill Dawson, Bob Copeland,
-    Bojan Rajkovic, Brad Taylor, Brandon Perry, Brian Lucas, Brian Nickel,
-    Brian Teague, Chow Loong Jin, Chris Howie, Chris Jones, Chris Lahey,
-    Chris Toshok, Chris Turchin, Christian Hergert, Christian Krause,
-    Christoph Burgdorf, Christopher James Halse Rogers, Cody Russell,
-    Cosmin Banu, Dan Wilson, Dan Winship, Daniel Munkton, Daniel Siegel,
-    David Spreen, David Stone, Diego E. Pettenò, Eitan Isaacson, Elena Grassi,
+    Alex Mauer, Alexander Hixon, Alexander Kojevnikov, Alexandros Frantzis,
+    Alp Toker, Anders Petersson, Andrea Cimitan, Andreas Neustifter,
+    Andreas Nilsson, Andrew Conkling, Andrés G. Aragoneses, Andy Midgette,
+    Arthur Carli, Arun Raghavan, Aurélien Mino, Aydemir Ulaş Şahin,
+    Ben Maurer, Benjamín Valero Espinosa, Bertrand Lorentz, Bill Dawson,
+    Bob Copeland, Bojan Rajkovic, Brad Taylor, Brandon Perry, Brian Lucas,
+    Brian Nickel, Brian Teague, Chow Loong Jin, Chris Howie, Chris Jones,
+    Chris Lahey, Chris Toshok, Chris Turchin, Christian Hergert,
+    Christian Krause, Christoph Burgdorf, Christopher James Halse Rogers,
+    Claude Paroz, Cody Russell, Cosmin Banu, Dan Wilson, Dan Winship,
+    Daniel Munkton, Daniel Siegel, David Nielsen, David Spreen, David Stone,
+    Diego E. Pettenò, Dougal Stanton, Eitan Isaacson, Elena Grassi,
     Eoin Hennessy, Eric Butler, Erik Schmidt, Fabian Jost,
     Felipe Almeida Lessa, Fernando Casanova, Florent Thoumie, Fredrik Hedberg,
-    Félix Velasco, Gabriel Burt, Garrett LeSage, Götz Waschk, Haitao Feng,
-    Hans Petter Jansson, Iain Lane, Igor Guerrero Fonseca, Ilya Konstantinov,
-    Ivan N. Zlatev, Jack Deslippe, Jakub Steiner, James Willcox,
-    Jan Arne Petersen, Jason Conti, Jason Taylor, Jeff Tickle, Jeff Wheeler,
-    Jensen Somers, Jeroen Budts, Jo Shields, Johannes Kuhn, John Millikin,
-    Jordi Mas, Jorge Castro, Julien Moutte, Juri Pakaste, Ján Sokoly,
-    Jérémie Laval, K. Vishnoo Charan Reddy, Ken Vandine, Kevin Duffus,
+    Félix Velasco, Gabriel Burt, Garrett LeSage, Ghislain Lacroix,
+    Götz Waschk, Haitao Feng, Hans Petter Jansson, Harold Schreckengost,
+    Iain Lane, Igor Guerrero Fonseca, Ilya Konstantinov, Ivan N. Zlatev,
+    Jack Deslippe, Jakub Steiner, James Willcox, Jan Arne Petersen,
+    Jason Conti, Jason Taylor, Jeff Tickle, Jeff Wheeler, Jensen Somers,
+    Jeroen Budts, Jo Shields, Johannes Kuhn, John Millikin, Jordi Mas,
+    Jorge Castro, Julien Moutte, Juri Pakaste, Ján Sokoly, Jérémie Laval,
+    K. Vishnoo Charan Reddy, Ken Vandine, Kentaro KAZUHAMA, Kevin Duffus,
     Konstantin Oshiyko, Larry Ewing, Lauri Kotilainen, Lukas Lipka, Marijn Ros,
     Matt Enright, Michael Kaiser, Michael Martin-Smucker, Michael Monreal,
-    Michael Monreal, Miguel de Icaza, Mike Urbanski, Moritz Schallaböck,
-    Nathan Palmer, Neil Loknath, Nicholas Doyle, Nicholas Parker,
-    Nicolò Chieffo, Nils Naumann, Oben Sonne, Olivier Duff, Oscar Forero,
-    Pacho Ramos, Patrick van Staveren, Paul Lange, Pavel Antonov,
-    Pepijn van de Geer, Peter de Kraker, Pratik Patel, Przemysław Grzegorczyk,
-    Roderich Schupp, Romain Tartière, Ruben Vermeersch, Ryan Collier,
-    Sandy Armstrong, Scott Peterson, Sebastian Dröge, Tim Yamin,
-    Tobias Mueller, Todd Berman, Travis Glenn Hansen, Travis Reitter,
-    Trey Ethridge, Valentin Sawadski, Will Farrington, William Pettersson,
-    Wouter Bolsterlee
+    Michael Monreal, Michał Sawicz, Miguel de Icaza, Mike Gemünde,
+    Mike Urbanski, Moritz Schallaböck, Nathan Palmer, Neil Loknath,
+    Nicholas Doyle, Nicholas Parker, Nicolò Chieffo, Nils Naumann, Oben Sonne,
+    Olivier Duff, Oscar Forero, Pacho Ramos, Patrick van Staveren, Paul Cutler,
+    Paul Lange, Pavel Antonov, Pepijn van de Geer, Pete Johanson,
+    Peter de Kraker, Pratik Patel, Przemysław Grzegorczyk, Raimo Radczewski,
+    Robin Stocker, Roderich Schupp, Romain Tartière, Ruben Vermeersch,
+    Ryan Collier, Sandy Armstrong, Scott Peterson, Sebastian Dröge,
+    Shaun McCance, Tim Fisken, Tim Yamin, Tobias Mueller, Todd Berman,
+    Travis Glenn Hansen, Travis Reitter, Trey Ethridge, Valentin Sawadski,
+    Will Farrington, William Pettersson, Wouter Bolsterlee, Zhou Ting

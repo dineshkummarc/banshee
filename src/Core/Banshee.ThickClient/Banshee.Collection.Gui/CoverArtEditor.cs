@@ -71,6 +71,7 @@ namespace Banshee.Collection.Gui
             public EditorBox (Widget child)
             {
                 Child = child;
+                VisibleWindow = false;
 
                 ButtonPressEvent += (o, a) => {
                     if (a.Event.Button == 3 && IsSensitive ((int)a.Event.X, (int)a.Event.Y)) {
@@ -195,6 +196,14 @@ namespace Banshee.Collection.Gui
                     var artwork_id = track.ArtworkId;
                     if (artwork_id != null) {
                         ServiceManager.Get<ArtworkManager> ().ClearCacheFor (track.ArtworkId);
+                    }
+
+                    // Deleting it from this table means the cover art downloader extension will
+                    // attempt to redownload it on its next run.
+                    var db = ServiceManager.DbConnection;
+                    var db_track = track as DatabaseTrackInfo;
+                    if (db_track != null && db.TableExists ("CoverArtDownloads")) {
+                        db.Execute ("DELETE FROM CoverArtDownloads WHERE AlbumID = ?", db_track.AlbumId);
                     }
                 }
             }

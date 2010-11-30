@@ -31,7 +31,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Data;
 using System.Threading;
 using System.Collections.Generic;
 
@@ -189,7 +188,7 @@ namespace Banshee.LibraryWatcher
         {
             using (var reader = ServiceManager.DbConnection.Query (
                 DatabaseTrackInfo.Provider.CreateFetchCommand (
-                "CoreTracks.Uri = ? LIMIT 1"), new SafeUri (track).AbsoluteUri)) {
+                "CoreTracks.PrimarySourceID = ? AND CoreTracks.Uri = ? LIMIT 1"), library.DbId, new SafeUri (track).AbsoluteUri)) {
                 if (reader.Read ()) {
                     var track_info = DatabaseTrackInfo.Provider.Load (reader);
                     if (Banshee.IO.File.GetModifiedTime (track_info.Uri) > track_info.FileModifiedStamp) {
@@ -230,15 +229,14 @@ namespace Banshee.LibraryWatcher
             }
 
             if (hash != null) {
-                QueueItem item;
                 lock (queue) {
-                    item = queue.FirstOrDefault (
-                        i => i.ChangeType == WatcherChangeTypes.Created && GetMetadataHash(i) == hash);
-                }
-                if (item != null) {
-                    item.ChangeType = WatcherChangeTypes.Renamed;
-                    item.OldFullPath = track;
-                    return;
+                    var item = queue.FirstOrDefault (
+                        i => i.ChangeType == WatcherChangeTypes.Created && GetMetadataHash (i) == hash);
+                    if (item != null) {
+                        item.ChangeType = WatcherChangeTypes.Renamed;
+                        item.OldFullPath = track;
+                        return;
+                    }
                 }
             }
 

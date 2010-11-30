@@ -31,7 +31,6 @@ using System;
 using System.IO;
 using System.Text;
 using System.Security.Cryptography;
-using Mono.Security.Cryptography;
 using System.Collections.Generic;
 using System.Web;
 using System.Xml;
@@ -44,7 +43,7 @@ using Banshee.ServiceStack;
 using Banshee.Sources;
 
 using Lastfm;
-using Banshee.Lastfm.Radio;
+using Lastfm.Data;
 
 namespace Banshee.Lastfm.Audioscrobbler
 {
@@ -71,8 +70,8 @@ namespace Banshee.Lastfm.Audioscrobbler
                 this.musicbrainzid = "";
 
                 // set trackauth value, otherwise empty string is default
-                if (track is LastfmTrackInfo) {
-                    this.track_auth = (track as LastfmTrackInfo).TrackAuth;
+                if (track is ILastfmInfo) {
+                    this.track_auth = (track as ILastfmInfo).TrackAuth;
                 }
             }
 

@@ -94,6 +94,9 @@ namespace Banshee.Lastfm.Audioscrobbler
             LastfmCore.AudioscrobblerQueue = queue;
             connection = LastfmCore.Audioscrobbler;
 
+            // Initialize with a reasonable value in case we miss the first StartOfStream event
+            song_start_time = DateTime.Now;
+
             Network network = ServiceManager.Get<Network> ();
             connection.UpdateNetworkState (network.Connected);
             network.StateChanged += HandleNetworkStateChanged;
@@ -109,7 +112,7 @@ namespace Banshee.Lastfm.Audioscrobbler
                 PlayerEvent.Seek |
                 PlayerEvent.Iterate);
 
-            action_service = ServiceManager.Get<InterfaceActionService> ("InterfaceActionService");
+            action_service = ServiceManager.Get<InterfaceActionService> ();
             InterfaceInitialize ();
         }
 
@@ -275,7 +278,8 @@ namespace Banshee.Lastfm.Audioscrobbler
                     break;
 
                 case PlayerEvent.EndOfStream:
-                    Queue (ServiceManager.PlayerEngine.CurrentTrack);
+                    Queue (last_track);
+                    last_track = null;
                     iterate_countdown = 4 * 4;
                     break;
             }

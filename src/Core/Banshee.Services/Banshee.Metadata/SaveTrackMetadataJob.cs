@@ -29,12 +29,13 @@
 //
 
 using System;
+using System.Linq;
 using Mono.Unix;
 
+using Hyena;
 using Hyena.Jobs;
 using Hyena.Data.Sqlite;
 
-using Banshee.Base;
 using Banshee.Streaming;
 using Banshee.Collection.Database;
 using Banshee.Library;
@@ -46,21 +47,28 @@ namespace Banshee.Metadata
 {
     public class SaveTrackMetadataJob : DbIteratorJob
     {
-        private LibrarySource source = ServiceManager.SourceManager.MusicLibrary;
+        private LibrarySource musicLibrarySource = ServiceManager.SourceManager.MusicLibrary;
 
         public SaveTrackMetadataJob () : base (Catalog.GetString ("Saving Metadata to File"))
         {
             SetResources (Resource.Cpu, Resource.Disk, Resource.Database);
             IsBackground = true;
 
-            CountCommand = new HyenaSqliteCommand (
-                "SELECT COUNT(*) FROM CoreTracks WHERE DateUpdatedStamp > LastSyncedStamp AND PrimarySourceID = ?",
-                source.DbId
-            );
+            var db_ids = ServiceManager.Get<SaveTrackMetadataService> ().Sources.
+                Select (s => s.DbId.ToString ()).ToArray ();
 
-            SelectCommand = DatabaseTrackInfo.Provider.CreateFetchCommand (String.Format (
-                "DateUpdatedStamp > LastSyncedStamp AND PrimarySourceID = {0}", source.DbId)
-            );
+            string range = String.Join (",", db_ids);
+
+            string condition = String.Format (
+                @"(DateUpdatedStamp > LastSyncedStamp OR
+                  (DateUpdatedStamp IS NOT NULL AND LastSyncedStamp IS NULL))
+                  AND PrimarySourceID IN ({0})
+                  AND Uri LIKE '{1}%'", range, "file:");
+
+            CountCommand = new HyenaSqliteCommand (
+                "SELECT COUNT(*) FROM CoreTracks WHERE " + condition);
+
+            SelectCommand = DatabaseTrackInfo.Provider.CreateFetchCommand (condition);
         }
 
         public bool WriteMetadataEnabled { get; set; }
@@ -87,7 +95,9 @@ namespace Banshee.Metadata
                     wrote = StreamTagger.SaveToFile (track, WriteMetadataEnabled, WriteRatingsAndPlayCountsEnabled);
                 }
 
-                if (RenameEnabled) {
+                // Rename tracks only from the Music Library
+                if (RenameEnabled &&
+                    track.PrimarySource.Equals (musicLibrarySource)) {
                     Hyena.Log.DebugFormat ("Updating file name for {0}", track);
                     renamed = RenameFile (track);
                     if (renamed && !wrote) {
@@ -115,13 +125,13 @@ namespace Banshee.Metadata
         private bool RenameFile (DatabaseTrackInfo track)
         {
             SafeUri old_uri = track.Uri;
-            bool in_library = old_uri.AbsolutePath.StartsWith (source.BaseDirectoryWithSeparator);
+            bool in_library = old_uri.AbsolutePath.StartsWith (musicLibrarySource.BaseDirectoryWithSeparator);
 
             if (!in_library) {
                 return false;
             }
 
-            string new_filename = track.PathPattern.BuildFull (source.BaseDirectory, track, System.IO.Path.GetExtension (old_uri.ToString ()));
+            string new_filename = track.PathPattern.BuildFull (musicLibrarySource.BaseDirectory, track, System.IO.Path.GetExtension (old_uri.ToString ()));
             SafeUri new_uri = new SafeUri (new_filename);
 
             if (!new_uri.Equals (old_uri) && !Banshee.IO.File.Exists (new_uri)) {

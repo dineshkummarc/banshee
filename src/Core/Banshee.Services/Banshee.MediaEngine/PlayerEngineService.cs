@@ -281,12 +281,12 @@ namespace Banshee.MediaEngine
 
         public void Open (SafeUri uri)
         {
-            OpenCheck (uri);
+            Open (new UnknownTrackInfo (uri));
         }
 
         void IPlayerEngineService.Open (string uri)
         {
-            OpenCheck (new SafeUri (uri));
+            Open (new SafeUri (uri));
         }
 
         public void SetNextTrack (TrackInfo track)
@@ -341,18 +341,13 @@ namespace Banshee.MediaEngine
             }
 
             try {
-                OpenCheck (track, true);
+                OpenCheck (track, play);
             } catch (Exception e) {
                 Log.Exception (e);
                 Log.Error (Catalog.GetString ("Problem with Player Engine"), e.Message, true);
                 Close ();
                 ActiveEngine = default_engine;
             }
-        }
-
-        private void OpenCheck (object o)
-        {
-            OpenCheck (o, false);
         }
 
         private void OpenCheck (object o, bool play)
@@ -372,6 +367,11 @@ namespace Banshee.MediaEngine
                 track = (TrackInfo)o;
                 uri = track.Uri;
             } else {
+                return;
+            }
+
+            if (track != null && (track.MediaAttributes & TrackMediaAttributes.ExternalResource) != 0) {
+                RaiseEvent (new PlayerEventArgs (PlayerEvent.EndOfStream));
                 return;
             }
 
@@ -450,7 +450,6 @@ namespace Banshee.MediaEngine
         public void Close (bool fullShutdown)
         {
             IncrementLastPlayed ();
-            active_engine.Reset ();
             active_engine.Close (fullShutdown);
         }
 
@@ -548,7 +547,9 @@ namespace Banshee.MediaEngine
         }
 
         public TrackInfo CurrentTrack {
-            get { return active_engine.CurrentTrack ?? synthesized_contacting_track; }
+            get {
+                return active_engine.CurrentTrack ?? synthesized_contacting_track;
+            }
         }
 
         private Dictionary<string, object> dbus_sucks;
@@ -691,7 +692,8 @@ namespace Banshee.MediaEngine
             | PlayerEvent.Volume
             | PlayerEvent.Metadata
             | PlayerEvent.TrackInfoUpdated
-            | PlayerEvent.RequestNextTrack;
+            | PlayerEvent.RequestNextTrack
+            | PlayerEvent.PrepareVideoWindow;
 
         private const PlayerEvent event_default_mask = event_all_mask & ~PlayerEvent.Iterate;
 
@@ -779,7 +781,11 @@ namespace Banshee.MediaEngine
                 LinkedListNode<PlayerEventHandlerSlot> node = event_handlers.First;
                 while (node != null) {
                     if ((node.Value.EventMask & args.Event) == args.Event) {
-                        node.Value.Handler (args);
+                        try {
+                            node.Value.Handler (args);
+                        } catch (Exception e) {
+                            Log.Exception (String.Format ("Error running PlayerEngine handler for {0}", args.Event), e);
+                        }
                     }
                     node = node.Next;
                 }

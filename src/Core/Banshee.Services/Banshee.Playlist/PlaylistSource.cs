@@ -28,7 +28,6 @@
 //
 
 using System;
-using System.Data;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -244,10 +243,10 @@ namespace Banshee.Playlist
             AddTrack (track.TrackId);
         }
 
-        public override bool AddSelectedTracks (Source source)
+        public override bool AddSelectedTracks (Source source, Selection selection)
         {
             if (Parent == null || source == Parent || source.Parent == Parent) {
-                return base.AddSelectedTracks (source);
+                return base.AddSelectedTracks (source, selection);
             } else {
                 // Adding from a different primary source, so add to our primary source first
                 //PrimarySource primary = Parent as PrimarySource;
@@ -359,18 +358,14 @@ namespace Banshee.Playlist
             }
         }
 
-        private static bool temps_cleared = false;
         private static void ClearTemporary ()
         {
-            if (!temps_cleared) {
-                temps_cleared = true;
-                ServiceManager.DbConnection.BeginTransaction ();
-                ServiceManager.DbConnection.Execute (@"
-                    DELETE FROM CorePlaylistEntries WHERE PlaylistID IN (SELECT PlaylistID FROM CorePlaylists WHERE IsTemporary = 1);
-                    DELETE FROM CorePlaylists WHERE IsTemporary = 1;"
-                );
-                ServiceManager.DbConnection.CommitTransaction ();
-            }
+            ServiceManager.DbConnection.BeginTransaction ();
+            ServiceManager.DbConnection.Execute (@"
+                DELETE FROM CorePlaylistEntries WHERE PlaylistID IN (SELECT PlaylistID FROM CorePlaylists WHERE IsTemporary = 1);
+                DELETE FROM CorePlaylists WHERE IsTemporary = 1;"
+            );
+            ServiceManager.DbConnection.CommitTransaction ();
         }
 
         private static int GetPlaylistId (string name)

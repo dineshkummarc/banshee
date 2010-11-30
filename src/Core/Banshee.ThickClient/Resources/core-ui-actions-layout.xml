@@ -8,6 +8,7 @@
     <placeholder name="SourceActions">
         <toolitem name="RefreshSmartPlaylist" action="RefreshSmartPlaylistAction"/>
     </placeholder>
+    <placeholder name="SearchEntry"/>
     <placeholder name="VolumeButton"/>
     <placeholder name="ToolbarMenuPlaceholder"/>
     <placeholder name="ClosePlaceholder"/>
@@ -77,7 +78,6 @@
       <menuitem name="TrackProperties" action="TrackPropertiesAction"/>
       <separator/>
       <menuitem name="Preferences" action="PreferencesAction"/>
-      <menuitem name="Extensions" action="ExtensionsAction"/>
     </menu>
 
     <menu name="ViewMenu" action="ViewMenuAction">
@@ -115,13 +115,10 @@
     </menu>
 
     <menu name="HelpMenu" action="HelpMenuAction">
-      <menu name="WebMenu" action="WebMenuAction">
-        <menuitem name="WikiGuide" action="WikiGuideAction"/>
-        <menuitem name="WikiSearchHelp" action="WikiSearchHelpAction"/>
-        <separator/>
-        <menuitem name="Wiki" action="WikiAction"/>
-        <menuitem name="WikiDeveloper" action="WikiDeveloperAction"/>
-      </menu>
+      <menuitem action="UserHelp"/>
+      <separator/>
+      <menuitem name="Wiki" action="WikiAction"/>
+      <menuitem name="WikiDeveloper" action="WikiDeveloperAction"/>
       <separator/>
       <menuitem name="VersionInformation" action="VersionInformationAction"/>
       <menuitem name="About" action="AboutAction"/>
@@ -169,6 +166,8 @@
   </popup>
 
   <popup name="TrackContextMenu" action="TrackContextMenuAction">
+    <menuitem action="PlayTrack"/>
+    <separator/>
     <placeholder name="AboveAddToPlaylist"/>
     <menu name="AddToPlaylist" action="AddToPlaylistAction"></menu>
     <placeholder name="BelowAddToPlaylist"/>
@@ -182,8 +181,6 @@
       <menuitem name="SearchForSameArtist" action="SearchForSameArtistAction"/>
       <menuitem name="SearchForSameAlbum" action="SearchForSameAlbumAction"/>
     </menu>
-    <separator/>
-    <menuitem name="JumpToPlayingTrack" action="JumpToPlayingTrackAction"/>
     <separator/>
     <menuitem name="TrackProperties" action="TrackPropertiesAction"/>
     <menuitem name="TrackEditor" action="TrackEditorAction"/>

@@ -28,6 +28,7 @@
 //
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using System.Threading;
@@ -201,7 +202,9 @@ namespace Banshee.Dap
 
             if (acceptable_mimetypes == null) {
                 acceptable_mimetypes = HasMediaCapabilities ? MediaCapabilities.PlaybackMimeTypes : null;
-                acceptable_mimetypes = acceptable_mimetypes ?? new string [] { "taglib/mp3" };
+                if (acceptable_mimetypes == null || acceptable_mimetypes.Length == 0) {
+                    acceptable_mimetypes = new string [] { "taglib/mp3" };
+                }
             }
 
             AddChildSource (music_group_source = new MusicGroupSource (this));
@@ -243,6 +246,10 @@ namespace Banshee.Dap
 
         public override bool HasProperties {
             get { return true; }
+        }
+
+        public override bool CanSearch {
+            get { return false; }
         }
 
         public override void SetStatus (string message, bool can_close, bool is_spinning, string icon_name)
@@ -334,10 +341,12 @@ namespace Banshee.Dap
 
         protected bool TrackNeedsTranscoding (TrackInfo track)
         {
-            foreach (string mimetype in AcceptableMimeTypes) {
-                if (ServiceManager.MediaProfileManager.GetExtensionForMimeType (track.MimeType) ==
-                    ServiceManager.MediaProfileManager.GetExtensionForMimeType (mimetype)) {
-                    return false;
+            string extension = ServiceManager.MediaProfileManager.GetExtensionForMimeType (track.MimeType);
+            if (extension != null) {
+                foreach (string mimetype in AcceptableMimeTypes) {
+                    if (extension == ServiceManager.MediaProfileManager.GetExtensionForMimeType (mimetype)) {
+                        return false;
+                    }
                 }
             }
 

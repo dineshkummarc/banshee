@@ -78,7 +78,7 @@ namespace Banshee.Dap.Ipod
                         "version of the song database for your iPod that is too new " +
                         "for Banshee to recognize.\n\n" +
 
-                        "Banshee can rebuild your database, but some settings might be lost. " +
+                        "Banshee can rebuild your database, but you might lose your settings and all the content in the device (be sure to backup your data first). " +
                         "Using Banshee and iTunes with the same iPod is not recommended."
                     ));
 
@@ -87,7 +87,7 @@ namespace Banshee.Dap.Ipod
                     link.Markup = String.Format("<u>{0}</u>", GLib.Markup.EscapeText(Catalog.GetString(
                         "Learn more about Banshee's iPod support")));
 
-                    link.Clicked += delegate { Banshee.Web.Browser.Open ("http://banshee-project.org/IpodAndItunes"); };
+                    link.Clicked += delegate { Banshee.Web.Browser.Open ("http://banshee.fm/IpodAndItunes"); };
 
                     link.Show();
                     pane.Append(link, Gtk.AttachOptions.Expand | Gtk.AttachOptions.Fill, 0, true);

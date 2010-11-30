@@ -1,7 +1,4 @@
 SUBDIRS = \
-   Mono.Data.Sqlite \
-   Hyena \
-   Hyena.Gui \
    Migo \
    Migo2 \
    Mono.Media \

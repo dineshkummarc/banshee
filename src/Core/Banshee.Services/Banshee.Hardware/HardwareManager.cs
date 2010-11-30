@@ -46,15 +46,16 @@ namespace Banshee.Hardware
 
         public HardwareManager ()
         {
-            foreach (TypeExtensionNode node in AddinManager.GetExtensionNodes ("/Banshee/Platform/HardwareManager")) {
-                try {
-                    if (manager != null) {
-                        throw new Exception (String.Format (
-                            "A HardwareManager has already been loaded ({0}). Only one can be loaded.",
-                            manager.GetType ().FullName));
-                    }
+            var extensions = Banshee.IO.Provider.GetOrderedExtensions (
+                "/Banshee/Platform/HardwareManager",
+                "Banshee.Hardware.Gio", "Banshee.HalBackend.HardwareManager"
+            );
 
+            foreach (var node in extensions) {
+                try {
                     manager = (IHardwareManager)node.CreateInstance (typeof (IHardwareManager));
+                    Log.DebugFormat ("Loaded HardwareManager backend: {0}", node.Id);
+                    break;
                 } catch (Exception e) {
                     Log.Exception ("Hardware manager extension failed to load", e);
                 }

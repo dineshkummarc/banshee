@@ -59,10 +59,9 @@ namespace Banshee.Collection.Gui
             IsEverReorderable = true;
 
             RowActivated += (o, a) => {
-                ITrackModelSource source = ServiceManager.SourceManager.ActiveSource as ITrackModelSource;
+                var source = ServiceManager.SourceManager.ActiveSource as ITrackModelSource;
                 if (source != null && source.TrackModel == Model) {
-                    ServiceManager.PlaybackController.Source = source;
-                    ServiceManager.PlayerEngine.OpenPlay (a.RowValue);
+                    ServiceManager.Get<InterfaceActionService> ().TrackActions["PlayTrack"].Activate ();
                 }
             };
 

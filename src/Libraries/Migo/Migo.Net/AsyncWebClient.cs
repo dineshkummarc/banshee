@@ -88,7 +88,6 @@ namespace Migo.Net
 
         public event EventHandler<EventArgs> ResponseReceived;
         public event EventHandler<DownloadProgressChangedEventArgs> DownloadProgressChanged;
-        public event EventHandler<TransferRateUpdatedEventArgs> TransferRateUpdated;
 
         public event EventHandler<AsyncCompletedEventArgs> DownloadFileCompleted;
         public event EventHandler<DownloadDataCompletedEventArgs> DownloadDataCompleted;
@@ -560,7 +559,10 @@ namespace Migo.Net
                     err = we;
 
                     HttpWebResponse response = we.Response as HttpWebResponse;
-                    if (response != null && response.StatusCode == HttpStatusCode.BadRequest && response.ResponseUri != request.RequestUri) {
+                    if (response != null
+                        && (response.StatusCode == HttpStatusCode.BadRequest
+                            || response.StatusCode == HttpStatusCode.NotAcceptable)
+                        && response.ResponseUri != request.RequestUri) {
                         Hyena.Log.DebugFormat ("Identified Content-Length: 0 redirection bug for {0}; trying to get {1} directly", request.RequestUri, response.ResponseUri);
                         redirect_workaround = true;
                         uri = response.ResponseUri;

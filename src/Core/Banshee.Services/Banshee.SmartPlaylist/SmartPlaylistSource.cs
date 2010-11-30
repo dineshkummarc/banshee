@@ -28,7 +28,6 @@
 //
 
 using System;
-using System.Data;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -150,7 +149,16 @@ namespace Banshee.SmartPlaylist
 
         public QueryOrder QueryOrder {
             get { return query_order; }
-            set { query_order = value; }
+            set {
+                query_order = value;
+                if (value != null) {
+                    Properties.Set<string> ("TrackListSortField", value.Field.Name);
+                    Properties.Set<bool> ("TrackListSortAscending", value.Ascending);
+                } else {
+                    Properties.Remove ("TrackListSortField");
+                    Properties.Remove ("TrackListSortAscending");
+                }
+            }
         }
 
         public IntegerQueryValue LimitValue {
@@ -164,7 +172,7 @@ namespace Banshee.SmartPlaylist
         }
 
         protected string OrderSql {
-            get { return QueryOrder == null ? null : QueryOrder.ToSql (); }
+            get { return !IsLimited || QueryOrder == null ? null : QueryOrder.ToSql (); }
         }
 
         protected string LimitSql {
@@ -177,11 +185,17 @@ namespace Banshee.SmartPlaylist
             }
         }
 
+        public bool IsHiddenWhenEmpty { get; private set; }
+
         public override bool HasDependencies {
             get { return dependencies.Count > 0; }
         }
 
         // FIXME scan ConditionTree for date fields
+        // FIXME even better, scan for date fields and see how fine-grained they are;
+        //       eg if set to Last Added < 2 weeks ago, don't need a timer going off
+        //       every 1 minute - every hour or two would suffice.  Just change this
+        //       property to a TimeSpan, rename it TimeDependentResolution or something
         public bool TimeDependent {
             get { return false; }
         }
@@ -196,19 +210,24 @@ namespace Banshee.SmartPlaylist
         }
 
         public SmartPlaylistSource (string name, QueryNode condition, QueryOrder order, QueryLimit limit, IntegerQueryValue limit_value, PrimarySource parent)
+            : this (name, condition, order, limit, limit_value, false, parent)
+        {
+        }
+
+        public SmartPlaylistSource (string name, QueryNode condition, QueryOrder order, QueryLimit limit, IntegerQueryValue limit_value, bool hiddenWhenEmpty, PrimarySource parent)
             : this (name, parent)
         {
             ConditionTree = condition;
             QueryOrder = order;
             Limit = limit;
             LimitValue = limit_value;
+            IsHiddenWhenEmpty = hiddenWhenEmpty;
 
-            SetProperties ();
             UpdateDependencies ();
         }
 
         // For existing smart playlists that we're loading from the database
-        protected SmartPlaylistSource (int dbid, string name, string condition_xml, string order_by, string limit_number, string limit_criterion, PrimarySource parent, int count, bool is_temp) :
+        protected SmartPlaylistSource (int dbid, string name, string condition_xml, string order_by, string limit_number, string limit_criterion, PrimarySource parent, int count, bool is_temp, bool hiddenWhenEmpty) :
             base (generic_name, name, dbid, -1, 0, parent, is_temp)
         {
             ConditionXml = condition_xml;
@@ -217,6 +236,7 @@ namespace Banshee.SmartPlaylist
             LimitValue = new IntegerQueryValue ();
             LimitValue.ParseUserQuery (limit_number);
             SavedCount = count;
+            IsHiddenWhenEmpty = hiddenWhenEmpty;
 
             SetProperties ();
             UpdateDependencies ();
@@ -284,19 +304,23 @@ namespace Banshee.SmartPlaylist
                 PrimarySource.TracksChanged += HandleTracksChanged;
                 PrimarySource.TracksDeleted += HandleTracksDeleted;
             }
+
+            if (IsHiddenWhenEmpty) {
+                RefreshAndReload ();
+            }
         }
 
         protected override void Create ()
         {
             DbId = ServiceManager.DbConnection.Execute (new HyenaSqliteCommand (@"
                 INSERT INTO CoreSmartPlaylists
-                    (Name, Condition, OrderBy, LimitNumber, LimitCriterion, PrimarySourceID, IsTemporary)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    (Name, Condition, OrderBy, LimitNumber, LimitCriterion, PrimarySourceID, IsTemporary, IsHiddenWhenEmpty)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 Name, ConditionXml,
-                IsLimited ? QueryOrder.Name : null,
+                QueryOrder != null ? QueryOrder.Name : null,
                 IsLimited ? LimitValue.ToSql () : null,
                 IsLimited ? Limit.Name : null,
-                PrimarySourceId, IsTemporary
+                PrimarySourceId, IsTemporary, IsHiddenWhenEmpty
             ));
             UpdateDependencies ();
         }
@@ -311,13 +335,14 @@ namespace Banshee.SmartPlaylist
                         LimitNumber = ?,
                         LimitCriterion = ?,
                         CachedCount = ?,
-                        IsTemporary = ?
+                        IsTemporary = ?,
+                        IsHiddenWhenEmpty = ?
                     WHERE SmartPlaylistID = ?",
                 Name, ConditionXml,
                 IsLimited ? QueryOrder.Name : null,
                 IsLimited ? LimitValue.ToSql () : null,
                 IsLimited ? Limit.Name : null,
-                Count, IsTemporary, DbId
+                Count, IsTemporary, IsHiddenWhenEmpty, DbId
             ));
             UpdateDependencies ();
         }
@@ -349,10 +374,25 @@ namespace Banshee.SmartPlaylist
         private bool refreshed = false;
         public override void Reload ()
         {
-            if (!refreshed)
+            if (!refreshed) {
                 Refresh ();
+            } else {
+                // Don't set this on the first refresh
+                Properties.Set<bool> ("NotifyWhenAdded", IsHiddenWhenEmpty);
+            }
 
             base.Reload ();
+
+            if (IsHiddenWhenEmpty && Parent != null) {
+                bool contains_me = Parent.ContainsChildSource (this);
+                int count = Count;
+
+                if (count == 0 && contains_me) {
+                    Parent.RemoveChildSource (this);
+                } else if (count > 0 && !contains_me) {
+                    Parent.AddChildSource (this);
+                }
+            }
         }
 
         public void Refresh ()
@@ -487,7 +527,7 @@ namespace Banshee.SmartPlaylist
         {
             ClearTemporary ();
             using (HyenaDataReader reader = new HyenaDataReader (ServiceManager.DbConnection.Query (
-                @"SELECT SmartPlaylistID, Name, Condition, OrderBy, LimitNumber, LimitCriterion, PrimarySourceID, CachedCount, IsTemporary
+                @"SELECT SmartPlaylistID, Name, Condition, OrderBy, LimitNumber, LimitCriterion, PrimarySourceID, CachedCount, IsTemporary, IsHiddenWhenEmpty
                     FROM CoreSmartPlaylists WHERE PrimarySourceID = ?", parent.DbId))) {
                 while (reader.Read ()) {
                     SmartPlaylistSource playlist = null;
@@ -496,7 +536,8 @@ namespace Banshee.SmartPlaylist
                             reader.Get<int> (0), reader.Get<string> (1),
                             reader.Get<string> (2), reader.Get<string> (3),
                             reader.Get<string> (4), reader.Get<string> (5),
-                            parent, reader.Get<int> (7), reader.Get<bool> (8)
+                            parent, reader.Get<int> (7), reader.Get<bool> (8),
+                            reader.Get<bool> (9)
                         );
                     } catch (Exception e) {
                         Log.Warning ("Ignoring Smart Playlist", String.Format ("Caught error: {0}", e), false);
@@ -509,18 +550,14 @@ namespace Banshee.SmartPlaylist
             }
         }
 
-        private static bool temps_cleared = false;
         private static void ClearTemporary ()
         {
-            if (!temps_cleared) {
-                temps_cleared = true;
-                ServiceManager.DbConnection.Execute (@"
-                    BEGIN TRANSACTION;
-                        DELETE FROM CoreSmartPlaylistEntries WHERE SmartPlaylistID IN (SELECT SmartPlaylistID FROM CoreSmartPlaylists WHERE IsTemporary = 1);
-                        DELETE FROM CoreSmartPlaylists WHERE IsTemporary = 1;
-                    COMMIT TRANSACTION"
-                );
-            }
+            ServiceManager.DbConnection.Execute (@"
+                BEGIN TRANSACTION;
+                    DELETE FROM CoreSmartPlaylistEntries WHERE SmartPlaylistID IN (SELECT SmartPlaylistID FROM CoreSmartPlaylists WHERE IsTemporary = 1);
+                    DELETE FROM CoreSmartPlaylists WHERE IsTemporary = 1;
+                COMMIT TRANSACTION"
+            );
         }
 
         private static void HandleSourceAdded (SourceEventArgs args)
@@ -545,7 +582,7 @@ namespace Banshee.SmartPlaylist
             StopTimer();
         }
 
-        public static void StartTimer (SmartPlaylistSource playlist)
+        private static void StartTimer (SmartPlaylistSource playlist)
         {
             // Check if the playlist is time-dependent, and if it is,
             // start the auto-refresh timer.
@@ -559,7 +596,7 @@ namespace Banshee.SmartPlaylist
             }
         }
 
-        public static void StopTimer ()
+        private static void StopTimer ()
         {
             // If the timer is going and there are no more time-dependent playlists,
             // stop the timer.
@@ -594,7 +631,7 @@ namespace Banshee.SmartPlaylist
             return true;
         }
 
-        public static void SortPlaylists () {
+        private static void SortPlaylists () {
             playlists.Sort (new DependencyComparer ());
         }
 

@@ -34,6 +34,7 @@ using Mono.Unix;
 
 using Banshee.Base;
 using Banshee.Collection;
+using Banshee.Query;
 using Banshee.SmartPlaylist;
 using Banshee.Preferences;
 using Banshee.Configuration;
@@ -62,6 +63,8 @@ namespace Banshee.Library
             NotMediaTypes = TrackMediaAttributes.Podcast | TrackMediaAttributes.VideoStream | TrackMediaAttributes.AudioBook;
             Properties.SetStringList ("Icon.Name", "audio-x-generic", "source-library");
 
+            Properties.Set<string> ("SearchEntryDescription", Catalog.GetString ("Search your music"));
+
             // Migrate the old library-location schema, if necessary
             if (DatabaseConfigurationClient.Client.Get<int> ("MusicLibraryLocationMigrated", 0) != 1) {
                 string old_location = OldLocationSchema.Get ();
@@ -85,6 +88,11 @@ namespace Banshee.Library
             ));
         }
 
+        public override string GetPluralItemCountString (int count)
+        {
+            return Catalog.GetPluralString ("{0} song", "{0} songs", count);
+        }
+
         public static string GetDefaultBaseDirectory ()
         {
             return Hyena.XdgBaseDirectorySpec.GetXdgDirectoryUnderHome ("XDG_MUSIC_DIR", "Music");
@@ -102,29 +110,39 @@ namespace Banshee.Library
             get { return non_default_smart_playlists; }
         }
 
+        protected override string SectionName {
+            get { return Catalog.GetString ("Music Folder"); }
+        }
+
         private static SmartPlaylistDefinition [] default_smart_playlists = new SmartPlaylistDefinition [] {
             new SmartPlaylistDefinition (
                 Catalog.GetString ("Favorites"),
                 Catalog.GetString ("Songs rated four and five stars"),
-                "rating>=4"),
+                "rating>=4", true),
 
             new SmartPlaylistDefinition (
                 Catalog.GetString ("Recent Favorites"),
                 Catalog.GetString ("Songs listened to often in the past week"),
-                "played<\"1 week ago\" playcount>3"),
+                "played<\"1 week ago\" playcount>3", true),
 
             new SmartPlaylistDefinition (
                 Catalog.GetString ("Recently Added"),
                 Catalog.GetString ("Songs imported within the last week"),
-                "added<\"1 week ago\""),
+                "added<\"1 week ago\"", true) { Order = BansheeQuery.FindOrder (BansheeQuery.DateAddedField, false) },
+
+            new SmartPlaylistDefinition (
+                Catalog.GetString ("Recently Played"),
+                Catalog.GetString ("Recently played songs"),
+                "played<\"2 weeks ago\" plays>0", true) { Order = BansheeQuery.FindOrder (BansheeQuery.LastPlayedField, false) },
 
             new SmartPlaylistDefinition (
                 Catalog.GetString ("Unheard"),
                 Catalog.GetString ("Songs that have not been played or skipped"),
-                "playcount:0 skips:0"),
+                "playcount:0 skips:0", true),
         };
 
         private static SmartPlaylistDefinition [] non_default_smart_playlists = new SmartPlaylistDefinition [] {
+
             new SmartPlaylistDefinition (
                 Catalog.GetString ("Neglected Favorites"),
                 Catalog.GetString ("Favorites not played in over two months"),

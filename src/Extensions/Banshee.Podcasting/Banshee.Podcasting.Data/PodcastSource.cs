@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using Gtk;
@@ -58,6 +59,7 @@ namespace Banshee.Podcasting.Gui
     public class PodcastSource : Banshee.Library.LibrarySource
     {
         private PodcastFeedModel feed_model;
+        private PodcastUnheardFilterModel new_filter;
 
         public override string DefaultBaseDirectory {
             get {
@@ -90,13 +92,122 @@ namespace Banshee.Podcasting.Gui
             get { return feed_model; }
         }
 
+        public PodcastUnheardFilterModel NewFilter { get { return new_filter; } }
+
         public override string PreferencesPageId {
             get { return UniqueId; }
         }
 
+        protected override string SectionName {
+            get { return Catalog.GetString ("Podcasts Folder"); }
+        }
+
+        class FeedMessage : SourceMessage
+        {
+            public Feed Feed { get; set; }
+
+            public bool Valid { get; private set; }
+
+            public FeedMessage (Source src, Feed feed) : base (src)
+            {
+                Feed = feed;
+                Update ();
+            }
+
+            public void Update ()
+            {
+                ClearActions ();
+                CanClose = Feed.LastDownloadError != FeedDownloadError.None;
+                IsSpinning = !CanClose;
+
+                var title = Feed.Title == Feed.UnknownPodcastTitle ? Feed.Url : Feed.Title;
+
+                if (CanClose) {
+                    Text = String.Format (GetErrorText (), title);
+                    SetIconName ("dialog-error");
+
+                    AddAction (new MessageAction (Catalog.GetString ("Remove Podcast"), delegate {
+                        Feed.Delete (true);
+                        IsHidden = true;
+                    }));
+
+                    AddAction (new MessageAction (Catalog.GetString ("Disable Auto Updates"), delegate {
+                        Feed.IsSubscribed = false;
+                        Feed.Save ();
+                        IsHidden = true;
+                    }));
+                } else {
+                    Text = String.Format (Catalog.GetString ("Loading {0}"), title);
+                }
+
+                // TODO Avoid nagging about an error more than once
+                Valid = true;//Feed.LastDownloadTime == DateTime.MinValue || Feed.LastDownloadTime > last_feed_nag;
+            }
+
+            private string GetErrorText ()
+            {
+                switch (Feed.LastDownloadError) {
+                    case FeedDownloadError.DoesNotExist:
+                    case FeedDownloadError.DownloadFailed:
+                        return Catalog.GetString ("Network error updating {0}");
+
+                    case FeedDownloadError.InvalidFeedFormat:
+                    case FeedDownloadError.NormalizationFailed:
+                    case FeedDownloadError.UnsupportedMsXml:
+                    case FeedDownloadError.UnsupportedDtd:
+                        return Catalog.GetString ("Parsing error updating {0}");
+
+                    case FeedDownloadError.UnsupportedAuth:
+                        return Catalog.GetString ("Authentication error updating {0}");
+
+                    default:
+                        return Catalog.GetString ("Error updating {0}");
+                }
+            }
+        }
+
+        //private static DateTime last_feed_nag = DateTime.MinValue;
+        private List<FeedMessage> feed_messages = new List<FeedMessage> ();
+        public void UpdateFeedMessages ()
+        {
+            var feeds = Feed.Provider.FetchAllMatching (
+                "IsSubscribed = 1 AND (LastDownloadTime = 0 OR LastDownloadError != 0) ORDER BY LastDownloadTime ASC").ToList ();
+
+            lock (feed_messages) {
+                var msgs = new List<FeedMessage> ();
+
+                var cur = CurrentMessage as FeedMessage;
+                if (cur != null && feeds.Contains (cur.Feed)) {
+                    cur.Update ();
+                    feeds.Remove (cur.Feed);
+                    feed_messages.Remove (cur);
+                    msgs.Add (cur);
+                }
+
+                feed_messages.ForEach (RemoveMessage);
+                feed_messages.Clear ();
+
+                foreach (var feed in feeds) {
+                    var msg = new FeedMessage (this, feed);
+                    if (msg.Valid) {
+                        msgs.Add (msg);
+                        PushMessage (msg);
+                    }
+                }
+
+                feed_messages = msgs;
+                //last_feed_nag = DateTime.Now;
+
+                // If there's at least one new message, notify the user
+                if (msgs.Count > ((cur != null) ? 1 : 0)) {
+                    NotifyUser ();
+                }
+            }
+        }
+
 #region Constructors
 
-        public PodcastSource () : base (Catalog.GetString ("Podcasts"), "PodcastLibrary", 200)
+        public PodcastSource () : base (Catalog.GetString ("Podcasts"), "PodcastLibrary", 51)
         {
             TrackExternalObjectHandler = GetPodcastInfoObject;
             TrackArtworkIdHandler = GetTrackArtworkId;
@@ -106,6 +217,7 @@ namespace Banshee.Podcasting.Gui
             TrackModel.Reloaded += OnReloaded;
 
             Properties.SetString ("Icon.Name", "podcast");
+            Properties.Set<string> ("SearchEntryDescription", Catalog.GetString ("Search your podcasts"));
 
             Properties.SetString ("ActiveSourceUIResource", "ActiveSourceUI.xml");
             Properties.Set<bool> ("ActiveSourceUIResourcePropagate", true);
@@ -115,6 +227,7 @@ namespace Banshee.Podcasting.Gui
 
             Properties.Set<ISourceContents> ("Nereid.SourceContents", new LazyLoadSourceContents<PodcastSourceContents> ());
             Properties.Set<bool> ("Nereid.SourceContentsPropagate", true);
+            Properties.Set<bool> ("SourceView.HideCount", false);
 
             Properties.SetString ("TrackView.ColumnControllerXml", String.Format (@"
                     <column-controller>
@@ -183,21 +296,31 @@ namespace Banshee.Podcasting.Gui
             get { return false; }
         }
 
+        public override bool HasEditableTrackProperties {
+            get { return false; }
+        }
+
+        public override string GetPluralItemCountString (int count)
+        {
+            return Catalog.GetPluralString ("{0} episode", "{0} episodes", count);
+        }
+
         public override bool AcceptsInputFromSource (Source source)
         {
             return false;
         }
 
+        public PodcastTrackListModel PodcastTrackModel { get; private set; }
+
         protected override DatabaseTrackListModel CreateTrackModelFor (DatabaseSource src)
         {
-            return new PodcastTrackListModel (ServiceManager.DbConnection, DatabaseTrackInfo.Provider, src);
+            return PodcastTrackModel = new PodcastTrackListModel (ServiceManager.DbConnection, DatabaseTrackInfo.Provider, src);
         }
 
         protected override IEnumerable<IFilterListModel> CreateFiltersFor (DatabaseSource src)
         {
             PodcastFeedModel feed_model;
-            yield return new PodcastUnheardFilterModel (src.DatabaseTrackModel);
-            yield return new DownloadStatusFilterModel (src.DatabaseTrackModel);
+            yield return new_filter = new PodcastUnheardFilterModel (src.DatabaseTrackModel);
             yield return feed_model = new PodcastFeedModel (src, src.DatabaseTrackModel, ServiceManager.DbConnection, String.Format ("PodcastFeeds-{0}", src.UniqueId));
 
             if (src == this) {

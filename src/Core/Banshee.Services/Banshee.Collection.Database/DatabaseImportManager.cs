@@ -67,7 +67,7 @@ namespace Banshee.Collection.Database
             "wmd",  "wmv",  "wmx",  "wv",   "wvc",  "wvx",  "yuv",  "f4v",
             "f4a",  "f4b",  "669",  "it",   "med",  "mod",  "mol",  "mtm",
             "nst",  "s3m",  "stm",  "ult",  "wow",  "xm",   "xnm",  "spx",
-            "ts"
+            "ts",   "webm"
         );
 
         public static bool IsWhiteListedFile (string path)
@@ -174,12 +174,12 @@ namespace Banshee.Collection.Database
             // because of transactions.  Needs to be fixed in HyenaDatabaseConnection.
             ServiceManager.DbConnection.BeginTransaction ();
             try {
-                track = new DatabaseTrackInfo ();
-                track.Uri = uri;
+                track = new DatabaseTrackInfo () { Uri = uri };
                 using (var file = StreamTagger.ProcessUri (uri)) {
                     StreamTagger.TrackInfoMerge (track, file, false, true);
                 }
 
+                track.Uri = uri;
                 track.PrimarySource = trackPrimarySourceChooser (track);
 
                 bool save_track = true;

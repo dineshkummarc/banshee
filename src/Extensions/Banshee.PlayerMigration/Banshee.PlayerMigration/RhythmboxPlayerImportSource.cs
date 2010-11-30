@@ -29,15 +29,14 @@
 //
 
 using System;
-using System.Data;
 using System.IO;
 using System.Xml;
 
 using Mono.Unix;
 
+using Hyena;
 using Hyena.Data.Sqlite;
 
-using Banshee.Base;
 using Banshee.Collection.Database;
 using Banshee.Library;
 using Banshee.ServiceStack;

@@ -4,6 +4,7 @@ LINK = $(REF_BANSHEE_SERVICES)
 
 SOURCES =  \
 	Banshee.Base/RateLimiter.cs \
+	Banshee.Collection.Database/Bookmark.cs \
 	Banshee.Collection.Database/CachedList.cs \
 	Banshee.Collection.Database/DatabaseAlbumInfo.cs \
 	Banshee.Collection.Database/DatabaseAlbumListModel.cs \
@@ -74,10 +75,11 @@ SOURCES =  \
 	Banshee.Hardware/IDiskDevice.cs \
 	Banshee.Hardware/IHardwareManager.cs \
 	Banshee.Hardware/IUsbDevice.cs \
+	Banshee.Hardware/IUsbPortInfo.cs \
 	Banshee.Hardware/IVolume.cs \
+	Banshee.Hardware/UsbPortInfo.cs \
 	Banshee.Hardware/VendorProductDeviceNode.cs \
 	Banshee.Hardware/VendorProductInfo.cs \
-	Banshee.Library/HomeDirectoryImportSource.cs \
 	Banshee.Library/IImportSource.cs \
 	Banshee.Library/ImportSourceManager.cs \
 	Banshee.Library/LibraryImportManager.cs \
@@ -99,6 +101,7 @@ SOURCES =  \
 	Banshee.MediaEngine/PlayerEngine.cs \
 	Banshee.MediaEngine/PlayerEngineService.cs \
 	Banshee.MediaEngine/PlayerEvent.cs \
+	Banshee.MediaEngine/Tests.cs \
 	Banshee.MediaEngine/TranscoderService.cs \
 	Banshee.MediaEngine/VideoDisplayContextType.cs \
 	Banshee.MediaProfiles/MediaProfileManager.cs \
@@ -126,6 +129,7 @@ SOURCES =  \
 	Banshee.Metadata/Tests/TaglibReadWriteTests.cs \
 	Banshee.Metrics/BansheeMetrics.cs \
 	Banshee.Metrics/Configuration.cs \
+	Banshee.Networking/DotNetNetworking.cs \
 	Banshee.Networking/INetworkAvailabilityService.cs \
 	Banshee.Networking/Network.cs \
 	Banshee.Networking/NetworkManager.cs \
@@ -216,6 +220,7 @@ SOURCES =  \
 	Banshee.Sources/SourceMergeType.cs \
 	Banshee.Sources/SourceMessage.cs \
 	Banshee.Sources/SourceSortType.cs \
+	Banshee.Sources/Tests.cs \
 	Banshee.Streaming/RadioTrackInfo.cs \
 	Banshee.Web/BaseHttpServer.cs \
 	Banshee.Web/Browser.cs \
@@ -229,3 +234,5 @@ module_DATA = Banshee.Services.addins
 
 include $(top_srcdir)/build/build.mk
 
+EXTRA_DIST += Banshee.Services.dll.config
+module_SCRIPTS += Banshee.Services.dll.config

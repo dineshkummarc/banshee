@@ -9,11 +9,13 @@ if ENABLE_TESTS
 TEST_ASSEMBLIES = \
 	Hyena.dll \
 	Hyena.Gui.dll \
+	Hyena.Data.Sqlite.dll \
 	Migo.dll \
 	Mono.Media.dll \
 	Banshee.Core.dll \
 	Banshee.Gnome.dll \
 	Banshee.Services.dll \
+	Banshee.Fixup.dll \
 	Banshee.Dap.Mtp.dll
 
 if ENABLE_GIO
@@ -21,7 +23,8 @@ TEST_ASSEMBLIES += Banshee.Gio.dll
 endif
 
 ENV_OPTIONS = TZ=America/Chicago LC_ALL=it_IT LANG=it_IT
-RUNNER = for asm in $${TEST_ASSEMBLIES}; do echo -e "\033[1mRunning tests on $${asm}...\033[0m"; $(ENV_OPTIONS) nunit-console2 -nologo -noshadow $$asm; done
+NUNIT_CONSOLE = $$(echo $$(which nunit-console2 || which nunit-console))
+RUNNER = for asm in $${TEST_ASSEMBLIES}; do echo -e "\033[1mRunning tests on $${asm}...\033[0m"; $(ENV_OPTIONS) $(NUNIT_CONSOLE) -nologo -noshadow $$asm; done
 
 test:
 	@pushd $(DIR_BIN) &>/dev/null; \

@@ -51,7 +51,7 @@ namespace Banshee.InternetRadio
     {
         private uint ui_id;
 
-        public InternetRadioSource () : base (Catalog.GetString ("Radio"), Catalog.GetString ("Radio"), "internet-radio", 220)
+        public InternetRadioSource () : base (Catalog.GetString ("Radio"), Catalog.GetString ("Radio"), "internet-radio", 52)
         {
             Properties.SetString ("Icon.Name", "radio");
             TypeUniqueId = "internet-radio";
@@ -60,17 +60,19 @@ namespace Banshee.InternetRadio
             AfterInitialized ();
 
             InterfaceActionService uia_service = ServiceManager.Get<InterfaceActionService> ();
-            uia_service.GlobalActions.AddImportant (
+            uia_service.GlobalActions.Add (
                 new ActionEntry ("AddRadioStationAction", Stock.Add,
                     Catalog.GetString ("Add Station"), null,
                     Catalog.GetString ("Add a new Internet Radio station or playlist"),
                     OnAddStation)
             );
+            uia_service.GlobalActions["AddRadioStationAction"].IsImportant = false;
 
             ui_id = uia_service.UIManager.AddUiFromResource ("GlobalUI.xml");
 
             Properties.SetString ("ActiveSourceUIResource", "ActiveSourceUI.xml");
             Properties.Set<bool> ("ActiveSourceUIResourcePropagate", true);
+            Properties.Set<bool> ("SourceView.HideCount", true);
             Properties.Set<System.Reflection.Assembly> ("ActiveSourceUIResource.Assembly", typeof(InternetRadioSource).Assembly);
 
             Properties.SetString ("GtkActionPath", "/InternetRadioContextMenu");
@@ -78,18 +80,17 @@ namespace Banshee.InternetRadio
             Properties.Set<bool> ("Nereid.SourceContentsPropagate", true);
             Properties.Set<ISourceContents> ("Nereid.SourceContents", new LazyLoadSourceContents<InternetRadioSourceContents> ());
 
+            Properties.Set<string> ("SearchEntryDescription", Catalog.GetString ("Search your stations"));
             Properties.SetString ("TrackEditorActionLabel", Catalog.GetString ("Edit Station"));
             Properties.Set<InvokeHandler> ("TrackEditorActionHandler", delegate {
-                ITrackModelSource active_track_model_source =
-                    (ITrackModelSource) ServiceManager.SourceManager.ActiveSource;
-
-                if (active_track_model_source.TrackModel.SelectedItems == null ||
-                    active_track_model_source.TrackModel.SelectedItems.Count <= 0) {
+                var track_actions = ServiceManager.Get<InterfaceActionService> ().TrackActions;
+                var tracks = track_actions.SelectedTracks;
+                if (tracks == null || tracks.Count <= 0) {
                     return;
                 }
 
-                foreach (TrackInfo track in active_track_model_source.TrackModel.SelectedItems) {
-                    DatabaseTrackInfo station_track = track as DatabaseTrackInfo;
+                foreach (var track in tracks) {
+                    var station_track = track as DatabaseTrackInfo;
                     if (station_track != null) {
                         EditStation (station_track);
                         return;
@@ -147,6 +148,11 @@ namespace Banshee.InternetRadio
             if (new XspfMigrator (this).Migrate ()) {
                 Reload ();
             }
+        }
+
+        public override string GetPluralItemCountString (int count)
+        {
+            return Catalog.GetPluralString ("{0} station", "{0} stations", count);
         }
 
         protected override IEnumerable<IFilterListModel> CreateFiltersFor (DatabaseSource src)
@@ -334,6 +340,10 @@ namespace Banshee.InternetRadio
 
         public override bool HasViewableTrackProperties {
             get { return false; }
+        }
+
+        public override bool HasEditableTrackProperties {
+            get { return true; }
         }
     }
 }

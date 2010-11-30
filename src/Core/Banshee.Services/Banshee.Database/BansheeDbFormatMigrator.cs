@@ -28,12 +28,10 @@
 //
 
 using System;
-using System.Data;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using Mono.Unix;
-using Mono.Data.Sqlite;
 
 using Hyena;
 using Hyena.Jobs;
@@ -56,7 +54,7 @@ namespace Banshee.Database
         // NOTE: Whenever there is a change in ANY of the database schema,
         //       this version MUST be incremented and a migration method
         //       MUST be supplied to match the new version number
-        protected const int CURRENT_VERSION = 42;
+        protected const int CURRENT_VERSION = 44;
         protected const int CURRENT_METADATA_VERSION = 7;
 
 #region Migration Driver
@@ -731,6 +729,8 @@ namespace Banshee.Database
                 // Make paths not relative for Music Library items
                 string library_path = Banshee.Library.LibrarySource.OldLocationSchema.Get (Banshee.Library.MusicLibrarySource.GetDefaultBaseDirectory ());
                 if (library_path != null) {
+                    connection.AddFunction<MigratePartialFunction> ();
+
                     int podcast_src_id = connection.Query<int> ("SELECT PrimarySourceID FROM CorePrimarySources WHERE StringID = 'PodcastSource-PodcastLibrary'");
 
                     connection.Execute (@"
@@ -743,6 +743,8 @@ namespace Banshee.Database
                         UPDATE CoreTracks SET Uri = BANSHEE_MIGRATE_PARTIAL(?, Uri)
                         WHERE UriType = 1
                           AND PrimarySourceID = ?", podcast_path, podcast_src_id);
+
+                    connection.RemoveFunction<MigratePartialFunction> ();
                 }
             } catch (Exception e) {
                 Hyena.Log.Exception (e);
@@ -931,6 +933,25 @@ namespace Banshee.Database
         [DatabaseVersion (42)]
         private bool Migrate_42 ()
         {
+            // Unset the Music attribute for any videos or podcasts
+            connection.Execute (
+                @"UPDATE CoreTracks SET Attributes = Attributes & ? WHERE (Attributes & ?) != 0",
+                (int)(~TrackMediaAttributes.Music),
+                (int)(TrackMediaAttributes.VideoStream | TrackMediaAttributes.Podcast)
+            );
+            return true;
+        }
+
+        [DatabaseVersion (43)]
+        private bool Migrate_43 ()
+        {
+            Execute ("ALTER TABLE CoreSmartPlaylists ADD COLUMN IsHiddenWhenEmpty INTEGER");
+            return true;
+        }
+
+        [DatabaseVersion (44)]
+        private bool Migrate_44 ()
+        {
             Execute ("CREATE INDEX IF NOT EXISTS CoreAlbumArtistIndex ON CoreAlbums (AlbumID, ArtistID)");
             Execute ("CREATE INDEX IF NOT EXISTS CoreTracksArtistAlbumSourceIndex ON CoreTracks (AlbumID, ArtistID, ExternalID, PrimarySourceID)");
             return true;
@@ -1117,7 +1138,8 @@ namespace Banshee.Database
                     LimitNumber         TEXT,
                     LimitCriterion      TEXT,
                     CachedCount         INTEGER,
-                    IsTemporary         INTEGER DEFAULT 0
+                    IsTemporary         INTEGER DEFAULT 0,
+                    IsHiddenWhenEmpty   INTEGER DEFAULT 0
                 )
             ");
 
@@ -1383,7 +1405,7 @@ namespace Banshee.Database
             );
 
             int count = 0;
-            using (System.Data.IDataReader reader = ServiceManager.DbConnection.Query (select_command)) {
+            using (var reader = ServiceManager.DbConnection.Query (select_command)) {
                 while (reader.Read ()) {
                     DatabaseTrackInfo track = null;
                     try {
@@ -1449,7 +1471,7 @@ namespace Banshee.Database
             string library_path = (string)args[0];
             string filename_fragment = (string)args[1];
             string full_path = Paths.Combine (library_path, filename_fragment);
-            return Banshee.Base.SafeUri.FilenameToUri (full_path);
+            return SafeUri.FilenameToUri (full_path);
         }
     }
 }

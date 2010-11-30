@@ -105,7 +105,7 @@ namespace Banshee.SmartPlaylist
             builder.Show ();
             builder.Spacing = 4;
 
-            var expander = new Expander ("Predefined Smart Playlists");
+            var expander = new Expander (Catalog.GetString ("Predefined Smart Playlists"));
             var hbox = new HBox () { Spacing = 8 };
             var scrolled_window = new ScrolledWindow () {
                 HscrollbarPolicy = PolicyType.Never,
@@ -310,7 +310,6 @@ namespace Banshee.SmartPlaylist
                     SmartPlaylistSource pl = def.ToSmartPlaylistSource (primary_source);
                     pl.Save ();
                     pl.PrimarySource.AddChildSource (pl);
-                    pl.RefreshAndReload ();
                     //SmartPlaylistCore.Instance.StartTimer (pl);
                 }
             }

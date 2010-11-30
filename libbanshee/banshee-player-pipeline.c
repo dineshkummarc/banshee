@@ -87,9 +87,10 @@ bp_next_track_starting (BansheePlayer *player)
     g_return_val_if_fail (IS_BANSHEE_PLAYER (player), FALSE);
     g_return_val_if_fail (GST_IS_ELEMENT (player->playbin), FALSE);
 
-    // Work around BGO #602437 - gapless transition between tracks with 
+    // FIXME: Work around BGO #602437 - gapless transition between tracks with 
     // video streams results in broken behaviour - most obviously, huge A/V
     // sync issues.
+    // Will be in GStreamer 0.10.31
     has_video = bp_stream_has_video (player->playbin);
     if (player->in_gapless_transition && has_video) {
         gchar *uri;
@@ -193,13 +194,6 @@ bp_pipeline_bus_callback (GstBus *bus, GstMessage *message, gpointer userdata)
             GError *error;
             gchar *debug;
             
-            // FIXME: This is to work around a bug in qtdemux in
-            // -good <= 0.10.6
-            if (message->src != NULL && message->src->name != NULL && 
-                strncmp (message->src->name, "qtdemux", 7) == 0) {
-                break;
-            }
-            
             _bp_pipeline_destroy (player);
             
             if (player->error_cb != NULL) {
@@ -292,9 +286,19 @@ _bp_pipeline_construct (BansheePlayer *player)
     // source and decoder elements) based on source URI and stream content
     player->playbin = gst_element_factory_make ("playbin2", "playbin");
 
+    player->supports_stream_volume = FALSE;
+#if BANSHEE_CHECK_GST_VERSION(0,10,25)
+    player->supports_stream_volume = gst_element_implements_interface (
+        player->playbin, GST_TYPE_STREAM_VOLUME);
+#endif
+
+    bp_debug ("Stream volume supported: %s",
+        player->supports_stream_volume ? "YES" : "NO");
+
 #ifdef ENABLE_GAPLESS
-    // Connect a proxy about-to-finish callback that will generate a next-track-starting callback.
+    // FIXME: Connect a proxy about-to-finish callback that will generate a next-track-starting callback.
     // This can be removed once playbin2 generates its own next-track signal.
+    // bgo#584987 - this is included in >= 0.10.26
     g_signal_connect (player->playbin, "about-to-finish", G_CALLBACK (bp_about_to_finish_callback), player);
 #endif //ENABLE_GAPLESS
 
@@ -321,6 +325,21 @@ _bp_pipeline_construct (BansheePlayer *player)
     }
     
     g_return_val_if_fail (audiosink != NULL, FALSE);
+
+    // See if the audiosink has a 'volume' property.  If it does, we assume it saves and restores
+    // its volume information - and that we shouldn't
+    player->audiosink_has_volume = FALSE;
+    if (!GST_IS_BIN (audiosink)) {
+        player->audiosink_has_volume = g_object_class_find_property (G_OBJECT_GET_CLASS (audiosink), "volume") != NULL;
+    } else {
+        GstIterator *elem_iter = gst_bin_iterate_recurse (GST_BIN (audiosink));
+        BANSHEE_GST_ITERATOR_ITERATE (elem_iter, GstElement *, element, TRUE, {
+            player->audiosink_has_volume |= g_object_class_find_property (G_OBJECT_GET_CLASS (element), "volume") != NULL;
+            gst_object_unref (element);
+        });
+    }
+    bp_debug ("Audiosink has volume: %s",
+        player->audiosink_has_volume ? "YES" : "NO");
         
     // Set the profile to "music and movies" (gst-plugins-good 0.10.3)
     if (g_object_class_find_property (G_OBJECT_GET_CLASS (audiosink), "profile")) {
@@ -334,7 +353,11 @@ _bp_pipeline_construct (BansheePlayer *player)
     // Our audio sink is a tee, so plugins can attach their own pipelines
     player->audiotee = gst_element_factory_make ("tee", "audiotee");
     g_return_val_if_fail (player->audiotee != NULL, FALSE);
-    
+
+    // Create a volume control with low latency
+    player->volume = gst_element_factory_make ("volume", NULL);
+    g_return_val_if_fail (player->volume != NULL, FALSE);
+
     audiosinkqueue = gst_element_factory_make ("queue", "audiosinkqueue");
     g_return_val_if_fail (audiosinkqueue != NULL, FALSE);
 
@@ -347,7 +370,7 @@ _bp_pipeline_construct (BansheePlayer *player)
     }
     
     // Add elements to custom audio sink
-    gst_bin_add_many (GST_BIN (player->audiobin), player->audiotee, audiosinkqueue, audiosink, NULL);
+    gst_bin_add_many (GST_BIN (player->audiobin), player->audiotee, player->volume, audiosinkqueue, audiosink, NULL);
     
     if (player->equalizer != NULL) {
         gst_bin_add_many (GST_BIN (player->audiobin), eq_audioconvert, eq_audioconvert2, player->equalizer, player->preamp, NULL);
@@ -362,15 +385,13 @@ _bp_pipeline_construct (BansheePlayer *player)
     if (player->equalizer != NULL) {
         // link in equalizer, preamp and audioconvert.
         gst_element_link_many (audiosinkqueue, eq_audioconvert, player->preamp, 
-            player->equalizer, eq_audioconvert2, audiosink, NULL);
-        player->before_rgvolume = eq_audioconvert;
-        player->after_rgvolume = player->preamp;
+            player->equalizer, eq_audioconvert2, player->volume, audiosink, NULL);
     } else {
         // link the queue with the real audio sink
-        gst_element_link (audiosinkqueue, audiosink);
-        player->before_rgvolume = audiosinkqueue;
-        player->after_rgvolume = audiosink;
+        gst_element_link_many (audiosinkqueue, player->volume, audiosink, NULL);
     }
+    player->before_rgvolume = player->volume;
+    player->after_rgvolume = audiosink;
     player->rgvolume_in_pipeline = FALSE;
     _bp_replaygain_pipeline_rebuild (player);
 

@@ -129,7 +129,13 @@ namespace Banshee.Addins.Gui
                     bool enabled = (bool) model.GetValue (iter, 1);
                     addin.Enabled = !enabled;
                     model.SetValue (iter, 1, addin.Enabled);
-                    update_model ();
+                    model.Foreach (delegate (TreeModel current_model, TreePath path, TreeIter current_iter) {
+                        var an = current_model.GetValue (current_iter, 3) as Addin;
+                        if (an != null) {
+                            current_model.SetValue (current_iter, 1, an.Enabled);
+                        }
+                        return false;
+                    });
                 }
             };
 
@@ -137,10 +143,10 @@ namespace Banshee.Addins.Gui
             search_entry.Changed += (o, a) => update_model ();
             filter_combo.Changed += (o, a) => update_model ();
 
-            var tree_scroll = new Gtk.ScrolledWindow () {
+            var tree_scroll = new Hyena.Widgets.ScrolledWindow () {
                 HscrollbarPolicy = PolicyType.Never
             };
-            tree_scroll.AddWithViewport (tree_view);
+            tree_scroll.AddWithFrame (tree_view);
 
             Spacing = 6;
             PackStart (hbox, false, false, 0);

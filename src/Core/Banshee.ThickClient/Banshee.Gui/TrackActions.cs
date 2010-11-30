@@ -42,8 +42,10 @@ using Banshee.Collection;
 using Banshee.Collection.Database;
 using Banshee.ServiceStack;
 using Banshee.Widgets;
+using Banshee.Gui;
 using Banshee.Gui.Dialogs;
 using Banshee.Gui.Widgets;
+using Hyena.Data;
 
 namespace Banshee.Gui
 {
@@ -52,12 +54,51 @@ namespace Banshee.Gui
         private RatingActionProxy rating_proxy;
 
         private static readonly string [] require_selection_actions = new string [] {
-            "TrackContextMenuAction", "TrackPropertiesAction", "AddToPlaylistAction",
+            "TrackPropertiesAction", "AddToPlaylistAction",
             "RemoveTracksAction", "RemoveTracksFromLibraryAction", "OpenContainingFolderAction",
-            "DeleteTracksFromDriveAction", "RateTracksAction", "SelectNoneAction"
+            "DeleteTracksFromDriveAction", "RateTracksAction", "SelectNoneAction", "PlayTrack"
         };
 
+        private static readonly string [] disable_for_filter_actions = new string [] {
+            "SelectAllAction", "SelectNoneAction", "SearchMenuAction",
+            // FIXME should be able to do this, just need to implement it
+            "RateTracksAction"
+        };
+
+        private Hyena.Collections.Selection filter_selection = new Hyena.Collections.Selection ();
+
+        private bool filter_focused;
+        public bool FilterFocused {
+            get { return filter_focused; }
+            set {
+                if (filter_focused == value)
+                    return;
+
+                filter_focused = value;
+                if (value) {
+                    Selection = filter_selection;
+                    SuppressSelectActions ();
+                } else {
+                    Selection = current_source.TrackModel.Selection;
+                    UnsuppressSelectActions ();
+                }
+
+                UpdateActions ();
+                OnSelectionChanged ();
+            }
+        }
+
         public event EventHandler SelectionChanged;
+
+        public Hyena.Collections.Selection Selection { get; private set; }
+
+        public ModelSelection<TrackInfo> SelectedTracks {
+            get {
+                return FilterFocused
+                    ? new ModelSelection<TrackInfo> (current_source.TrackModel, Selection)
+                    : current_source.TrackModel.SelectedItems;
+            }
+        }
 
         public TrackActions () : base ("Track")
         {
@@ -80,6 +121,10 @@ namespace Banshee.Gui
                 new ActionEntry ("TrackPropertiesAction", Stock.Properties,
                     Catalog.GetString ("Properties"), null,
                     Catalog.GetString ("View information on selected tracks"), OnTrackProperties),
+
+                new ActionEntry ("PlayTrack", null,
+                    Catalog.GetString ("_Play"), null,
+                    Catalog.GetString ("Play the selected item"), OnPlayTrack),
 
                 new ActionEntry ("AddToPlaylistAction", null,
                     Catalog.GetString ("Add _to Playlist"), null,
@@ -129,6 +174,7 @@ namespace Banshee.Gui
             ServiceManager.SourceManager.ActiveSourceChanged += HandleActiveSourceChanged;
 
             this["AddToPlaylistAction"].HideIfEmpty = false;
+            this["PlayTrack"].StockId = Gtk.Stock.MediaPlay;
         }
 
 #region State Event Handlers
@@ -136,7 +182,10 @@ namespace Banshee.Gui
         private ITrackModelSource current_source;
         private void HandleActiveSourceChanged (SourceEventArgs args)
         {
+            FilterFocused = false;
+
             if (current_source != null && current_source.TrackModel != null) {
+                current_source.TrackModel.Reloaded -= OnReloaded;
                 current_source.TrackModel.Selection.Changed -= HandleSelectionChanged;
                 current_source = null;
             }
@@ -144,10 +193,19 @@ namespace Banshee.Gui
             ITrackModelSource new_source = ActiveSource as ITrackModelSource;
             if (new_source != null) {
                 new_source.TrackModel.Selection.Changed += HandleSelectionChanged;
+                new_source.TrackModel.Reloaded += OnReloaded;
                 current_source = new_source;
+                Selection = new_source.TrackModel.Selection;
             }
 
             ThreadAssist.ProxyToMain (UpdateActions);
+        }
+
+        private void OnReloaded (object sender, EventArgs args)
+        {
+            ThreadAssist.ProxyToMain (delegate {
+                UpdateActions ();
+            });
         }
 
         private void HandleActionsChanged (object sender, EventArgs args)
@@ -186,7 +244,7 @@ namespace Banshee.Gui
 #region Utility Methods
 
         private bool select_actions_suppressed = false;
-        public void SuppressSelectActions ()
+        private void SuppressSelectActions ()
         {
             if (!select_actions_suppressed) {
                 this ["SelectAllAction"].DisconnectAccelerator ();
@@ -195,7 +253,7 @@ namespace Banshee.Gui
             }
         }
 
-        public void UnsuppressSelectActions ()
+        private void UnsuppressSelectActions ()
         {
             if (select_actions_suppressed) {
                 this ["SelectAllAction"].ConnectAccelerator ();
@@ -204,53 +262,68 @@ namespace Banshee.Gui
             }
         }
 
-        private void UpdateActions ()
+        public void UpdateActions ()
         {
             Source source = ServiceManager.SourceManager.ActiveSource;
+            if (source == null) {
+                Sensitive = Visible = false;
+                return;
+            }
+
             bool in_database = source is DatabaseSource;
             PrimarySource primary_source = (source as PrimarySource) ?? (source.Parent as PrimarySource);
 
-            Hyena.Collections.Selection selection = (source is ITrackModelSource) ? (source as ITrackModelSource).TrackModel.Selection : null;
+            var track_source = source as ITrackModelSource;
+            if (track_source != null) {
+                if (FilterFocused) {
+                    if (Selection == filter_selection) {
+                        filter_selection.MaxIndex = track_source.TrackModel.Selection.MaxIndex;
+                        filter_selection.Clear (false);
+                        filter_selection.SelectAll ();
+                    } else {
+                        Log.Error ("Filter focused, but selection is not filter selection!");
+                        Console.WriteLine (System.Environment.StackTrace);
+                    }
+                }
 
-            if (selection != null) {
+                var selection = Selection;
+                int count = selection.Count;
                 Sensitive = Visible = true;
-                bool has_selection = selection.Count > 0;
+                bool has_selection = count > 0;
+                bool has_single_selection = count == 1;
+
                 foreach (string action in require_selection_actions) {
                     this[action].Sensitive = has_selection;
                 }
 
-                bool has_single_selection = selection.Count == 1;
+                UpdateActions (source.CanSearch && !FilterFocused, has_single_selection,
+                   "SearchMenuAction", "SearchForSameArtistAction", "SearchForSameAlbumAction"
+                );
 
-                this["SelectAllAction"].Sensitive = !selection.AllSelected;
+                this["SelectAllAction"].Sensitive = track_source.Count > 0 && !selection.AllSelected;
+                UpdateAction ("RemoveTracksAction", track_source.CanRemoveTracks, has_selection, source);
+                UpdateAction ("DeleteTracksFromDriveAction", track_source.CanDeleteTracks, has_selection, source);
 
-                if (source != null) {
-                    ITrackModelSource track_source = source as ITrackModelSource;
-                    bool is_track_source = track_source != null;
+                //if it can delete tracks, most likely it can open their folder
+                UpdateAction ("OpenContainingFolderAction", track_source.CanDeleteTracks, has_single_selection, source);
 
-                    UpdateActions (is_track_source && source.CanSearch, has_single_selection,
-                       "SearchMenuAction", "SearchForSameArtistAction", "SearchForSameAlbumAction"
-                    );
+                UpdateAction ("RemoveTracksFromLibraryAction", source.Parent is LibrarySource, has_selection, null);
 
-                    UpdateAction ("RemoveTracksAction", is_track_source && track_source.CanRemoveTracks, has_selection, source);
-                    UpdateAction ("DeleteTracksFromDriveAction", is_track_source && track_source.CanDeleteTracks, has_selection, source);
+                UpdateAction ("TrackPropertiesAction", source.HasViewableTrackProperties, has_selection, source);
+                UpdateAction ("TrackEditorAction", source.HasEditableTrackProperties, has_selection, source);
+                UpdateAction ("RateTracksAction", source.HasEditableTrackProperties, has_selection, null);
+                UpdateAction ("AddToPlaylistAction", in_database && primary_source != null &&
+                        primary_source.SupportsPlaylists && !primary_source.PlaylistsReadOnly, has_selection, null);
 
-                    //if it can delete tracks, most likely it can open their folder
-                    UpdateAction ("OpenContainingFolderAction", is_track_source && track_source.CanDeleteTracks, has_single_selection, source);
+                if (primary_source != null &&
+                    !(primary_source is LibrarySource) &&
+                    primary_source.StorageName != null) {
+                    this["DeleteTracksFromDriveAction"].Label = String.Format (
+                        Catalog.GetString ("_Delete From \"{0}\""), primary_source.StorageName);
+                }
 
-                    UpdateAction ("RemoveTracksFromLibraryAction", source.Parent is LibrarySource, has_selection, null);
-
-                    UpdateAction ("TrackPropertiesAction", source.HasViewableTrackProperties, has_selection, source);
-                    UpdateAction ("TrackEditorAction", source.HasEditableTrackProperties, has_selection, source);
-                    UpdateAction ("RateTracksAction", in_database, has_selection, null);
-                    UpdateAction ("AddToPlaylistAction", in_database && primary_source != null &&
-                            primary_source.SupportsPlaylists && !primary_source.PlaylistsReadOnly, has_selection, null);
-
-                    if (primary_source != null &&
-                        !(primary_source is LibrarySource) &&
-                        primary_source.StorageName != null) {
-                        this["DeleteTracksFromDriveAction"].Label = String.Format (
-                            Catalog.GetString ("_Delete From \"{0}\""), primary_source.StorageName);
-                    }
+                if (FilterFocused) {
+                    UpdateActions (false, false, disable_for_filter_actions);
                 }
             } else {
                 Sensitive = Visible = false;
@@ -263,8 +336,8 @@ namespace Banshee.Gui
                 int rating = 0;
 
                 // If there is only one track, get the preset rating
-                if (current_source.TrackModel.Selection.Count == 1) {
-                    foreach (TrackInfo track in current_source.TrackModel.SelectedItems) {
+                if (Selection.Count == 1) {
+                    foreach (TrackInfo track in SelectedTracks) {
                         rating = track.Rating;
                     }
                 }
@@ -291,6 +364,7 @@ namespace Banshee.Gui
         private void OnTrackContextMenu (object o, EventArgs args)
         {
             ResetRating ();
+            UpdateActions ();
             ShowContextMenu ("/TrackContextMenu");
         }
 
@@ -312,14 +386,30 @@ namespace Banshee.Gui
         private void OnTrackProperties (object o, EventArgs args)
         {
             if (current_source != null && !RunSourceOverrideHandler ("TrackPropertiesActionHandler")) {
-                Banshee.Gui.TrackEditor.TrackEditorDialog.RunView (current_source.TrackModel);
+                var s = current_source as Source;
+                var readonly_tabs = s != null && !s.HasEditableTrackProperties;
+                TrackEditor.TrackEditorDialog.RunView (current_source.TrackModel, Selection, readonly_tabs);
             }
         }
 
         private void OnTrackEditor (object o, EventArgs args)
         {
             if (current_source != null && !RunSourceOverrideHandler ("TrackEditorActionHandler")) {
-                Banshee.Gui.TrackEditor.TrackEditorDialog.RunEdit (current_source.TrackModel);
+                TrackEditor.TrackEditorDialog.RunEdit (current_source.TrackModel, Selection);
+            }
+        }
+
+        private void OnPlayTrack (object o, EventArgs args)
+        {
+            var source = ServiceManager.SourceManager.ActiveSource as ITrackModelSource;
+            if (source != null) {
+                var track = source.TrackModel [FilterFocused ? 0 : source.TrackModel.Selection.FocusedIndex];
+                if (track.HasAttribute (TrackMediaAttributes.ExternalResource)) {
+                    System.Diagnostics.Process.Start (track.Uri);
+                } else {
+                    ServiceManager.PlaybackController.Source = source;
+                    ServiceManager.PlayerEngine.OpenPlay (track);
+                }
             }
         }
 
@@ -372,29 +462,32 @@ namespace Banshee.Gui
             PlaylistSource playlist = new PlaylistSource (Catalog.GetString ("New Playlist"), ActivePrimarySource);
             playlist.Save ();
             playlist.PrimarySource.AddChildSource (playlist);
-            ThreadAssist.SpawnFromMain (delegate {
-                playlist.AddSelectedTracks (ActiveSource);
-            });
+            AddToPlaylist (playlist);
         }
 
         private void OnAddToExistingPlaylist (object o, EventArgs args)
         {
-            ThreadAssist.SpawnFromMain (delegate {
-                ((PlaylistMenuItem)o).Playlist.AddSelectedTracks (ActiveSource);
-            });
+            AddToPlaylist (((PlaylistMenuItem)o).Playlist);
+        }
+
+        private void AddToPlaylist (PlaylistSource playlist)
+        {
+            if (!FilterFocused) {
+                playlist.AddSelectedTracks (ActiveSource);
+            } else {
+                playlist.AddAllTracks (ActiveSource);
+            }
         }
 
         private void OnRemoveTracks (object o, EventArgs args)
         {
             ITrackModelSource source = ActiveSource as ITrackModelSource;
 
-            if (!ConfirmRemove (source, false, source.TrackModel.Selection.Count))
+            if (!ConfirmRemove (source, false, Selection.Count))
                 return;
 
             if (source != null && source.CanRemoveTracks) {
-                ThreadAssist.SpawnFromMain (delegate {
-                    source.RemoveSelectedTracks ();
-                });
+                source.RemoveTracks (Selection);
             }
         }
 
@@ -405,12 +498,19 @@ namespace Banshee.Gui
             if (source != null) {
                 LibrarySource library = source.Parent as LibrarySource;
                 if (library != null) {
-                    if (!ConfirmRemove (library, false, source.TrackModel.Selection.Count)) {
+                    if (!ConfirmRemove (library, false, Selection.Count)) {
                         return;
                     }
 
+                    foreach (var track in source.TrackModel.SelectedItems) {
+                        if (track.IsPlaying) {
+                            ServiceManager.PlayerEngine.Close ();
+                            break;
+                        }
+                    }
+
                     ThreadAssist.SpawnFromMain (delegate {
-                        library.RemoveSelectedTracks (source.TrackModel as DatabaseTrackListModel);
+                        library.RemoveTracks (source.TrackModel as DatabaseTrackListModel, Selection);
                     });
                 }
             }
@@ -419,16 +519,16 @@ namespace Banshee.Gui
         private void OnOpenContainingFolder (object o, EventArgs args)
         {
             var source = ActiveSource as ITrackModelSource;
+            if (source == null || source.TrackModel == null)
+                return;
 
-            if (source == null ||
-                source.TrackModel == null ||
-                source.TrackModel.SelectedItems == null ||
-                source.TrackModel.SelectedItems.Count != 1) {
+            var items = SelectedTracks;
+            if (items == null || items.Count != 1) {
                 Log.Error ("Could not open containing folder");
                 return;
             }
 
-            foreach (var track in source.TrackModel.SelectedItems) {
+            foreach (var track in items) {
                 var path = System.IO.Path.GetDirectoryName (track.Uri.AbsolutePath);
                 if (Banshee.IO.Directory.Exists (path)) {
                     System.Diagnostics.Process.Start (path);
@@ -437,7 +537,7 @@ namespace Banshee.Gui
             }
 
             var md = new HigMessageDialog (
-                ServiceManager.Get<GtkElementsService> ("GtkElementsService").PrimaryWindow,
+                ServiceManager.Get<GtkElementsService> ().PrimaryWindow,
                 DialogFlags.DestroyWithParent, MessageType.Warning,
                 ButtonsType.None, Catalog.GetString ("The folder could not be found."),
                 Catalog.GetString ("Please check that the track's location is accessible by the system.")
@@ -455,14 +555,21 @@ namespace Banshee.Gui
         {
             ITrackModelSource source = ActiveSource as ITrackModelSource;
 
-            if (!ConfirmRemove (source, true, source.TrackModel.Selection.Count))
+            if (!ConfirmRemove (source, true, Selection.Count))
                 return;
 
             if (source != null && source.CanDeleteTracks) {
-                source.DeleteSelectedTracks ();
+                foreach (var track in source.TrackModel.SelectedItems) {
+                    if (track.IsPlaying) {
+                        ServiceManager.PlayerEngine.Close ();
+                        break;
+                    }
+                }
+                source.DeleteTracks (Selection);
             }
         }
 
+        // FIXME filter
         private void OnRateTracks (object o, EventArgs args)
         {
             ThreadAssist.SpawnFromMain (delegate {
@@ -474,7 +581,9 @@ namespace Banshee.Gui
         {
             if (current_source != null) {
                 foreach (TrackInfo track in current_source.TrackModel.SelectedItems) {
-                    ActiveSource.FilterQuery = BansheeQuery.ArtistField.ToTermString (":", track.ArtistName);
+                    if (!String.IsNullOrEmpty (track.ArtistName)) {
+                        ActiveSource.FilterQuery = BansheeQuery.ArtistField.ToTermString (":", track.ArtistName);
+                    }
                     break;
                 }
             }
@@ -484,7 +593,9 @@ namespace Banshee.Gui
         {
             if (current_source != null) {
                 foreach (TrackInfo track in current_source.TrackModel.SelectedItems) {
-                    ActiveSource.FilterQuery = BansheeQuery.AlbumField.ToTermString (":", track.AlbumTitle);
+                    if (!String.IsNullOrEmpty (track.AlbumTitle)) {
+                        ActiveSource.FilterQuery = BansheeQuery.AlbumField.ToTermString (":", track.AlbumTitle);
+                    }
                     break;
                 }
             }
@@ -524,7 +635,7 @@ namespace Banshee.Gui
             }
 
             HigMessageDialog md = new HigMessageDialog (
-                ServiceManager.Get<GtkElementsService> ("GtkElementsService").PrimaryWindow,
+                ServiceManager.Get<GtkElementsService> ().PrimaryWindow,
                 DialogFlags.DestroyWithParent, delete ? MessageType.Warning : MessageType.Question,
                 ButtonsType.None, header, message
             );
@@ -540,12 +651,6 @@ namespace Banshee.Gui
                 md.Destroy ();
             }
             return ret;
-        }
-
-        // Reserve strings in preparation for the 1.5.5 string freeze (BGO#611923)
-        public void ReservedStrings ()
-        {
-            Catalog.GetString ("View Track Information");
         }
     }
 }

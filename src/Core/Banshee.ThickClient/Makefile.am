@@ -106,6 +106,8 @@ SOURCES =  \
 	Banshee.Gui/BansheeDbFormatMigratorMonitor.cs \
 	Banshee.Gui/BansheeIconFactory.cs \
 	Banshee.Gui/BaseClientWindow.cs \
+	Banshee.Gui/BookmarksService.cs \
+	Banshee.Gui/BookmarkUI.cs \
 	Banshee.Gui/CommonServices.cs \
 	Banshee.Gui/GlobalActions.cs \
 	Banshee.Gui/GtkBaseClient.cs \
@@ -127,7 +129,6 @@ SOURCES =  \
 	Banshee.Library.Gui/FileImportSource.cs \
 	Banshee.Library.Gui/FolderImportSource.cs \
 	Banshee.Library.Gui/ImportDialog.cs \
-	Banshee.Library.Gui/PhotoFolderImportSource.cs \
 	Banshee.MediaProfiles.Gui/ProfileComboBox.cs \
 	Banshee.MediaProfiles.Gui/ProfileComboBoxConfigurable.cs \
 	Banshee.MediaProfiles.Gui/ProfileConfigurationDialog.cs \
@@ -165,6 +166,7 @@ SOURCES =  \
 RESOURCES =  \
 	Banshee.ThickClient.addin.xml \
 	Resources/banshee-logo.png \
+	Resources/BookmarksMenu.xml \
 	Resources/browser-album-cover.png \
 	Resources/context-pane-close.png \
 	Resources/context-pane-maximize.png \

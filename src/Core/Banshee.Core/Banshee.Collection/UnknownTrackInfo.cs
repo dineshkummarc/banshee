@@ -28,7 +28,7 @@
 
 using System;
 
-using Banshee.Base;
+using Hyena;
 
 namespace Banshee.Collection
 {
@@ -37,7 +37,7 @@ namespace Banshee.Collection
         public UnknownTrackInfo(SafeUri uri)
         {
             Uri = uri;
-            IsLive = true;
+            IsLive = !uri.IsFile;
         }
     }
 }

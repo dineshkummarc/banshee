@@ -44,6 +44,7 @@ namespace Banshee.Configuration
         private const string namespace_tag_name = "namespace";
         private const string value_tag_name = "value";
         private const string tag_identifier_attribute_name = "name";
+        private const string skel_path = "/etc/skel/.config/banshee-1/config.xml";
 
         private static string file_path {
             get {
@@ -64,9 +65,18 @@ namespace Banshee.Configuration
 
             xml_document = new XmlDocument();
             bool make_new_xml = true;
-            if(File.Exists(file_path)) {
+
+            string load_path = null;
+            if (File.Exists (file_path)) {
+                load_path = file_path;
+            } else if (File.Exists (skel_path)) {
+                Hyena.Log.InformationFormat ("Restoring config.xml from {0}", skel_path);
+                load_path = skel_path;
+            }
+
+            if (load_path != null && File.Exists (load_path)) {
                 try {
-                    xml_document.Load(file_path);
+                    xml_document.Load (load_path);
                     make_new_xml = false;
                 } catch { // TODO try recovery?
                 }
@@ -76,41 +86,27 @@ namespace Banshee.Configuration
             }
         }
 
-        public T Get<T>(SchemaEntry<T> entry)
-        {
-            return Get<T>(entry.Namespace, entry.Key, entry.DefaultValue);
-        }
-
-        public T Get<T>(SchemaEntry<T> entry, T fallback)
-        {
-            return Get<T>(entry.Namespace, entry.Key, fallback);
-        }
-
-        public T Get<T>(string key, T fallback)
-        {
-            return Get<T>(null, key, fallback);
-        }
-
-        public T Get<T>(string namespce, string key, T fallback)
+        public bool TryGet<T>(string namespce, string key, out T result)
         {
             lock(xml_document) {
                 XmlNode namespace_node = GetNamespaceNode(namespce == null
                     ? new string [] {null_namespace}
                     : namespce.Split('.'), false);
 
-                if(namespace_node == null) {
-                    return fallback;
-                }
-
-                foreach(XmlNode node in namespace_node.ChildNodes) {
-                    if(node.Attributes[tag_identifier_attribute_name].Value == key && node.Name == value_tag_name) {
-                        XmlSerializer serializer = new XmlSerializer(typeof(T));
-                        using (var reader = new StringReader(node.InnerXml) ) {
-                            return (T) serializer.Deserialize(reader);
+                if(namespace_node != null) {
+                    foreach(XmlNode node in namespace_node.ChildNodes) {
+                        if(node.Attributes[tag_identifier_attribute_name].Value == key && node.Name == value_tag_name) {
+                            XmlSerializer serializer = new XmlSerializer(typeof(T));
+                            using (var reader = new StringReader(node.InnerXml) ) {
+                                result = (T) serializer.Deserialize(reader);
+                                return true;
+                            }
                         }
                     }
                 }
-                return fallback;
+
+                result = default (T);
+                return false;
             }
         }
 

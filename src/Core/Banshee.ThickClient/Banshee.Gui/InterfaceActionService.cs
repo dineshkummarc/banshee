@@ -54,7 +54,7 @@ namespace Banshee.Gui
         private SourceActions   source_actions;
 
         private BansheeActionGroup active_source_actions;
-        private uint active_source_uiid = 0;
+        private List<uint> active_source_uis = new List<uint> ();
 
         public InterfaceActionService ()
         {
@@ -82,10 +82,12 @@ namespace Banshee.Gui
 
         private void OnActiveSourceChangedGui ()
         {
-            if (active_source_uiid > 0) {
-                UIManager.RemoveUi (active_source_uiid);
-                active_source_uiid = 0;
+            foreach (uint ui_id in active_source_uis) {
+                if (ui_id != 0) {
+                    UIManager.RemoveUi (ui_id);
+                }
             }
+            active_source_uis.Clear ();
 
             if (active_source_actions != null) {
                 RemoveActionGroup (active_source_actions.Name);
@@ -104,11 +106,14 @@ namespace Banshee.Gui
                 AddActionGroup (active_source_actions);
             }
 
-            Assembly assembly =
-                active_source.GetProperty<Assembly> ("ActiveSourceUIResource.Assembly", propagate) ??
+            Assembly assembly = active_source.GetProperty<Assembly> ("ActiveSourceUIResource.Assembly", propagate) ??
                 Assembly.GetAssembly (active_source.GetType ());
+            active_source_uis.Add (AddUiFromFile (active_source.GetProperty<string> ("ActiveSourceUIResource", propagate), assembly));
 
-            active_source_uiid = AddUiFromFile (active_source.GetProperty<string> ("ActiveSourceUIResource", propagate), assembly);
+            var ui_str = active_source.GetProperty<string> ("ActiveSourceUIString", propagate);
+            if (ui_str != null) {
+                active_source_uis.Add (UIManager.AddUiFromString (ui_str));
+            }
         }
 
         private void OnExtensionChanged (object o, ExtensionNodeEventArgs args)
@@ -121,13 +126,14 @@ namespace Banshee.Gui
                         ActionGroup group = (ActionGroup)node.CreateInstance (typeof (ActionGroup));
                         extension_actions[node.Id] = group;
                         AddActionGroup (group);
-                        Log.DebugFormat ("Extension actions loaded: {0}", node.Id);
+                        Log.DebugFormat ("Extension actions loaded: {0}", group.Name);
                     }
                 } else if (args.Change == ExtensionChange.Remove) {
                     if (extension_actions.ContainsKey (node.Id)) {
+                        string name = extension_actions[node.Id].Name;
                         extension_actions[node.Id].Dispose ();
                         extension_actions.Remove (node.Id);
-                        Log.DebugFormat ("Extension actions unloaded: {0}", node.Id);
+                        Log.DebugFormat ("Extension actions unloaded: {0}", name);
                     }
                 }
             } catch (Exception e) {

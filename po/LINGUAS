@@ -1,15 +1,19 @@
 # please keep this list sorted alphabetically
 ar
+ast
 be@latin
 bg
 br
 ca
+ca@valencia
 cs
 da
 de
 dz
+el
 en_CA
 en_GB
+eo
 es
 eu
 fi
@@ -38,6 +42,7 @@ sr
 sr@latin
 sv
 th
+tr
 uk
 vi
 zh_CN

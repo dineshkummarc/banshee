@@ -7,6 +7,7 @@
   <contributor>Alex Bennee</contributor>
   <contributor>Alex Kloss</contributor>
   <contributor>Alex Launi</contributor>
+  <contributor>Alex Mauer</contributor>
   <contributor>Alexander Hixon</contributor>
   <contributor>Alexandros Frantzis</contributor>
   <contributor>Alp Toker</contributor>
@@ -18,10 +19,10 @@
   <contributor>Andy Midgette</contributor>
   <contributor>Arthur Carli</contributor>
   <contributor>Arun Raghavan</contributor>
+  <contributor>Aurélien Mino</contributor>
   <contributor>Aydemir Ulaş Şahin</contributor>
   <contributor>Ben Maurer</contributor>
   <contributor>Benjamín Valero Espinosa</contributor>
-  <contributor>Bertrand Lorentz</contributor>
   <contributor>Bill Dawson</contributor>
   <contributor>Bob Copeland</contributor>
   <contributor>Bojan Rajkovic</contributor>
@@ -40,15 +41,18 @@
   <contributor>Christian Krause</contributor>
   <contributor>Christoph Burgdorf</contributor>
   <contributor>Christopher James Halse Rogers</contributor>
+  <contributor>Claude Paroz</contributor>
   <contributor>Cody Russell</contributor>
   <contributor>Cosmin Banu</contributor>
   <contributor>Dan Wilson</contributor>
   <contributor>Dan Winship</contributor>
   <contributor>Daniel Munkton</contributor>
   <contributor>Daniel Siegel</contributor>
+  <contributor>David Nielsen</contributor>
   <contributor>David Spreen</contributor>
   <contributor>David Stone</contributor>
   <contributor>Diego E. Pettenò</contributor>
+  <contributor>Dougal Stanton</contributor>
   <contributor>Eitan Isaacson</contributor>
   <contributor>Elena Grassi</contributor>
   <contributor>Eoin Hennessy</contributor>
@@ -60,9 +64,11 @@
   <contributor>Fernando Casanova</contributor>
   <contributor>Florent Thoumie</contributor>
   <contributor>Fredrik Hedberg</contributor>
+  <contributor>Ghislain Lacroix</contributor>
   <contributor>Götz Waschk</contributor>
   <contributor>Haitao Feng</contributor>
   <contributor>Hans Petter Jansson</contributor>
+  <contributor>Harold Schreckengost</contributor>
   <contributor>Iain Lane</contributor>
   <contributor>Igor Guerrero Fonseca</contributor>
   <contributor>Ilya Konstantinov</contributor>
@@ -86,6 +92,7 @@
   <contributor>Julien Moutte</contributor>
   <contributor>Juri Pakaste</contributor>
   <contributor>Ken Vandine</contributor>
+  <contributor>Kentaro KAZUHAMA</contributor>
   <contributor>Kevin Duffus</contributor>
   <contributor>Konstantin Oshiyko</contributor>
   <contributor>Larry Ewing</contributor>
@@ -96,7 +103,9 @@
   <contributor>Michael Kaiser</contributor>
   <contributor>Michael Martin-Smucker</contributor>
   <contributor>Michael Monreal</contributor>
+  <contributor>Michał Sawicz</contributor>
   <contributor>Miguel de Icaza</contributor>
+  <contributor>Mike Gemünde</contributor>
   <contributor>Mike Urbanski</contributor>
   <contributor>Moritz Schallaböck</contributor>
   <contributor>Nathan Palmer</contributor>
@@ -110,18 +119,24 @@
   <contributor>Oscar Forero</contributor>
   <contributor>Pacho Ramos</contributor>
   <contributor>Patrick van Staveren</contributor>
+  <contributor>Paul Cutler</contributor>
   <contributor>Paul Lange</contributor>
   <contributor>Pavel Antonov</contributor>
   <contributor>Pepijn van de Geer</contributor>
+  <contributor>Pete Johanson</contributor>
   <contributor>Peter de Kraker</contributor>
   <contributor>Pratik Patel</contributor>
   <contributor>Przemysław Grzegorczyk</contributor>
+  <contributor>Raimo Radczewski</contributor>
+  <contributor>Robin Stocker</contributor>
   <contributor>Roderich Schupp</contributor>
   <contributor>Romain Tartière</contributor>
   <contributor>Ruben Vermeersch</contributor>
   <contributor>Sandy Armstrong</contributor>
   <contributor>Scott Peterson</contributor>
   <contributor>Sebastian Dröge</contributor>
+  <contributor>Shaun McCance</contributor>
+  <contributor>Tim Fisken</contributor>
   <contributor>Tim Yamin</contributor>
   <contributor>Tobias Mueller</contributor>
   <contributor>Todd Berman</contributor>
@@ -132,6 +147,7 @@
   <contributor>Will Farrington</contributor>
   <contributor>William Pettersson</contributor>
   <contributor>Wouter Bolsterlee</contributor>
+  <contributor>Zhou Ting</contributor>
   <!-- Artists have their own markup because of the GtkAboutBox design -->
   <artist>Andreas Nilsson</artist>
   <artist>Garrett LeSage</artist>

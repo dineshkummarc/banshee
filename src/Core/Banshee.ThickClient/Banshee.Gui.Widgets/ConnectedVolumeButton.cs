@@ -39,10 +39,21 @@ namespace Banshee.Gui.Widgets
 
         public ConnectedVolumeButton () : base()
         {
-            emit_lock = true;
-            Volume = PlayerEngineService.VolumeSchema.Get ();
-            emit_lock = false;
-            ServiceManager.PlayerEngine.ConnectEvent (OnPlayerEvent, PlayerEvent.Volume);
+            var player = ServiceManager.PlayerEngine;
+
+            if (player.ActiveEngine != null && player.ActiveEngine.IsInitialized) {
+                SetVolume ();
+            } else {
+                Sensitive = false;
+                player.EngineAfterInitialize += (e) => {
+                    Hyena.ThreadAssist.ProxyToMain (delegate {
+                        SetVolume ();
+                        Sensitive = true;
+                    });
+                };
+            }
+
+            player.ConnectEvent (OnPlayerEvent, PlayerEvent.Volume);
         }
 
         public ConnectedVolumeButton (bool classic) : this ()
@@ -52,6 +63,11 @@ namespace Banshee.Gui.Widgets
 
         private void OnPlayerEvent (PlayerEventArgs args)
         {
+            SetVolume ();
+        }
+
+        private void SetVolume ()
+        {
             emit_lock = true;
             Volume = ServiceManager.PlayerEngine.Volume;
             emit_lock = false;
@@ -59,8 +75,6 @@ namespace Banshee.Gui.Widgets
 
         protected override void OnVolumeChanged ()
         {
-            PlayerEngineService.VolumeSchema.Set (Volume);
-
             if (emit_lock) {
                 return;
             }

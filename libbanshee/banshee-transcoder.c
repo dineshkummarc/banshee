@@ -219,7 +219,7 @@ gst_transcoder_new_decoded_pad(GstElement *decodebin, GstPad *pad,
 
 static gboolean
 gst_transcoder_create_pipeline(GstTranscoder *transcoder, 
-    const char *input_file, const char *output_file, 
+    const char *input_uri, const char *output_uri, 
     const gchar *encoder_pipeline)
 {
     GstElement *source_elem;
@@ -235,21 +235,21 @@ gst_transcoder_create_pipeline(GstTranscoder *transcoder,
     
     transcoder->pipeline = gst_pipeline_new("pipeline");
 
-    source_elem = gst_element_factory_make("filesrc", "source");
+    source_elem = gst_element_make_from_uri(GST_URI_SRC, input_uri, "source");
     if(source_elem == NULL) {
-        gst_transcoder_raise_error(transcoder, _("Could not create 'filesrc' plugin"), NULL);
+        gst_transcoder_raise_error(transcoder, _("Could not create source element"), NULL);
         return FALSE;
     }
 
-    decoder_elem = gst_element_factory_make("decodebin", "decodebin");
+    decoder_elem = gst_element_factory_make("decodebin2", "decodebin2");
     if(decoder_elem == NULL) {
-        gst_transcoder_raise_error(transcoder, _("Could not create 'decodebin' plugin"), NULL);
+        gst_transcoder_raise_error(transcoder, _("Could not create 'decodebin2' plugin"), NULL);
         return FALSE;
     }
     
-    sink_elem = gst_element_factory_make("filesink", "sink");
+    sink_elem = gst_element_make_from_uri(GST_URI_SINK, output_uri, "sink");
     if(sink_elem == NULL) {
-        gst_transcoder_raise_error(transcoder, _("Could not create 'filesink' plugin"), NULL);
+        gst_transcoder_raise_error(transcoder, _("Could not create sink element"), NULL);
         return FALSE;
     }
     
@@ -287,9 +287,6 @@ gst_transcoder_create_pipeline(GstTranscoder *transcoder,
         transcoder->sink_bin, NULL);
         
     gst_element_link(source_elem, decoder_elem);
-
-    g_object_set(source_elem, "location", input_file, NULL);
-    g_object_set(sink_elem, "location", output_file, NULL);
 
     g_signal_connect(decoder_elem, "new-decoded-pad", 
         G_CALLBACK(gst_transcoder_new_decoded_pad), transcoder);

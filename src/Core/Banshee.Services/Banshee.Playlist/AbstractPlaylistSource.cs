@@ -28,7 +28,6 @@
 //
 
 using System;
-using System.Data;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -103,6 +102,10 @@ namespace Banshee.Playlist
             set { primary_source_id = value.DbId; }
         }
 
+        public override bool HasEditableTrackProperties {
+            get { return PrimarySource == null || PrimarySource.HasEditableTrackProperties; }
+        }
+
         private HyenaSqliteCommand count_updated_command;
         protected HyenaSqliteCommand CountUpdatedCommand {
             get {
@@ -153,7 +156,13 @@ namespace Banshee.Playlist
             DatabaseTrackModel.JoinColumn = "TrackID";
             DatabaseTrackModel.CachesJoinTableEntries = CachesJoinTableEntries;
             DatabaseTrackModel.AddCondition (String.Format (TrackCondition, dbid));
+            Properties.Set<string> ("SearchEntryDescription", Catalog.GetString ("Search this playlist"));
             base.AfterInitialized ();
+        }
+
+        public override string GetPluralItemCountString (int count)
+        {
+            return Parent == null ? base.GetPluralItemCountString (count) : Parent.GetPluralItemCountString (count);
         }
 
         public override void Rename (string newName)
@@ -199,10 +208,10 @@ namespace Banshee.Playlist
         }
 
         // Have our parent handle deleting tracks
-        public override void DeleteSelectedTracks ()
+        public override void DeleteTracks (DatabaseTrackListModel model, Selection selection)
         {
             if (Parent is PrimarySource) {
-                (Parent as PrimarySource).DeleteSelectedTracksFromChild (this);
+                (Parent as PrimarySource).DeleteTracks (model, selection);
             }
         }
 

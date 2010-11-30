@@ -51,9 +51,6 @@ namespace Banshee.Dap.Mtp
 {
     public class MtpSource : DapSource
     {
-        // libmtp only lets us have one device connected at a time
-        private static MtpSource mtp_source;
-
 		private MtpDevice mtp_device;
         //private bool supports_jpegs = false;
         private Dictionary<int, Track> track_map;
@@ -68,60 +65,50 @@ namespace Banshee.Dap.Mtp
         {
             base.DeviceInitialize (device);
 
-            if (MediaCapabilities == null || !MediaCapabilities.IsType ("mtp")) {
+            var portInfo = device.ResolveUsbPortInfo ();
+            if (portInfo == null) {
                 throw new InvalidDeviceException ();
             }
 
-            // libmtp only allows us to have one MTP device active
-            if (mtp_source != null) {
-                Log.Information (
-                    Catalog.GetString ("MTP Support Ignoring Device"),
-                    Catalog.GetString ("Banshee's MTP audio player support can only handle one device at a time."),
-                    true
-                );
-                throw new InvalidDeviceException ();
-            }
+            //int busnum = portInfo.BusNumber;
+            int devnum = portInfo.DeviceNumber;
 
-			List<MtpDevice> devices = null;
-			try {
-				devices = MtpDevice.Detect ();
-			} catch (TypeInitializationException e) {
+            List<RawMtpDevice> devices = null;
+            try {
+                devices = MtpDevice.Detect ();
+            } catch (TypeInitializationException e) {
                 Log.Exception (e);
-				Log.Error (
+                Log.Error (
                     Catalog.GetString ("Error Initializing MTP Device Support"),
                     Catalog.GetString ("There was an error intializing MTP device support.  See http://www.banshee-project.org/Guide/DAPs/MTP for more information."), true
                 );
                 throw new InvalidDeviceException ();
-			} catch (Exception e) {
+            } catch (Exception e) {
                 Log.Exception (e);
-				//ShowGeneralExceptionDialog (e);
+                //ShowGeneralExceptionDialog (e);
                 throw new InvalidDeviceException ();
-			}
+            }
 
-            if (devices == null || devices.Count == 0) {
-				Log.Error (
-                    Catalog.GetString ("Error Finding MTP Device Support"),
-                    Catalog.GetString ("An MTP device was detected, but Banshee was unable to load support for it."), true
-                );
-            } else {
-                string mtp_serial = devices[0].SerialNumber;
-                if (!String.IsNullOrEmpty (mtp_serial)) {
-                    if (mtp_serial.Contains (device.Serial)) {
-                        mtp_device = devices[0];
-                        mtp_source = this;
-                    } else if (device.Serial.Contains (mtp_serial.TrimStart('0'))) {
-                        // Special case for sony walkman players; BGO #543938
-                        mtp_device = devices[0];
-                        mtp_source = this;
+            IVolume volume = device as IVolume;
+            foreach (var v in devices) {
+                // Using the HAL hardware backend, HAL says the busnum is 2, but libmtp says it's 0, so disabling that check
+                //if (v.BusNumber == busnum && v.DeviceNumber == devnum) {
+                if (v.DeviceNumber == devnum) {
+                    // If gvfs-gphoto has it mounted, unmount it
+                    if (volume != null) {
+                        volume.Unmount ();
                     }
-                }
 
-                if (mtp_device == null) {
-                    Log.Information(
-                        Catalog.GetString ("MTP Support Ignoring Device"),
-                        Catalog.GetString ("Banshee's MTP audio player support can only handle one device at a time."),
-                        true
-                    );
+                    for (int i = 5; i > 0 && mtp_device == null; i--) {
+                        try {
+                            mtp_device = MtpDevice.Connect (v);
+                        } catch (Exception) {}
+
+                        if (mtp_device == null) {
+                            Log.DebugFormat ("Failed to connect to mtp device. Trying {0} more times...", i - 1);
+                            Thread.Sleep (2000);
+                        }
+                    }
                 }
             }
 
@@ -129,7 +116,13 @@ namespace Banshee.Dap.Mtp
                 throw new InvalidDeviceException ();
             }
 
-            Name = mtp_device.Name;
+            // libmtp sometimes returns '?????'. I assume this is if the device does
+            // not supply a friendly name. In this case show the model name.
+            if (string.IsNullOrEmpty (mtp_device.Name) || mtp_device.Name == "?????")
+                Name = mtp_device.ModelName;
+            else
+                Name = mtp_device.Name;
+
             Initialize ();
 
             List<string> mimetypes = new List<string> ();
@@ -200,15 +193,18 @@ namespace Banshee.Dap.Mtp
                         SELECT ?, TrackID FROM CoreTracks WHERE PrimarySourceID = ? AND ExternalID = ?");
 
                 lock (mtp_device) {
-                    foreach (MTP.Playlist playlist in mtp_device.GetPlaylists ()) {
-                        PlaylistSource pl_src = new PlaylistSource (playlist.Name, this);
-                        pl_src.Save ();
-                        // TODO a transaction would make sense here (when the threading issue is fixed)
-                        foreach (int id in playlist.TrackIds) {
-                            ServiceManager.DbConnection.Execute (insert_cmd, pl_src.DbId, this.DbId, id);
+                    var playlists = mtp_device.GetPlaylists ();
+                    if (playlists != null) {
+                        foreach (MTP.Playlist playlist in playlists) {
+                            PlaylistSource pl_src = new PlaylistSource (playlist.Name, this);
+                            pl_src.Save ();
+                            // TODO a transaction would make sense here (when the threading issue is fixed)
+                            foreach (uint id in playlist.TrackIds) {
+                                ServiceManager.DbConnection.Execute (insert_cmd, pl_src.DbId, this.DbId, id);
+                            }
+                            pl_src.UpdateCounts ();
+                            AddChildSource (pl_src);
                         }
-                        pl_src.UpdateCounts ();
-                        AddChildSource (pl_src);
                     }
                 }
 
@@ -246,11 +242,12 @@ namespace Banshee.Dap.Mtp
                 device_playlists.Clear ();
 
                 // Add playlists from Banshee to the device
-                foreach (Source child in Children) {
+                List<Source> children = new List<Source> (Children);
+                foreach (Source child in children) {
                     PlaylistSource from = child as PlaylistSource;
                     if (from != null && from.Count > 0) {
                         MTP.Playlist playlist = new MTP.Playlist (mtp_device, from.Name);
-                        foreach (int track_id in ServiceManager.DbConnection.QueryEnumerable<int> (String.Format (
+                        foreach (uint track_id in ServiceManager.DbConnection.QueryEnumerable<uint> (String.Format (
                             "SELECT CoreTracks.ExternalID FROM {0} WHERE {1}",
                             from.DatabaseTrackModel.ConditionFromFragment, from.DatabaseTrackModel.Condition)))
                         {
@@ -341,7 +338,11 @@ namespace Banshee.Dap.Mtp
                 if (!video) {
                     string key = MakeAlbumKey (track.AlbumArtist, track.AlbumTitle);
                     if (!album_cache.ContainsKey (key)) {
-                        Album album = new Album (mtp_device, track.AlbumTitle, track.AlbumArtist, track.Genre, track.Composer);
+                        // LIBMTP 1.0.3 BUG WORKAROUND
+                        // In libmtp.c the 'LIBMTP_Create_New_Album' function invokes 'create_new_abstract_list'.
+                        // The latter calls strlen on the 'name' parameter without null checking. If AlbumTitle is
+                        // null, this causes a sigsegv. Lets be safe and always pass non-null values.
+                        Album album = new Album (mtp_device, track.AlbumTitle ?? "", track.AlbumArtist ?? "", track.Genre ?? "", track.Composer ?? "");
                         album.AddTrack (mtp_track);
 
                         if (supports_jpegs && can_sync_albumart) {
@@ -378,10 +379,10 @@ namespace Banshee.Dap.Mtp
 
         private Folder GetFolderForTrack (TrackInfo track)
         {
-            if (track.HasAttribute (TrackMediaAttributes.Podcast)) {
-                return mtp_device.PodcastFolder;
-            } else if (track.HasAttribute (TrackMediaAttributes.VideoStream)) {
+            if (track.HasAttribute (TrackMediaAttributes.VideoStream)) {
                 return mtp_device.VideoFolder;
+            } else if (track.HasAttribute (TrackMediaAttributes.Podcast)) {
+                return mtp_device.PodcastFolder;
             } else {
                 return mtp_device.MusicFolder;
             }
@@ -441,7 +442,6 @@ namespace Banshee.Dap.Mtp
 
             ServiceManager.SourceManager.RemoveSource (this);
             mtp_device = null;
-            mtp_source = null;
         }
 
         protected override void Eject ()

@@ -79,10 +79,6 @@ namespace Banshee.Gui
                     Catalog.GetString ("_Preferences"), null,
                     Catalog.GetString ("Modify your personal preferences"), OnPreferences),
 
-                new ActionEntry ("ExtensionsAction", null,
-                    Catalog.GetString ("Manage _Extensions"), null,
-                    Catalog.GetString ("Manage extensions to add new features to Banshee"), OnExtensions),
-
                 // Tools menu
                 new ActionEntry ("ToolsMenuAction", null,
                     Catalog.GetString ("_Tools"), null, null, null),
@@ -91,31 +87,26 @@ namespace Banshee.Gui
                 new ActionEntry ("HelpMenuAction", null,
                     Catalog.GetString ("_Help"), null, null, null),
 
-                new ActionEntry ("WebMenuAction", null,
-                    Catalog.GetString ("_Web Resources"), null, null, null),
-
-                new ActionEntry ("WikiGuideAction", Stock.Help,
-                    Catalog.GetString ("Banshee _User Guide (Wiki)"), null,
-                    Catalog.GetString ("Learn about how to use Banshee"), delegate {
-                        Banshee.Web.Browser.Open ("http://banshee-project.org/support/guide/");
-                    }),
+                new ActionEntry ("UserHelp", Gtk.Stock.Help,
+                    Catalog.GetString ("_Contents"), "F1", null,
+                    delegate { Banshee.ServiceStack.Application.DisplayHelp (null); }),
 
                 new ActionEntry ("WikiSearchHelpAction", null,
                     Catalog.GetString ("Advanced Collection Searching"), null,
                     Catalog.GetString ("Learn advanced ways to search your media collection"), delegate {
-                        Banshee.Web.Browser.Open ("http://banshee-project.org/support/guide/searching/");
+                        Banshee.Web.Browser.Open ("http://banshee.fm/support/guide/searching/");
                     }),
 
                 new ActionEntry ("WikiAction", null,
                     Catalog.GetString ("Banshee _Home Page"), null,
                     Catalog.GetString ("Visit the Banshee Home Page"), delegate {
-                        Banshee.Web.Browser.Open ("http://banshee-project.org/");
+                        Banshee.Web.Browser.Open ("http://banshee.fm/");
                     }),
 
                 new ActionEntry ("WikiDeveloperAction", null,
                     Catalog.GetString ("_Get Involved"), null,
                     Catalog.GetString ("Become a contributor to Banshee"), delegate {
-                        Banshee.Web.Browser.Open ("http://banshee-project.org/contribute/");
+                        Banshee.Web.Browser.Open ("http://banshee.fm/contribute/");
                     }),
 
                 new ActionEntry ("VersionInformationAction", null,
@@ -124,8 +115,6 @@ namespace Banshee.Gui
 
                 new ActionEntry("AboutAction", "gtk-about", OnAbout)
             });
-
-            this["ExtensionsAction"].Visible = false;
 
             GLib.Timeout.Add (500, delegate {
                 if (ApplicationContext.CommandLine.Contains ("show-import-media")) {
@@ -219,11 +208,6 @@ namespace Banshee.Gui
                 dialog.Destroy ();
             } catch (ApplicationException) {
             }
-        }
-
-        private void OnExtensions (object o, EventArgs args)
-        {
-            Mono.Addins.Gui.AddinManagerWindow.Run (PrimaryWindow);
         }
 
 #endregion

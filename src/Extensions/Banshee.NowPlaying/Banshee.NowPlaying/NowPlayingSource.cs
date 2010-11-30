@@ -53,11 +53,33 @@ namespace Banshee.NowPlaying
             Properties.Set<bool> ("Nereid.SourceContents.HeaderVisible", false);
             Properties.SetString ("ActiveSourceUIResource", "ActiveSourceUI.xml");
 
+            var simplified_conf = CreateSchema<bool> ("simplified_mode");
+
+            var actions = new BansheeActionGroup ("NowPlaying");
+            actions.AddImportant (new ToggleActionEntry ("SimplifyNowPlaying", null, Catalog.GetString ("Simplify"),
+                "F9", Catalog.GetString ("Simplify the Now Playing interface by hiding the source list and more"),
+                delegate {
+                    bool simple = !Properties.Get<bool> ("Nereid.SimpleUI");
+                    Properties.Set<bool> ("Nereid.SimpleUI", simple);
+                    (actions["SimplifyNowPlaying"] as ToggleAction).Active = simple;
+                    simplified_conf.Set (simple);
+                }, simplified_conf.Get ())
+            );
+            Properties.Set<bool> ("Nereid.SimpleUI", simplified_conf.Get ());
+            Properties.Set<BansheeActionGroup> ("ActiveSourceActions", actions);
+
             ServiceManager.SourceManager.AddSource (this);
 
             ServiceManager.PlaybackController.Transition += OnPlaybackControllerTransition;
             ServiceManager.PlaybackController.TrackStarted += OnPlaybackControllerTrackStarted;
             ServiceManager.PlayerEngine.ConnectEvent (OnTrackInfoUpdated, PlayerEvent.TrackInfoUpdated);
+            ServiceManager.PlayerEngine.ConnectEvent (OnCreateVideoWindow, PlayerEvent.PrepareVideoWindow);
+        }
+
+        private void OnCreateVideoWindow (PlayerEventArgs args)
+        {
+            ServiceManager.PlayerEngine.DisconnectEvent (OnCreateVideoWindow);
+            NowPlayingContents.CreateVideoDisplay ();
         }
 
         public void Dispose ()

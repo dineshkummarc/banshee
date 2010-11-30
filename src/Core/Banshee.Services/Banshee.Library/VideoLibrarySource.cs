@@ -45,6 +45,7 @@ namespace Banshee.Library
             MediaTypes = TrackMediaAttributes.VideoStream;
             NotMediaTypes = TrackMediaAttributes.Podcast;
             Properties.SetStringList ("Icon.Name", "video-x-generic", "video", "source-library");
+            Properties.Set<string> ("SearchEntryDescription", Catalog.GetString ("Search your videos"));
             Properties.SetString ("TrackView.ColumnControllerXml", String.Format (@"
                 <column-controller>
                   <add-all-defaults />
@@ -64,6 +65,11 @@ namespace Banshee.Library
             ", Catalog.GetString ("Produced By")));
         }
 
+        public override string GetPluralItemCountString (int count)
+        {
+            return Catalog.GetPluralString ("{0} video", "{0} videos", count);
+        }
+
         public override bool ShowBrowser {
             get { return false; }
         }
@@ -78,6 +84,10 @@ namespace Banshee.Library
 
         public override IEnumerable<SmartPlaylistDefinition> DefaultSmartPlaylists {
             get { return default_smart_playlists; }
+        }
+
+        protected override string SectionName {
+            get { return Catalog.GetString ("Videos Folder"); }
         }
 
         private static SmartPlaylistDefinition [] default_smart_playlists = new SmartPlaylistDefinition [] {

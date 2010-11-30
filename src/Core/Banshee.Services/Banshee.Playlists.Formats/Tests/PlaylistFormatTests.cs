@@ -34,9 +34,9 @@ using System.Collections.Generic;
 
 using NUnit.Framework;
 
-using Banshee.Base;
 using Banshee.Playlists.Formats;
 
+using Hyena;
 using Hyena.Tests;
 
 namespace Banshee.Playlists.Formats.Tests
@@ -127,7 +127,7 @@ namespace Banshee.Playlists.Formats.Tests
                 parser.Parse (new SafeUri (Path.Combine (Environment.CurrentDirectory, path)));
             }
 
-            parser.Parse (new SafeUri ("http://download.banshee-project.org/test/extended.pls"));
+            parser.Parse (new SafeUri ("http://download.banshee.fm/test/extended.pls"));
             AssertTest (parser.Elements, false);
         }
 

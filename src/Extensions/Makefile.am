@@ -1,7 +1,8 @@
 SUBDIRS = \
+	Banshee.AmazonMp3 \
+	Banshee.AmazonMp3.Store \
 	Banshee.Audiobook \
 	Banshee.AudioCd \
-	Banshee.Bookmarks \
 	Banshee.BooScript \
 	Banshee.Bpm \
 	Banshee.CoverArt \
@@ -9,10 +10,14 @@ SUBDIRS = \
 	Banshee.Emusic \
 	Banshee.FileSystemQueue \
 	Banshee.InternetArchive \
+	Banshee.Fixup \
 	Banshee.InternetRadio \
 	Banshee.Lastfm \
+	Banshee.LastfmStreaming \
 	Banshee.LibraryWatcher \
 	Banshee.MiniMode \
+	Banshee.Mpris \
+	Banshee.MiroGuide \
 	Banshee.MultimediaKeys \
 	Banshee.NotificationArea \
 	Banshee.NowPlaying \

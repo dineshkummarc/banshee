@@ -5,12 +5,15 @@ internal static class AddinXmlStringCatalog
     private static void Strings ()
     {
         // ../src/Backends/Banshee.Gio/Banshee.Gio.addin.xml
-        Catalog.GetString (@"GIO IO backend");
+        Catalog.GetString (@"GIO IO and Hardware backends");
 
         // ../src/Backends/Banshee.Gnome/Banshee.Gnome.addin.xml
         Catalog.GetString (@"Backend providers for the GNOME platform. Includes GConf support and general GNOME integration.");
 
         // ../src/Backends/Banshee.GStreamer/Banshee.GStreamer.addin.xml
+        Catalog.GetString (@"GStreamer multimedia services including playback, CD ripping, and transcoding.");
+
+        // ../src/Backends/Banshee.GStreamerSharp/Banshee.GStreamerSharp.addin.xml
         Catalog.GetString (@"GStreamer multimedia services including playback, CD ripping, and transcoding.");
 
         // ../src/Backends/Banshee.Hal/Banshee.Hal.addin.xml
@@ -33,6 +36,11 @@ internal static class AddinXmlStringCatalog
 
         // ../src/Core/Banshee.ThickClient/Banshee.ThickClient.addin.xml
         Catalog.GetString (@"Provides GUI utilities and services.");
+
+        // ../src/Dap/Banshee.Dap.AppleDevice/Banshee.Dap.AppleDevice.addin.xml
+        Catalog.GetString (@"Apple device Support");
+        Catalog.GetString (@"Support for most iPod/iPhone/iPad devices.");
+        Catalog.GetString (@"Device Support");
 
         // ../src/Dap/Banshee.Dap.Ipod/Banshee.Dap.Ipod.addin.xml
         Catalog.GetString (@"iPod Support");
@@ -58,6 +66,16 @@ internal static class AddinXmlStringCatalog
         Catalog.GetString (@"Digital Media Player Support");
         Catalog.GetString (@"Provides general support for many kinds of media player devices.");
 
+        // ../src/Extensions/Banshee.AmazonMp3.Store/Banshee.AmazonMp3.Store.addin.xml
+        Catalog.GetString (@"Amazon MP3 Store Source");
+        Catalog.GetString (@"Browse, search, and purchase music from the Amazon MP3 store");
+        Catalog.GetString (@"Online Sources");
+
+        // ../src/Extensions/Banshee.AmazonMp3/Banshee.AmazonMp3.addin.xml
+        Catalog.GetString (@"Amazon MP3 Import");
+        Catalog.GetString (@"Download and import music purchased from Amazon.com");
+        Catalog.GetString (@"Online Sources");
+
         // ../src/Extensions/Banshee.Audiobook/Banshee.Audiobook.addin.xml
         Catalog.GetString (@"Audiobooks Library");
         Catalog.GetString (@"Organize audiobooks, lectures, etc.");
@@ -67,11 +85,6 @@ internal static class AddinXmlStringCatalog
         Catalog.GetString (@"Audio CD Support");
         Catalog.GetString (@"Listen to and rip Audio CDs.");
         Catalog.GetString (@"Core");
-
-        // ../src/Extensions/Banshee.Bookmarks/Banshee.Bookmarks.addin.xml
-        Catalog.GetString (@"Bookmarks");
-        Catalog.GetString (@"Save your position in tracks so you can resume playback later.");
-        Catalog.GetString (@"Utilities");
 
         // ../src/Extensions/Banshee.BooScript/Banshee.BooScript.addin.xml
         Catalog.GetString (@"Boo Scripting");
@@ -103,6 +116,11 @@ internal static class AddinXmlStringCatalog
         Catalog.GetString (@"Preview files without importing to your library.");
         Catalog.GetString (@"Core");
 
+        // ../src/Extensions/Banshee.Fixup/Banshee.Fixup.addin.xml
+        Catalog.GetString (@"Metadata Fixup");
+        Catalog.GetString (@"Fix broken and missing metadata using bulk operations");
+        Catalog.GetString (@"Utilities");
+
         // ../src/Extensions/Banshee.InternetArchive/Banshee.InternetArchive.addin.xml
         Catalog.GetString (@"Internet Archive");
         Catalog.GetString (@"Browse and search the Internet Archive's vast media collection.");
@@ -114,8 +132,13 @@ internal static class AddinXmlStringCatalog
         Catalog.GetString (@"Core");
 
         // ../src/Extensions/Banshee.Lastfm/Banshee.Lastfm.addin.xml
-        Catalog.GetString (@"Last.fm Radio and Scrobbling");
-        Catalog.GetString (@"Last.fm streaming radio, scrobbling, and context pane recommendations.");
+        Catalog.GetString (@"Last.fm Scrobbling");
+        Catalog.GetString (@"Last.fm scrobbling and context pane recommendations.");
+        Catalog.GetString (@"Online Sources");
+
+        // ../src/Extensions/Banshee.LastfmStreaming/Banshee.LastfmStreaming.addin.xml
+        Catalog.GetString (@"Last.fm Radio");
+        Catalog.GetString (@"Last.fm streaming radio for paid subscribers.");
         Catalog.GetString (@"Online Sources");
 
         // ../src/Extensions/Banshee.LibraryWatcher/Banshee.LibraryWatcher.addin.xml
@@ -130,6 +153,16 @@ internal static class AddinXmlStringCatalog
         // ../src/Extensions/Banshee.MiniMode/Banshee.MiniMode.addin.xml
         Catalog.GetString (@"Mini Mode");
         Catalog.GetString (@"Control Banshee through a small window with only playback controls and track information.");
+        Catalog.GetString (@"Utilities");
+
+        // ../src/Extensions/Banshee.MiroGuide/Banshee.MiroGuide.addin.xml
+        Catalog.GetString (@"Miro Guide Podcast Directory");
+        Catalog.GetString (@"Browse and subscribe to thousands of audio and video podcasts.");
+        Catalog.GetString (@"Online Sources");
+
+        // ../src/Extensions/Banshee.Mpris/Banshee.Mpris.addin.xml
+        Catalog.GetString (@"MPRIS D-Bus interface");
+        Catalog.GetString (@"Control Banshee using the MPRIS D-Bus interface.");
         Catalog.GetString (@"Utilities");
 
         // ../src/Extensions/Banshee.MultimediaKeys/Banshee.MultimediaKeys.addin.xml

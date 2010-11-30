@@ -30,6 +30,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using Mono.Unix;
 using Mono.Addins;
 
@@ -46,11 +48,20 @@ namespace Banshee.Dap
 {
     public class DapService : IExtensionService, IDelayedInitializeService, IDisposable
     {
+        private static SourceManager.GroupSource dap_group;
         private Dictionary<string, DapSource> sources;
         private List<DeviceCommand> unhandled_device_commands;
-        private List<TypeExtensionNode> supported_dap_types;
+        private List<DapPriorityNode> supported_dap_types;
         private bool initialized;
         private object sync = new object ();
+
+        static DapService ()
+        {
+            // This group source gives us a seperator for DAPs in the source view.
+            // We add it when we get our first dap source, and then remove it when
+            //we lose the last one.
+            dap_group = new SourceManager.GroupSource (Catalog.GetString ("Devices"), 400);
+        }
 
         public void Initialize ()
         {
@@ -63,7 +74,7 @@ namespace Banshee.Dap
                     return;
 
                 sources = new Dictionary<string, DapSource> ();
-                supported_dap_types = new List<TypeExtensionNode> ();
+                supported_dap_types = new List<DapPriorityNode> ();
 
                 AddinManager.AddExtensionNodeHandler ("/Banshee/Dap/DeviceClass", OnExtensionChanged);
 
@@ -83,11 +94,15 @@ namespace Banshee.Dap
         private void OnExtensionChanged (object o, ExtensionNodeEventArgs args)
         {
             lock (sync) {
-                TypeExtensionNode node = (TypeExtensionNode)args.ExtensionNode;
+                var node = (DapPriorityNode)args.ExtensionNode;
+                if (!node.Type.IsSubclassOf (typeof (DapSource)))
+                    return;
 
                 if (args.Change == ExtensionChange.Add) {
                     Log.DebugFormat ("Dap support extension loaded: {0}", node.Addin.Id);
+
                     supported_dap_types.Add (node);
+                    supported_dap_types.Sort ((left, right) => right.Priority.CompareTo (left.Priority));
 
                     if (initialized) {
                         // See if any existing devices are handled by this new DAP support
@@ -96,7 +111,7 @@ namespace Banshee.Dap
                         }
                     }
                 } else if (args.Change == ExtensionChange.Remove) {
-                    supported_dap_types.Remove (node);
+                    supported_dap_types.Remove ((DapPriorityNode) args.ExtensionNode);
 
                     Queue<DapSource> to_remove = new Queue<DapSource> ();
                     foreach (DapSource source in sources.Values) {
@@ -202,7 +217,8 @@ namespace Banshee.Dap
 
                         source = service.FindDeviceSource (device);
                         if (source != null) {
-                            Log.DebugFormat ("Found DAP support ({0}) for device {1}", source.GetType ().FullName, source.Name);
+                            Log.DebugFormat ("Found DAP support ({0}) for device {1} and Uuid {2}", source.GetType ().FullName,
+                                             source.Name, device.Uuid);
                             service.sources.Add (device.Uuid, source);
                         }
                     } catch (Exception e) {
@@ -212,6 +228,10 @@ namespace Banshee.Dap
 
                 if (source != null) {
                     ThreadAssist.ProxyToMain (delegate {
+                        if (!ServiceManager.SourceManager.ContainsSource (dap_group)) {
+                            ServiceManager.SourceManager.AddSource (dap_group);
+                        }
+
                         ServiceManager.SourceManager.AddSource (source);
                         source.NotifyUser ();
 
@@ -254,6 +274,9 @@ namespace Banshee.Dap
                     source.Dispose ();
                     ThreadAssist.ProxyToMain (delegate {
                         ServiceManager.SourceManager.RemoveSource (source);
+                        if (ServiceManager.SourceManager.FindSources<DapSource> ().Count () < 1) {
+                            ServiceManager.SourceManager.RemoveSource (dap_group);
+                        }
                     });
                 } catch (Exception e) {
                     Log.Exception (e);

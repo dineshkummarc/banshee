@@ -44,12 +44,14 @@ namespace Banshee.Gui.Widgets
     {
         private SeekSlider seek_slider;
         private StreamPositionLabel stream_position_label;
+        private Box box;
+        private Hyena.Widgets.GrabHandle grabber;
 
         public ConnectedSeekSlider () : this (SeekSliderLayout.Vertical)
         {
         }
 
-        public ConnectedSeekSlider (SeekSliderLayout layout) : base (0.0f, 0.0f, 1.0f, 1.0f)
+        public ConnectedSeekSlider (SeekSliderLayout layout) : base (0.5f, 0.5f, 1.0f, 0.0f)
         {
             RightPadding = 10;
             LeftPadding = 10;
@@ -63,6 +65,7 @@ namespace Banshee.Gui.Widgets
                 PlayerEvent.StateChange);
 
             ServiceManager.PlayerEngine.TrackIntercept += OnTrackIntercept;
+            SizeAllocated += delegate { QueueDraw (); };
 
             seek_slider.SeekRequested += OnSeekRequested;
 
@@ -89,12 +92,16 @@ namespace Banshee.Gui.Widgets
             get { return seek_slider; }
         }
 
+        public int Spacing {
+            get { return box.Spacing; }
+            set { box.Spacing = value; }
+        }
+
         private void BuildSeekSlider (SeekSliderLayout layout)
         {
+            var hbox = new HBox () { Spacing = 2 };
             seek_slider = new SeekSlider ();
             stream_position_label = new StreamPositionLabel (seek_slider);
-
-            Box box;
 
             if (layout == SeekSliderLayout.Horizontal) {
                 box = new HBox ();
@@ -104,14 +111,30 @@ namespace Banshee.Gui.Widgets
                 box = new VBox ();
             }
 
-            seek_slider.SetSizeRequest (125, -1);
+            seek_slider.SetSizeRequest (175, -1);
 
             box.PackStart (seek_slider, true, true, 0);
             box.PackStart (stream_position_label, false, false, 0);
 
-            box.ShowAll ();
+            hbox.PackStart (box, true, true, 0);
 
-            Add (box);
+            grabber = new Hyena.Widgets.GrabHandle () { NoShowAll = true };
+            grabber.ControlWidthOf (seek_slider, 125, 1024, true);
+
+            hbox.PackStart (grabber, true, true, 0);
+            hbox.ShowAll ();
+            Resizable = false;
+
+            Add (hbox);
+        }
+
+        public bool Resizable {
+            get { return grabber.Visible; }
+            set {
+                grabber.Visible = value;
+                // grabber is 5 + 2 spacing, do reduce right padding to 3
+                RightPadding = value ? (uint)3 : (uint)10;
+            }
         }
 
         private bool transitioning = false;

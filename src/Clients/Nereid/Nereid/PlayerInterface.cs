@@ -28,6 +28,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Mono.Unix;
 using Gtk;
@@ -66,8 +67,12 @@ namespace Nereid
         private HPaned views_pane;
         private ViewContainer view_container;
         private VBox source_box;
+        private Widget track_info_container;
         private CoverArtDisplay cover_art_display;
         private Widget cover_art_container;
+        private ConnectedSeekSlider seek_slider;
+        private TaskStatusIcon task_status;
+        private Alignment search_entry_align;
 
         // Major Interaction Components
         private SourceView source_view;
@@ -89,6 +94,14 @@ namespace Nereid
 
         protected PlayerInterface (IntPtr ptr) : base (ptr)
         {
+        }
+
+        private void SetSimple (bool simple)
+        {
+            var widgets = new Widget [] { main_menu, source_box, footer_toolbar, track_info_container };
+            foreach (var w in widgets.Where (w => w != null)) {
+                w.Visible = !simple;
+            }
         }
 
         public PlayerInterface () : base (Catalog.GetString ("Banshee Media Player"), "player_window", 1024, 700)
@@ -115,12 +128,16 @@ namespace Nereid
             interface_constructed = true;
             uint timer = Log.DebugTimerStart ();
 
+            if (PlatformDetection.IsMeeGo) {
+                Decorated = false;
+                Maximize ();
+            }
+
             BuildPrimaryLayout ();
             ConnectEvents ();
 
             ActionService.SourceActions.SourceView = this;
             composite_view.TrackView.HasFocus = true;
-            OnActiveSourceChanged (null);
 
             Log.DebugTimerPrint (timer, "Constructed Nereid interface: {0}");
 
@@ -150,6 +167,18 @@ namespace Nereid
             BuildViews ();
             BuildFooter ();
 
+            search_entry_align = new Alignment (1.0f, 0.5f, 0f, 0f);
+            var box = new HBox () { Spacing = 2 };
+            var grabber = new GrabHandle ();
+            grabber.ControlWidthOf (view_container.SearchEntry, 150, 350, false);
+            box.PackStart (grabber, false, false, 0);
+            box.PackStart (view_container.SearchEntry, false, false, 0);
+            search_entry_align.Child = box;
+
+            ActionService.PopulateToolbarPlaceholder (header_toolbar, "/HeaderToolbar/SearchEntry", search_entry_align);
+            search_entry_align.Visible = view_container.SearchSensitive = true;
+            search_entry_align.ShowAll ();
+
             primary_vbox.Show ();
             Add (primary_vbox);
         }
@@ -171,7 +200,7 @@ namespace Nereid
 
             Alignment toolbar_alignment = new Alignment (0.0f, 0.0f, 1.0f, 1.0f);
             toolbar_alignment.TopPadding = PlatformDetection.IsMeeGo ? 0u : 3u;
-            toolbar_alignment.BottomPadding = 3;
+            toolbar_alignment.BottomPadding = PlatformDetection.IsMeeGo ? 0u : 3u;
 
             header_toolbar = (Toolbar)ActionService.UIManager.GetWidget ("/HeaderToolbar");
             header_toolbar.ShowArrow = false;
@@ -179,7 +208,8 @@ namespace Nereid
             header_toolbar.Show ();
 
             if (PlatformDetection.IsMeeGo) {
-                header_toolbar.Name = "moblin-toolbar";
+                header_toolbar.IconSize = IconSize.LargeToolbar;
+                header_toolbar.Name = "meego-toolbar";
             }
 
             toolbar_alignment.Add (header_toolbar);
@@ -189,29 +219,40 @@ namespace Nereid
                 AttachOptions.Expand | AttachOptions.Fill,
                 AttachOptions.Shrink, 0, 0);
 
-            Widget next_button = new NextButton (ActionService, PlatformDetection.IsMeeGo);
+            var next_button = new NextButton (ActionService, PlatformDetection.IsMeeGo);
             next_button.Show ();
             ActionService.PopulateToolbarPlaceholder (header_toolbar, "/HeaderToolbar/NextArrowButton", next_button);
 
-            ConnectedSeekSlider seek_slider = new ConnectedSeekSlider ();
-            seek_slider.Show ();
+            seek_slider = new ConnectedSeekSlider () { Resizable = ShowSeekSliderResizer.Get () };
+            seek_slider.SeekSlider.WidthRequest = SeekSliderWidth.Get ();
+            seek_slider.SeekSlider.SizeAllocated += (o, a) => {
+                SeekSliderWidth.Set (seek_slider.SeekSlider.Allocation.Width);
+            };
+            seek_slider.ShowAll ();
             ActionService.PopulateToolbarPlaceholder (header_toolbar, "/HeaderToolbar/SeekSlider", seek_slider);
 
-            TrackInfoDisplay track_info_display = new ClassicTrackInfoDisplay ();
+            var track_info_display = new ClassicTrackInfoDisplay ();
             track_info_display.Show ();
-            var editable = TrackInfoDisplay.GetEditable (track_info_display);
-            editable.Show ();
-            ActionService.PopulateToolbarPlaceholder (header_toolbar, "/HeaderToolbar/TrackInfoDisplay", editable, true);
+            track_info_container = TrackInfoDisplay.GetEditable (track_info_display);
+            track_info_container.Show ();
+            ActionService.PopulateToolbarPlaceholder (header_toolbar, "/HeaderToolbar/TrackInfoDisplay", track_info_container, true);
 
             if (PlatformDetection.IsMeeGo) {
+                track_info_display.ArtworkSpacing = 5;
+                seek_slider.LeftPadding = 20;
+                seek_slider.RightPadding = 20;
+
                 var menu = (Menu)(ActionService.UIManager.GetWidget ("/ToolbarMenu"));
                 var menu_button = new Hyena.Widgets.MenuButton (new Image (Stock.Preferences, IconSize.LargeToolbar), menu, true);
                 menu_button.Show ();
                 ActionService.PopulateToolbarPlaceholder (header_toolbar, "/HeaderToolbar/ToolbarMenuPlaceholder", menu_button);
 
-                var close_button = new ToolButton (Stock.Close);
+                var close_button = new Button (Image.NewFromIconName ("window-close", IconSize.LargeToolbar)) {
+                    TooltipText = Catalog.GetString ("Close")
+                };
+
                 close_button.Clicked += (o, e) => Hide ();
-                close_button.Show ();
+                close_button.ShowAll ();
                 ActionService.PopulateToolbarPlaceholder (header_toolbar, "/HeaderToolbar/ClosePlaceholder", close_button);
             } else {
                 var volume_button = new ConnectedVolumeButton ();
@@ -231,8 +272,29 @@ namespace Nereid
             source_view = new SourceView ();
             composite_view = new CompositeTrackSourceContents ();
 
-            Hyena.Widgets.ScrolledWindow source_scroll = new Hyena.Widgets.ScrolledWindow ();
-            source_scroll.AddWithFrame (source_view);
+            Container source_scroll;
+            if (PlatformDetection.IsMeeGo) {
+                source_scroll = new Gtk.ScrolledWindow () {
+                    HscrollbarPolicy = PolicyType.Never,
+                    VscrollbarPolicy = PolicyType.Automatic,
+                    ShadowType = ShadowType.None
+                };
+                source_scroll.Add (source_view);
+
+                var color = new Gdk.Color ((byte)0xe6, (byte)0xe6, (byte)0xe6);
+                Gdk.Colormap.System.AllocColor (ref color, true, true);
+                source_view.ModifyBase (StateType.Normal, color);
+            } else {
+                Hyena.Widgets.ScrolledWindow window;
+                if (ApplicationContext.CommandLine.Contains ("smooth-scroll")) {
+                    window = new Hyena.Widgets.SmoothScrolledWindow ();
+                } else {
+                    window = new Hyena.Widgets.ScrolledWindow ();
+                }
+
+                window.AddWithFrame (source_view);
+                source_scroll = window;
+            }
 
             composite_view.TrackView.HeaderVisible = false;
             view_container.Content = composite_view;
@@ -287,7 +349,7 @@ namespace Nereid
 
             footer_toolbar = new HBox () { BorderWidth = 2 };
 
-            Widget task_status = new Banshee.Gui.Widgets.TaskStatusIcon ();
+            task_status = new Banshee.Gui.Widgets.TaskStatusIcon ();
 
             EventBox status_event_box = new EventBox ();
             status_event_box.ButtonPressEvent += OnStatusBoxButtonPress;
@@ -352,7 +414,10 @@ namespace Nereid
 
             source_view.RowActivated += delegate {
                 Source source = ServiceManager.SourceManager.ActiveSource;
-                if (source is ITrackModelSource) {
+                var handler = source.Properties.Get<System.Action> ("ActivationAction");
+                if (handler != null) {
+                    handler ();
+                } else if (source is ITrackModelSource) {
                     ServiceManager.PlaybackController.NextSource = (ITrackModelSource)source;
                     // Allow changing the play source without stopping the current song by
                     // holding ctrl when activating a source. After the song is done, playback will
@@ -387,24 +452,19 @@ namespace Nereid
             ThreadAssist.ProxyToMain (delegate {
                 Source source = ServiceManager.SourceManager.ActiveSource;
 
-                view_container.SearchSensitive = source != null && source.CanSearch;
+                search_entry_align.Visible = view_container.SearchSensitive = source != null && source.CanSearch;
 
                 if (source == null) {
                     return;
                 }
 
-                view_container.Title = source.Name;
-
-                if (source is IImplementsCustomSearch) {
-                    view_container.SetSearchEntry ((source as IImplementsCustomSearch).SearchEntry);
-                } else {
-                    view_container.RestoreDefaultSearchEntry ();
-                }
-
-                view_container.SearchSensitive = source.CanSearch || source is IImplementsCustomSearch;
-
                 view_container.SearchEntry.Ready = false;
                 view_container.SearchEntry.CancelSearch ();
+
+                /* Translators: this is a verb (command), not a noun (things) */
+                var msg = source.Properties.Get<string> ("SearchEntryDescription") ?? Catalog.GetString ("Search");
+                view_container.SearchEntry.EmptyMessage = msg;
+                view_container.SearchEntry.TooltipText = msg;
 
                 if (source.FilterQuery != null) {
                     view_container.SearchEntry.Query = source.FilterQuery;
@@ -436,15 +496,34 @@ namespace Nereid
 
                 UpdateSourceInformation ();
                 view_container.SearchEntry.Ready = true;
+
+                SetSimple (source.Properties.Get<bool> ("Nereid.SimpleUI"));
             });
         }
 
         private void OnSourcePropertyChanged (object o, PropertyChangeEventArgs args)
         {
-            if (args.PropertyName == "Nereid.SourceContents") {
-                ThreadAssist.ProxyToMain (delegate {
-                    UpdateSourceContents (previous_source);
-                });
+            switch (args.PropertyName) {
+                case "Nereid.SourceContents":
+                    ThreadAssist.ProxyToMain (delegate {
+                        UpdateSourceContents (previous_source);
+                    });
+                    break;
+
+                case "FilterQuery":
+                    var source = ServiceManager.SourceManager.ActiveSource;
+                    var search_entry = source.Properties.Get<SearchEntry> ("Nereid.SearchEntry") ?? view_container.SearchEntry;
+                    if (!search_entry.HasFocus) {
+                        ThreadAssist.ProxyToMain (delegate {
+                            view_container.SearchEntry.Ready = false;
+                            view_container.SearchEntry.Query = source.FilterQuery;
+                            view_container.SearchEntry.Ready = true;
+                        });
+                    }
+                    break;
+                case "Nereid.SimpleUI":
+                    SetSimple (ServiceManager.SourceManager.ActiveSource.Properties.Get<bool> ("Nereid.SimpleUI"));
+                    break;
             }
         }
 
@@ -489,8 +568,10 @@ namespace Nereid
                 source.Properties.Set<IListView<TrackInfo>>  ("Track.IListView", track_content.TrackView);
             }
 
-            view_container.Header.Visible = source.Properties.Contains ("Nereid.SourceContents.HeaderVisible") ?
-                source.Properties.Get<bool> ("Nereid.SourceContents.HeaderVisible") : true;
+            var title_widget = source.Properties.Get<Widget> ("Nereid.SourceContents.TitleWidget");
+            if (title_widget != null) {
+                Hyena.Log.Warning ("Nereid.SourceContents.TitleWidget is no longer used (from {0})", source.Name);
+            }
 
             Widget header_widget = null;
             if (source.Properties.Contains ("Nereid.SourceContents.HeaderWidget")) {
@@ -516,7 +597,6 @@ namespace Nereid
             if (args.Source == ServiceManager.SourceManager.ActiveSource) {
                 ThreadAssist.ProxyToMain (delegate {
                     UpdateSourceInformation ();
-                    view_container.Title = args.Source.Name;
                 });
             }
         }
@@ -590,8 +670,9 @@ namespace Nereid
                 }
             }
 
-            disable_keybindings &= ((GtkUtilities.NoImportantModifiersAreSet () &&
-                evnt.Key != Gdk.Key.Control_L && evnt.Key != Gdk.Key.Control_R));
+            // Don't disable them if ctrl is pressed
+            disable_keybindings &= (evnt.State & Gdk.ModifierType.ControlMask) == 0 &&
+                evnt.Key != Gdk.Key.Control_L && evnt.Key != Gdk.Key.Control_R;
 
             if (disable_keybindings) {
                 if (accel_group_active) {
@@ -630,8 +711,12 @@ namespace Nereid
                     break;
             }
 
-            if (focus_search && view_container.SearchEntry.Visible && !view_container.SearchEntry.HasFocus && !source_view.EditingRow) {
-                view_container.SearchEntry.HasFocus = true;
+            // The source might have its own custom search entry - use it if so
+            var src = ServiceManager.SourceManager.ActiveSource;
+            var search_entry = src.Properties.Get<SearchEntry> ("Nereid.SearchEntry") ?? view_container.SearchEntry;
+            if (focus_search && search_entry.Visible && !source_view.EditingRow) {
+                search_entry.InnerEntry.GrabFocus ();
+                search_entry.HasFocus = true;
                 return true;
             }
 
@@ -701,6 +786,16 @@ namespace Nereid
             false,
             "Show cover art",
             "Show cover art below source view if available"
+        );
+
+        private static readonly SchemaEntry<bool> ShowSeekSliderResizer = new SchemaEntry<bool> (
+            "player_window", "show_seek_slider_resizer",
+            true, "Show seek slider resize grip", ""
+        );
+
+        private static readonly SchemaEntry<int> SeekSliderWidth = new SchemaEntry<int> (
+            "player_window", "seek_slider_width",
+            175, "Width of seek slider in px", ""
         );
 
 #endregion

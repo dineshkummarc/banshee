@@ -11,8 +11,8 @@
   <name xml:lang="en">Banshee Media Player</name>
   <shortdesc xml:lang="en">Play and organize your media collection</shortdesc>
 
-  <homepage rdf:resource="http://banshee-project.org/" />
-  <download-page rdf:resource="http://banshee-project.org/download" />
+  <homepage rdf:resource="http://banshee.fm/" />
+  <download-page rdf:resource="http://banshee.fm/download" />
   <mailing-list rdf:resource="http://mail.gnome.org/mailman/listinfo/banshee-list" />
   <bug-database rdf:resource="http://bugzilla.gnome.org/" />
   <license rdf:resource="http://usefulinc.com/doap/licenses/mit" />
@@ -20,11 +20,21 @@
   <!-- Current Releases -->
   <release>
     <Version>
-      <name>1.6.0 Release</name>
-      <branch>stable</branch>
-      <created>2010-03-31</created>
-      <revision>1.6.0</revision>
-      <file-release rdf:resource="http://download.banshee-project.org/banshee/stable/1.6.0/banshee-1-1.6.0.tar.bz2" />
+      <name>1.8.0 Release</name>
+      <branch>stable-1.8</branch>
+      <created>2010-09-29</created>
+      <revision>1.8.0</revision>
+      <file-release rdf:resource="http://download.banshee.fm/banshee/stable/1.8.0/banshee-1-1.8.0.tar.bz2" />
+    </Version>
+  </release>
+
+  <release>
+    <Version>
+      <name>1.9.0 Release</name>
+      <branch>master</branch>
+      <created>2010-11-10</created>
+      <revision>1.9.0</revision>
+      <file-release rdf:resource="http://download.banshee.fm/banshee/unstable/1.9.0/banshee-1-1.9.0.tar.bz2" />
     </Version>
   </release>
 

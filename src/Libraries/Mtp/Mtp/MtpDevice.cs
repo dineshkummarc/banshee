@@ -37,6 +37,15 @@ namespace Mtp
 
     public class MtpDevice : IDisposable
     {
+        internal static IntPtr Offset (IntPtr ptr, int offset)
+        {
+            if (IntPtr.Size == 8) {
+                return (IntPtr) (ptr.ToInt64 () + offset);
+            } else {
+                return (IntPtr) (ptr.ToInt32 () + offset);
+            }
+        }
+
         internal MtpDeviceHandle Handle;
         private MtpDeviceStruct device;
         private string name;
@@ -67,6 +76,10 @@ namespace Mtp
 
         public string Version {
             get { return GetDeviceversion (Handle); }
+        }
+
+        public string ModelName {
+            get; private set;
         }
 
         public string Name {
@@ -115,6 +128,7 @@ namespace Mtp
             this.device = device;
             this.Handle = handle;
             this.name = GetFriendlyName(Handle);
+            this.ModelName = GetModelName (Handle);
             SetDefaultFolders ();
         }
         
@@ -181,9 +195,10 @@ namespace Mtp
             List<Track> tracks = new List<Track>();
             
             while (ptr != IntPtr.Zero) {
+                // Destroy the struct after we use it to avoid potential referencing of freed memory.
                 TrackStruct track = (TrackStruct)Marshal.PtrToStructure(ptr, typeof(TrackStruct));
-                Track.DestroyTrack (ptr);
                 tracks.Add (new Track (track, this));
+                Track.DestroyTrack (ptr);
                 ptr = track.next;
             }
             
@@ -249,18 +264,27 @@ namespace Mtp
 
             return file_types;
         }
-        
-        public static List<MtpDevice> Detect ()
+
+        public static MtpDevice Connect (RawMtpDevice rawDevice)
         {
-            IntPtr ptr;
-            GetConnectedDevices(out ptr);
-            
-            List<MtpDevice> devices = new List<MtpDevice>();
-            while (ptr != IntPtr.Zero)
-            {
-                MtpDeviceStruct d = (MtpDeviceStruct)Marshal.PtrToStructure(ptr, typeof(MtpDeviceStruct));
-                devices.Add(new MtpDevice(ptr, true, d));
-                ptr = d.next;
+            var raw = rawDevice.RawDevice;
+            IntPtr device = LIBMTP_Open_Raw_Device (ref raw);
+            if (device == IntPtr.Zero)
+                return null;
+            return new MtpDevice (new MtpDeviceHandle (device, true), (MtpDeviceStruct) Marshal.PtrToStructure (device, typeof (MtpDeviceStruct)));
+        }
+
+        public static List<RawMtpDevice> Detect ()
+        {
+            int count = 0;
+            IntPtr ptr = IntPtr.Zero;
+            LIBMTP_Detect_Raw_Devices (ref ptr, ref count);
+
+            List<RawMtpDevice> devices = new List<RawMtpDevice>();
+            for (int i = 0; i < count; i++) {
+                IntPtr offset = Offset (ptr, i * Marshal.SizeOf (typeof (RawDeviceStruct)));
+                RawDeviceStruct d = (RawDeviceStruct)Marshal.PtrToStructure (offset, typeof(RawDeviceStruct));
+                devices.Add(new RawMtpDevice (d));
             }
             
             return devices;
@@ -320,6 +344,15 @@ namespace Mtp
         {
             bool success = LIBMTP_Set_Friendlyname (handle, name) == 0;
             return success;
+        }
+
+        internal static string GetModelName(MtpDeviceHandle handle)
+        {
+            IntPtr ptr = LIBMTP_Get_Modelname (handle);
+            if (ptr == IntPtr.Zero)
+                return null;
+
+            return StringFromIntPtr (ptr);
         }
 
         internal static string GetSerialnumber(MtpDeviceHandle handle)
@@ -395,7 +428,13 @@ namespace Mtp
         
         [DllImportAttribute("libmtp.dll")]
         private static extern ErrorCode LIBMTP_Get_Connected_Devices (out IntPtr list); //LIBMTP_mtpdevice_t **
-        
+
+        [DllImport ("libmtp.dll")]
+        private static extern ErrorCode LIBMTP_Detect_Raw_Devices (ref IntPtr list, ref int count); //LIBMTP_raw_device_t
+
+        [DllImport ("libmtp.dll")]
+        private static extern IntPtr LIBMTP_Open_Raw_Device (ref RawDeviceStruct rawdevice);
+
         // Deallocates the memory for the device
         [DllImportAttribute("libmtp.dll")]
         private static extern void LIBMTP_Release_Device (IntPtr device);
@@ -406,8 +445,8 @@ namespace Mtp
         [DllImport("libmtp.dll")]
         private static extern int LIBMTP_Get_Batterylevel (MtpDeviceHandle handle, out ushort maxLevel, out ushort currentLevel);
         
-        //[DllImportAttribute("libmtp.dll")]
-        //private static extern IntPtr LIBMTP_Get_Modelname (MtpDeviceHandle handle); // char *
+        [DllImportAttribute("libmtp.dll")]
+        private static extern IntPtr LIBMTP_Get_Modelname (MtpDeviceHandle handle); // char *
         
         [DllImportAttribute("libmtp.dll")]
         private static extern IntPtr LIBMTP_Get_Serialnumber (MtpDeviceHandle handle); // char *
@@ -532,5 +571,32 @@ namespace Mtp
         public uint default_text_folder;
         public IntPtr cd; // void*
         public IntPtr next; // LIBMTP_mtpdevice_t*
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    internal struct RawDeviceStruct {
+        public DeviceEntry device_entry; /**< The device entry for this raw device */
+        public uint bus_location; /**< Location of the bus, if device available */
+        public byte devnum; /**< Device number on the bus, if device available */
+    }
+
+    public class RawMtpDevice {
+
+        public uint BusNumber {
+            get { return RawDevice.bus_location; }
+        }
+
+        public int DeviceNumber {
+            get { return RawDevice.devnum; }
+        }
+
+        internal RawDeviceStruct RawDevice {
+            get; private set;
+        }
+
+        internal RawMtpDevice (RawDeviceStruct device)
+        {
+            RawDevice = device;
+        }
     }
 }

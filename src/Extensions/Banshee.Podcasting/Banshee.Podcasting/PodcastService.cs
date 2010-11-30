@@ -29,6 +29,7 @@
 //
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -44,6 +45,7 @@ using Migo.TaskCore;
 using Migo.Syndication;
 using Migo.DownloadCore;
 
+using Banshee.Networking;
 using Banshee.MediaEngine;
 using Banshee.Podcasting.Gui;
 using Banshee.Podcasting.Data;
@@ -272,7 +274,16 @@ namespace Banshee.Podcasting
 
                 // Every 10 minutes try to refresh again
                 refresh_timeout_id = Application.RunTimeout (1000 * 60 * 10, RefreshFeeds);
+
+                ServiceManager.Get<Network> ().StateChanged += OnNetworkStateChanged;
             });
+
+            source.UpdateFeedMessages ();
+        }
+
+        private void OnNetworkStateChanged (object o, NetworkStateChangedArgs args)
+        {
+            RefreshFeeds ();
         }
 
         bool disposing;
@@ -291,6 +302,7 @@ namespace Banshee.Podcasting
 
             ServiceManager.PlayerEngine.DisconnectEvent (OnPlayerEvent);
             ServiceManager.Get<DBusCommandService> ().ArgumentPushed -= OnCommandLineArgument;
+            ServiceManager.Get<Network> ().StateChanged -= OnNetworkStateChanged;
 
             if (download_manager_iface != null) {
                 download_manager_iface.Dispose ();
@@ -317,11 +329,14 @@ namespace Banshee.Podcasting
 
         private bool RefreshFeeds ()
         {
+            if (!ServiceManager.Get<Network> ().Connected)
+                return true;
+
             Hyena.Log.Debug ("Refreshing any podcasts that haven't been updated in over an hour");
             Banshee.Kernel.Scheduler.Schedule (new Banshee.Kernel.DelegateJob (delegate {
                 DateTime now = DateTime.Now;
                 foreach (Feed feed in Feed.Provider.FetchAll ()) {
-                    if ((now - feed.LastDownloadTime).TotalHours > 1) {
+                    if (feed.IsSubscribed && (now - feed.LastDownloadTime).TotalHours > 1) {
                         feed.Update ();
                         RefreshArtworkFor (feed);
                     }
@@ -330,40 +345,51 @@ namespace Banshee.Podcasting
             return true;
         }
 
-        private void OnCommandLineArgument (string uri, object value, bool isFile)
+        private void OnCommandLineArgument (string argument, object value, bool isFile)
         {
-            if (!isFile || String.IsNullOrEmpty (uri)) {
+            if (isFile) {
+                ProcessFile (argument, null);
+            } else if (argument == "podcast") {
+                var podcast = Hyena.Json.JsonObject.FromString (value as string);
+                if (podcast != null) {
+                    ProcessFile ((string)podcast["uri"], (string)podcast["name"]);
+                }
+            }
+        }
+
+        private void ProcessFile (string uri, string title)
+        {
+            if (String.IsNullOrEmpty (uri)) {
                 return;
             }
 
-            // Handle OPML files
             if (uri.Contains ("opml") || uri.EndsWith (".miro") || uri.EndsWith (".democracy")) {
+                // Handle OPML files
                 try {
                     OpmlParser opml_parser = new OpmlParser (uri, true);
                     foreach (string feed in opml_parser.Feeds) {
-                        ServiceManager.Get<DBusCommandService> ().PushFile (feed);
+                        ProcessFile (feed, title);
                     }
                 } catch (Exception e) {
                     Log.Exception (e);
                 }
             } else if (uri.Contains ("xml") || uri.Contains ("rss") || uri.Contains ("feed") || uri.StartsWith ("itpc") || uri.StartsWith ("pcast")) {
+                // Handle normal XML/RSS URLs
                 if (uri.StartsWith ("feed://") || uri.StartsWith ("itpc://")) {
                     uri = String.Format ("http://{0}", uri.Substring (7));
                 } else if (uri.StartsWith ("pcast://")) {
                     uri = String.Format ("http://{0}", uri.Substring (8));
                 }
 
-                // TODO replace autodownload w/ actual default preference
-                FeedsManager.Instance.FeedManager.CreateFeed (uri, FeedAutoDownload.None);
-                source.NotifyUser ();
+                AddFeed (uri, title);
             } else if (uri.StartsWith ("itms://")) {
+                // Handle iTunes podcast URLs
                 System.Threading.ThreadPool.QueueUserWorkItem (delegate {
                     try {
-                        string feed_url = new ItmsPodcast (uri).FeedUrl;
-                        if (feed_url != null) {
+                        var feed = new ItmsPodcast (uri);
+                        if (feed.FeedUrl != null) {
                             ThreadAssist.ProxyToMain (delegate {
-                                FeedsManager.Instance.FeedManager.CreateFeed (feed_url, FeedAutoDownload.None);
-                                source.NotifyUser ();
+                                AddFeed (feed.FeedUrl, feed.Title ?? title);
                             });
                         }
                     } catch (Exception e) {
@@ -373,9 +399,17 @@ namespace Banshee.Podcasting
             }
         }
 
+        private void AddFeed (string uri, string title)
+        {
+            // TODO replace autodownload w/ actual default preference
+            FeedsManager.Instance.FeedManager.CreateFeed (uri, title, FeedAutoDownload.None);
+            source.NotifyUser ();
+            source.UpdateFeedMessages ();
+        }
+
         private void RefreshArtworkFor (Feed feed)
         {
-            if (feed.LastDownloadTime != DateTime.MinValue && !CoverArtSpec.CoverExists (PodcastService.ArtworkIdFor (feed))) {
+            if (!String.IsNullOrEmpty (feed.ImageUrl) && !CoverArtSpec.CoverExists (PodcastService.ArtworkIdFor (feed))) {
                 Banshee.Kernel.Scheduler.Schedule (new PodcastImageFetchJob (feed), Banshee.Kernel.JobPriority.BelowNormal);
             }
         }
@@ -430,6 +464,7 @@ namespace Banshee.Podcasting
         {
             source.Reload ();
             source.NotifyTracksChanged ();
+            source.UpdateFeedMessages ();
         }
 
         /*private void OnFeedAddedHandler (object sender, FeedEventArgs args)

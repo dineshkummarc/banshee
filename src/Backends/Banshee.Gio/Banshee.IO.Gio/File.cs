@@ -29,7 +29,7 @@
 using System;
 using GLib;
 
-using Banshee.Base;
+using Hyena;
 
 namespace Banshee.IO.Gio
 {
@@ -90,9 +90,13 @@ namespace Banshee.IO.Gio
 
         public long GetModifiedTime (SafeUri uri)
         {
-            var file = FileFactory.NewForUri (uri.AbsoluteUri);
-            using (var file_info = file.QueryInfo ("time::modified", FileQueryInfoFlags.None, null)) {
-                return (long) file_info.GetAttributeULong ("time::modified");
+            try {
+                var file = FileFactory.NewForUri (uri.AbsoluteUri);
+                using (var file_info = file.QueryInfo ("time::modified", FileQueryInfoFlags.None, null)) {
+                    return (long) file_info.GetAttributeULong ("time::modified");
+                }
+            } catch {
+                return -1;
             }
         }
     }

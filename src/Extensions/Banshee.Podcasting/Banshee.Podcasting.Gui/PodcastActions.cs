@@ -64,17 +64,18 @@ namespace Banshee.Podcasting.Gui
         public PodcastActions (PodcastSource source) : base (ServiceManager.Get<InterfaceActionService> (), "Podcast")
         {
             this.podcast_source = source;
+            ImportantByDefault = false;
 
-            AddImportant (
+            Add (
                 new ActionEntry (
                     "PodcastUpdateAllAction", Stock.Refresh,
-                     Catalog.GetString ("Check for New Episodes"), null,//"<control><shift>U",
-                     Catalog.GetString ("Refresh All Podcasts"),
+                     Catalog.GetString ("Refresh"), null,//"<control><shift>U",
+                     Catalog.GetString ("Check all podcasts for new episodes"),
                      OnPodcastUpdateAll
                 ),
                 new ActionEntry (
                     "PodcastAddAction", Stock.Add,
-                     Catalog.GetString ("Subscribe to Podcast..."),"<control><shift>F",
+                     Catalog.GetString ("Add Podcast..."),"<control><shift>F",
                      Catalog.GetString ("Subscribe to a new podcast"),
                      OnPodcastAdd
                 )
@@ -83,6 +84,9 @@ namespace Banshee.Podcasting.Gui
             Add (
                 new ActionEntry("PodcastFeedPopupAction", null,
                     String.Empty, null, null, OnFeedPopup),
+
+                new ActionEntry("EpisodePodcastMenu", null,
+                    Catalog.GetString ("Podcast"), null, null, null),
 
                 new ActionEntry (
                     "PodcastDeleteAction", Stock.Delete,
@@ -122,13 +126,13 @@ namespace Banshee.Podcasting.Gui
                 ),
                 new ActionEntry (
                     "PodcastItemMarkOldAction", null,
-                     Catalog.GetString ("Mark as Old"), "y", String.Empty,
+                     Catalog.GetString ("Archive"), "y", String.Empty,
                      OnPodcastItemMarkOld
                 ),
                 new ActionEntry (
                     "PodcastItemDownloadAction", Stock.Save,
                      /* Translators: this is a verb used as a button name, not a noun*/
-                     Catalog.GetString ("Download Podcast(s)"),
+                     Catalog.GetString ("Download"),
                      "<control><shift>D", String.Empty,
                      OnPodcastItemDownload
                 ),
@@ -140,7 +144,7 @@ namespace Banshee.Podcasting.Gui
                 ),
                 new ActionEntry (
                     "PodcastItemDeleteFileAction", Stock.Remove,
-                     Catalog.GetString ("Remove Downloaded File(s)"),
+                     "",
                      null, String.Empty,
                      OnPodcastItemDeleteFile
                 ),
@@ -158,7 +162,7 @@ namespace Banshee.Podcasting.Gui
                 )
             );
 
-            this["PodcastAddAction"].ShortLabel = Catalog.GetString ("Subscribe to Podcast");
+            this["PodcastAddAction"].ShortLabel = Catalog.GetString ("Add Podcast");
 
             actions_id = Actions.UIManager.AddUiFromResource ("GlobalUI.xml");
             Actions.AddActionGroup (this);
@@ -244,10 +248,24 @@ namespace Banshee.Podcasting.Gui
         private void UpdateItemActions ()
         {
             if (IsPodcastSource) {
-                bool has_single_selection = ActiveDbSource.TrackModel.Selection.Count == 1;
-                UpdateActions (true, has_single_selection,
-                   "PodcastItemLinkAction"
-                );
+                int count = ActiveDbSource.TrackModel.Selection.Count;
+
+                //bool has_single_podcast = podcast_source.PodcastTrackModel.SelectionPodcastCount == 1;
+
+                UpdateAction ("PodcastItemLinkAction", true, count == 1);
+
+                int downloaded = podcast_source.PodcastTrackModel.SelectionDownloadedCount;
+                UpdateAction ("PodcastItemDownloadAction", downloaded != count, true);
+                UpdateAction ("PodcastItemDeleteFileAction", downloaded > 0, true);
+                // Translators: {0} is available for your use, containing the number of files to delete
+                this["PodcastItemDeleteFileAction"].Label = String.Format (Catalog.GetPluralString (
+                    "Delete File", "Delete Files", downloaded), downloaded);
+
+                int unheard = podcast_source.PodcastTrackModel.SelectionUnheardCount;
+                UpdateAction ("PodcastItemMarkNewAction", unheard != count, true);
+                UpdateAction ("PodcastItemMarkOldAction", unheard > 0, true);
+
+                Actions["Track.SearchMenuAction"].Visible = false;
             }
         }
 
@@ -445,7 +463,9 @@ namespace Banshee.Podcasting.Gui
         private void OnPodcastUpdateAll (object sender, EventArgs e)
         {
             foreach (Feed feed in Feed.Provider.FetchAll ()) {
-                feed.Update ();
+                if (feed.IsSubscribed) {
+                    feed.Update ();
+                }
             }
         }
 

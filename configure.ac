@@ -1,8 +1,11 @@
 dnl Granularly define the version components
 dnl Remember to also update the Display Version
 m4_define([banshee_version_major], [1])
-m4_define([banshee_version_minor], [6])
+m4_define([banshee_version_minor], [9])
 m4_define([banshee_version_micro], [0])
+
+dnl this can sometimes differ manually
+m4_define([banshee_display_version], ["1.9.0"])
 
 dnl set to 0 when doing an official release
 m4_define([banshee_version_pre_release], [0])
@@ -21,10 +24,6 @@ m4_define([banshee_version],
 		banshee_version,
 		concat(banshee_version, banshee_version_pre_release)))
 
-dnl this can sometimes differ manually
-m4_define([banshee_display_version],
-	["1.6.0"])
-
 m4_define([banshee_api_version],
 	[banshee_version_major.banshee_version_minor])
 
@@ -38,6 +37,7 @@ AC_INIT([banshee-1], banshee_version,
 AM_INIT_AUTOMAKE([1.9 dist-bzip2 tar-ustar dist-zip foreign])
 AM_MAINTAINER_MODE
 AM_CONFIG_HEADER([config.h])
+AC_CONFIG_MACRO_DIR([build/m4])
 AC_SUBST([ACLOCAL_AMFLAGS], ["-I build/m4/shamrock -I build/m4/banshee -I build/m4/shave \${ACLOCAL_FLAGS}"])
 
 IT_PROG_INTLTOOL([0.35.0])
@@ -46,6 +46,7 @@ AC_PROG_INSTALL
 
 dnl How to configure for distcheck
 DISTCHECK_CONFIGURE_FLAGS="--disable-docs --enable-mtp --enable-daap --enable-podcast --enable-podcast-ng --enable-release"
+DISTCHECK_CONFIGURE_FLAGS="--disable-docs --enable-mtp --enable-daap --enable-podcast --enable-user-help --enable-release"
 AC_SUBST(DISTCHECK_CONFIGURE_FLAGS)
 
 dnl Export Version Info
@@ -62,14 +63,19 @@ dnl libbanshee/native dependencies (required)
 BANSHEE_CHECK_LIBBANSHEE
 BANSHEE_CHECK_GSTREAMER
 
+dnl For the new media backend using gstreamer-sharp
+BANSHEE_CHECK_GSTREAMER_SHARP
+
 BANSHEE_CHECK_NOW_PLAYING_X11
+
+dnl User help
+SHAMROCK_CHECK_GNOME_DOC_UTILS(0.17.3)
 
 dnl Mono and gmcs
 SHAMROCK_CHECK_MONO_MODULE(1.9.1)
 SHAMROCK_FIND_MONO_2_0_COMPILER
 SHAMROCK_FIND_MONO_RUNTIME
 SHAMROCK_CHECK_MONO_2_0_GAC_ASSEMBLIES([	
-	System.Data
 	Mono.Cairo
 	Mono.Posix
 	ICSharpCode.SharpZipLib
@@ -79,8 +85,18 @@ dnl Check for mono >= 2.4.3 for LibraryWatcher extension, with fix for bnc#32233
 PKG_CHECK_MODULES(MONO_2_4_3, mono >= 2.4.3, HAVE_MONO_2_4_3=yes, HAVE_MONO_2_4_3=no)
 AM_CONDITIONAL(ENABLE_LIBRARY_WATCHER, test "x$HAVE_MONO_2_4_3" = "xyes")
 
-dnl Check for GNOME >= 2.28 to see if we should remove 'Media Player' from the app Name, bgo#596242
-PKG_CHECK_MODULES(GNOME_LT_2_28, gnome-desktop-2.0 < 2.28, BANSHEE_DESKTOP_NAME="_Name=Banshee Media Player", BANSHEE_DESKTOP_NAME="_Name=Banshee")
+dnl Check for GNOME >= 2.28 to see if we should remove
+dnl 'Media Player' from the app Name, bgo#596242, except
+dnl in MeeGo where GNOME >= 2.28, but we want the full name
+PKG_CHECK_MODULES(GNOME_2_28, gnome-desktop-2.0 >= 2.28,
+	HAVE_GNOME_2_28=yes, HAVE_GNOME_2_28=no)
+PKG_CHECK_MODULES(MEEGO_PANEL, meego-panel,
+	HAVE_MEEGO_PANEL=yes, HAVE_MEEGO_PANEL=no)
+if test "x$HAVE_GNOME_2_28" = "xno" -o "x$HAVE_MEEGO_PANEL" = "xyes"; then
+	BANSHEE_DESKTOP_NAME="_Name=Banshee Media Player"
+else
+	BANSHEE_DESKTOP_NAME="_Name=Banshee"
+fi
 AC_SUBST(BANSHEE_DESKTOP_NAME)
 
 dnl NDesk DBus libraries
@@ -99,10 +115,13 @@ dnl Monodoc (optional through --disable-docs)
 SHAMROCK_CHECK_MONODOC
 
 dnl webkit (optional through --disable-webkit)
-BANSHEE_CHECK_WEBKIT
+BANSHEE_CHECK_LIBWEBKIT
 
 dnl gdata (optional through --disable-youtube)
 BANSHEE_CHECK_YOUTUBE
+
+dnl Check for disabled hal
+BANSHEE_CHECK_HAL
 
 dnl gtk#-beans and gio#
 BANSHEE_CHECK_GIO_SHARP
@@ -141,6 +160,7 @@ fi
 
 dnl DAP support (each module is optional)
 BANSHEE_CHECK_DAP_MTP
+BANSHEE_CHECK_DAP_APPLEDEVICE
 BANSHEE_CHECK_DAP_IPOD
 BANSHEE_CHECK_DAP_KARMA
 
@@ -201,6 +221,8 @@ else
 fi
 AC_SUBST(GMCS_FLAGS)
 
+AM_CONDITIONAL(HYENA_PKG_CONFIG, false)
+
 AC_ARG_WITH(vendor-build-id,
 	AC_HELP_STRING([--with-vendor-build-id=<vendor-build-id>],
 		[Set a vendor build ID, recommended for packagers]),
@@ -238,6 +260,8 @@ data/desktop-files/Makefile
 data/desktop-files/common.desktop
 data/icon-theme-hicolor/Makefile
 
+help/Makefile
+
 docs/Makefile
 docs/Hyena/Makefile
 docs/Banshee/Makefile
@@ -255,6 +279,14 @@ libbanshee/Makefile
 gstreamer/Makefile
 gstreamer/equalizer/Makefile
 
+src/Hyena/Makefile
+src/Hyena/build/Makefile
+src/Hyena/build/pkg-config/Makefile
+src/Hyena/build/m4/Makefile
+src/Hyena/Hyena/Makefile
+src/Hyena/Hyena.Data.Sqlite/Makefile
+src/Hyena/Hyena.Gui/Makefile
+
 src/Makefile
 src/AssemblyInfo.cs
 
@@ -266,6 +298,7 @@ src/Clients/Booter/banshee-1.darwin
 src/Clients/Halie/Makefile
 src/Clients/Muinshee/Makefile
 src/Clients/Nereid/Makefile
+src/Clients/MeeGo/Makefile
 
 src/Core/Makefile
 src/Core/Banshee.CollectionIndexer/Makefile
@@ -273,11 +306,14 @@ src/Core/Banshee.Core/Makefile
 src/Core/Banshee.Services/Makefile
 src/Core/Banshee.ThickClient/Makefile
 src/Core/Banshee.Widgets/Makefile
+src/Core/Banshee.WebBrowser/Makefile
+src/Core/Banshee.WebBrowser/libossifer/Makefile
 
 src/Backends/Makefile
 src/Backends/Banshee.Gio/Makefile
 src/Backends/Banshee.Gnome/Makefile
 src/Backends/Banshee.GStreamer/Makefile
+src/Backends/Banshee.GStreamerSharp/Makefile
 src/Backends/Banshee.Hal/Makefile
 src/Backends/Banshee.Unix/Makefile
 src/Backends/Banshee.Osx/Makefile
@@ -285,13 +321,10 @@ src/Backends/Banshee.NowPlaying.X11/Makefile
 src/Backends/Banshee.NowPlaying.X11/libbnpx11/Makefile
 
 src/Libraries/Makefile
-src/Libraries/Hyena/Makefile
-src/Libraries/Hyena.Gui/Makefile
 src/Libraries/Lastfm/Makefile
 src/Libraries/Lastfm.Gui/Makefile
 src/Libraries/Migo/Makefile
 src/Libraries/Migo2/Makefile
-src/Libraries/Mono.Data.Sqlite/Makefile
 src/Libraries/Mono.Media/Makefile
 src/Libraries/Mtp/Makefile
 src/Libraries/Mtp/Mtp.dll.config
@@ -299,15 +332,17 @@ src/Libraries/MusicBrainz/Makefile
 
 src/Dap/Makefile
 src/Dap/Banshee.Dap/Makefile
+src/Dap/Banshee.Dap.AppleDevice/Makefile
 src/Dap/Banshee.Dap.Ipod/Makefile
 src/Dap/Banshee.Dap.MassStorage/Makefile
 src/Dap/Banshee.Dap.Mtp/Makefile
 src/Dap/Banshee.Dap.Karma/Makefile
 
 src/Extensions/Makefile
+src/Extensions/Banshee.AmazonMp3/Makefile
+src/Extensions/Banshee.AmazonMp3.Store/Makefile
 src/Extensions/Banshee.Audiobook/Makefile
 src/Extensions/Banshee.AudioCd/Makefile
-src/Extensions/Banshee.Bookmarks/Makefile
 src/Extensions/Banshee.BooScript/Makefile
 src/Extensions/Banshee.Bpm/Makefile
 src/Extensions/Banshee.CoverArt/Makefile
@@ -315,11 +350,15 @@ src/Extensions/Banshee.Daap/Makefile
 src/Extensions/Banshee.Emusic/Makefile
 src/Extensions/Banshee.FileSystemQueue/Makefile
 src/Extensions/Banshee.InternetArchive/Makefile
+src/Extensions/Banshee.Fixup/Makefile
 src/Extensions/Banshee.InternetRadio/Makefile
 src/Extensions/Banshee.Lastfm/Makefile
+src/Extensions/Banshee.LastfmStreaming/Makefile
 src/Extensions/Banshee.LibraryWatcher/Makefile
 src/Extensions/Banshee.MiniMode/Makefile
+src/Extensions/Banshee.MiroGuide/Makefile
 src/Extensions/Banshee.MeeGo/Makefile
+src/Extensions/Banshee.Mpris/Makefile
 src/Extensions/Banshee.MultimediaKeys/Makefile
 src/Extensions/Banshee.NotificationArea/Makefile
 src/Extensions/Banshee.NowPlaying/Makefile
@@ -363,25 +402,33 @@ ${PACKAGE}-${VERSION}
   Digital Audio Player (DAP) Support:
     Mass Storage:      yes
     MTP:               ${enable_libmtp}
+    Apple Device:      ${enable_appledevice}
     iPod:              ${enable_ipodsharp}
     Karma:             ${enable_karmasharp}
 
   Extra Features:
+    Web Browser:       ${have_libwebkit} (webkit-1.0 >= $WEBKIT_MIN_VERSION, libsoup-2.4 >= $SOUP_MIN_VERSION)
+      + GNOME Proxy    ${have_libsoup_gnome} (libsoup-gnome-2.4 >= $SOUP_GNOME_MIN_VERSION)
+      + Amazon MP3     ${have_libwebkit}
+      + Miro Guide     ${have_libwebkit}
+      + Wikipedia      ${have_libwebkit}
     Boo Scripting:     ${enable_boo}
     Builtin Equalizer: ${enable_builtin_equalizer}
     DAAP:              ${enable_daap}
-    GIO Backend:       ${enable_gio} (requires glib >= 2.22, gtk-sharp-beans, and gio-sharp)
-    Library Watcher:   ${HAVE_MONO_2_4_3} (requires Mono >= 2.4.3)
+    GIO Backend:       ${enable_gio} (glib >= 2.22, gtk-sharp-beans, and gio-sharp)
+    GIO Hardware:      ${enable_gio_hardware} (gudev-sharp, gkeyfile-sharp)
+    HAL Backend:       ${enable_hal}
+    Library Watcher:   ${HAVE_MONO_2_4_3} (Mono >= 2.4.3)
     Podcasts:          ${enable_podcast}
     Podcast NG:        ${enable_podcast_ng}
-    Wikipedia:         ${enable_webkit} (requires webkit-sharp)
-    Gapless playback:  ${ENABLE_GAPLESS} (requires gstreamer-plugins-base > 0.10.25.2)
-    YouTube extension: ${enable_youtube} (requires gdata-sharp >= 1.4)
+    Gapless playback:  ${ENABLE_GAPLESS} (gstreamer-plugins-base > 0.10.25.2)
+    YouTube extension: ${enable_youtube} (gdata-sharp >= 1.4)
 
   Build/Development:
-    Unit Tests:        ${do_tests} (requires nunit >= ${NUNIT_REQUIRED})
-    API Docs:          ${enable_docs} (requires monodocer and mdassembler)
-    Custom a11y:       ${gtksharp_with_a11y} (requires gtk-sharp >= 2.12.10)
+    Unit Tests:        ${do_tests} (nunit >= ${NUNIT_REQUIRED})
+    API Docs:          ${enable_docs} (monodocer and mdassembler)
+    User Help:         ${enable_user_help} (gnome-doc-utils >= 0.17.3)
+    Custom a11y:       ${gtksharp_with_a11y} (gtk-sharp >= 2.12.10)
     Release Build:     ${enable_release}
     Vendor Build ID:   ${vendor_build_id}
 
@@ -391,6 +438,7 @@ EOF
 if test "x$enable_moonlight" = "xyes";    then br=yes; echo "  Moonlight Effects:   ${enable_moonlight}";    fi
 if test "x$enable_remote_audio" = "xyes"; then br=yes; echo "  Remote Audio:        ${enable_remote_audio}"; fi
 if test "x$enable_torrent" = "xyes";      then br=yes; echo "  Torrent Podcasts:    ${enable_torrent}";      fi
+if test "x$enable_gst_sharp" = "xyes";    then br=yes; echo "  Gst# Backend:        ${enable_gst_sharp} (unfinished, experimental!)";      fi
 
 if test -d ${expanded_libdir}/${PACKAGE}; then
 	if test x$br = xyes; then echo; fi

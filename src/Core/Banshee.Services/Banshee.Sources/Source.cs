@@ -221,13 +221,6 @@ namespace Banshee.Sources
                 }
 
                 child_sources.Remove (child);
-
-                if (ServiceManager.SourceManager.ActiveSource == child) {
-                    if (CanActivate) {
-                        ServiceManager.SourceManager.SetActiveSource (this);
-                    }
-                }
-
                 OnChildSourceRemoved (child);
             }
         }
@@ -271,7 +264,11 @@ namespace Banshee.Sources
 
                     int i = 0;
                     foreach (Source child in child_sources) {
-                        child.Order = i++;
+                        // Leave children with negative orders alone, so they can be manually
+                        // placed at the top
+                        if (child.Order >= 0) {
+                            child.Order = i++;
+                        }
                     }
                 }
             }
@@ -302,9 +299,9 @@ namespace Banshee.Sources
             SortChildSources ();
         }
 
-        public T GetProperty<T> (string name, bool propagate)
+        public T GetProperty<T> (string name, bool inherited)
         {
-            return propagate ? GetInheritedProperty<T> (name) : Properties.Get<T> (name);
+            return inherited ? GetInheritedProperty<T> (name) : Properties.Get<T> (name);
         }
 
         public T GetInheritedProperty<T> (string name)
@@ -357,8 +354,7 @@ namespace Banshee.Sources
             }
         }
 
-
-        protected virtual void PushMessage (SourceMessage message)
+        public void PushMessage (SourceMessage message)
         {
             lock (this) {
                 messages.Insert (0, message);
@@ -368,7 +364,7 @@ namespace Banshee.Sources
             OnMessageNotify ();
         }
 
-        protected virtual SourceMessage PopMessage ()
+        protected SourceMessage PopMessage ()
         {
             try {
                 lock (this) {
@@ -386,7 +382,7 @@ namespace Banshee.Sources
             }
         }
 
-        protected virtual void ClearMessages ()
+        protected void ClearMessages ()
         {
             lock (this) {
                 if (messages.Count > 0) {
@@ -439,7 +435,7 @@ namespace Banshee.Sources
             });
         }
 
-        protected virtual void RemoveMessage (SourceMessage message)
+        public void RemoveMessage (SourceMessage message)
         {
             lock (this) {
                 if (messages.Remove (message)) {
@@ -451,6 +447,10 @@ namespace Banshee.Sources
 
         private void HandleMessageUpdated (object o, EventArgs args)
         {
+            if (CurrentMessage == o && CurrentMessage.IsHidden) {
+                PopMessage ();
+            }
+
             OnMessageNotify ();
         }
 
@@ -550,7 +550,7 @@ namespace Banshee.Sources
         public string UniqueId {
             get {
                 if (unique_id == null && type_unique_id == null) {
-                    Log.ErrorFormat ("Creating Source.UniqueId for {0}, but TypeUniqueId is null; trace is {1}", this.Name, System.Environment.StackTrace);
+                    Log.ErrorFormat ("Creating Source.UniqueId for {0} (type {1}), but TypeUniqueId is null; trace is {2}", this.Name, GetType ().Name, System.Environment.StackTrace);
                 }
                 return unique_id ?? (unique_id = String.Format ("{0}-{1}", this.GetType ().Name, TypeUniqueId));
             }
@@ -762,7 +762,8 @@ namespace Banshee.Sources
                 return String.Empty;
             }
 
-            builder.AppendFormat (Catalog.GetPluralString ("{0} item", "{0} items", count), count);
+            var count_str = String.Format ("{0:N0}", count);
+            builder.AppendFormat (GetPluralItemCountString (count), count_str);
 
             if (this is IDurationAggregator && StatusFormatsCount > 0) {
                 var duration = ((IDurationAggregator)this).Duration;
@@ -781,6 +782,11 @@ namespace Banshee.Sources
             }
 
             return builder.ToString ();
+        }
+
+        public virtual string GetPluralItemCountString (int count)
+        {
+            return Catalog.GetPluralString ("{0} item", "{0} items", count);
         }
 
 #endregion

@@ -68,7 +68,6 @@ namespace Banshee.InternetArchive
 
             Spacing = 6;
 
-            PackStart (new Label () { Visible = true }, true, true, 0);
             BuildMediaTypeCombo ();
             BuildSortCombo ();
             BuildSearchEntry ();
@@ -118,6 +117,8 @@ namespace Banshee.InternetArchive
                 EmptyMessage = String.Format (Catalog.GetString ("Optional Query"))
             };
 
+            source.Properties.Set<Banshee.Widgets.SearchEntry> ("Nereid.SearchEntry", entry);
+
             entry.Activated += (o, a) => { search_button.Activate (); };
 
             // Add 'filter' items
@@ -148,7 +149,7 @@ namespace Banshee.InternetArchive
                 }
             };
 
-            PackStart (entry, false, false, 0);
+            PackStart (entry, true, true, 0);
         }
 
         private void BuildSortCombo ()

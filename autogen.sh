@@ -64,11 +64,16 @@ check_autotool_version $LIBTOOLIZE 1.4.3
 check_autotool_version intltoolize 0.35.0
 check_autotool_version pkg-config 0.14.0
 
+if git --help &>/dev/null; then
+	git submodule update --init
+fi
+
 run intltoolize --force --copy
 run $LIBTOOLIZE --force --copy --automake
 run aclocal -I build/m4/banshee -I build/m4/shamrock -I build/m4/shave $ACLOCAL_FLAGS
 run autoconf
 run autoheader
+
 test -f config.h.in && touch config.h.in
 run automake --gnu --add-missing --force --copy \
 	-Wno-portability -Wno-portability
@@ -82,5 +87,12 @@ if [ $# = 0 ]; then
 	echo "WARNING: I am going to run configure without any arguments."
 fi
 
-run ./configure --enable-maintainer-mode $@
 
+{ cat <<EOF
+#!/usr/bin/env bash
+./autogen.sh $@ \$@
+EOF
+} > reautogen.sh
+chmod +x reautogen.sh
+
+run ./configure --enable-maintainer-mode $@
