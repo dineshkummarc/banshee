@@ -13,22 +13,6 @@ SOURCES =  \
 	Banshee.Paas/Banshee.Paas.Aether/ChannelEventArgs.cs \
 	Banshee.Paas/Banshee.Paas.Aether/ChannelUpdateStatus.cs \
 	Banshee.Paas/Banshee.Paas.Aether/ItemEventArgs.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/GetCategoriesCompletedEventArgs.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/GetChannelsEventArgs.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/MiroGuideAccountInfo.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/MiroGuideCategoryInfo.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/MiroGuideChannelInfo.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/MiroGuideClient.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/MiroGuideClientError.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/MiroGuideClientMethod.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/MiroGuideFilterType.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/MiroGuideMethodCompletedEventArgs.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/MiroGuideRequestState.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/MiroGuideSortType.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/RequestCompletedEventArgs.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/SearchContext.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/ServiceMethodFlags.cs \
-	Banshee.Paas/Banshee.Paas.Aether/MiroGuideClient/SubscriptionRequestedEventArgs.cs \
 	Banshee.Paas/Banshee.Paas.Aether/RequestState.cs \
 	Banshee.Paas/Banshee.Paas.Aether/SyndicationClient/ChannelUpdateCompletedEventArgs.cs \
 	Banshee.Paas/Banshee.Paas.Aether/SyndicationClient/ChannelUpdateManager.cs \
@@ -73,35 +57,6 @@ SOURCES =  \
 	Banshee.Paas/Banshee.Paas.Gui/PaasItemView.cs \
 	Banshee.Paas/Banshee.Paas.Gui/PaasSourceContents.cs \
 	Banshee.Paas/Banshee.Paas.Gui/PaasUnheardFilterView.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide.Gui/ChannelInfoPreview.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide.Gui/ColumnCellChannel.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide.Gui/MiroGuideAccountDialog.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide.Gui/MiroGuideActions.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide.Gui/MiroGuideCategoryListView.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide.Gui/MiroGuideChannelListView.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide.Gui/MiroGuideLoginForm.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide.Gui/MiroGuideSearchEntry.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide.Gui/ReflectionInfoWidget.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide.Gui/SortPreferenceActionButton.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide.Gui/SortPreferenceChangedEventArgs.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide.Gui/SourceContents/BrowserSourceContents.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide.Gui/SourceContents/ChannelSourceContents.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide.Gui/SourceContents/MiroGuideSourceContents.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide/MiroGuideCategoryListModel.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide/MiroGuideChannelListModel.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide/MiroGuideImageFetchJob.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide/MiroGuideInterfaceManager.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide/MiroGuideSearchFilter.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide/Sources/BrowseChannelsSource.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide/Sources/ChannelSource.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide/Sources/FeaturedChannelsSource.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide/Sources/HDChannelsSource.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide/Sources/MiroGuideSource.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide/Sources/MiroGuideSourcePosition.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide/Sources/PopularChannelsSource.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide/Sources/RecommendedChannelsSource.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide/Sources/SearchSource.cs \
-	Banshee.Paas/Banshee.Paas.MiroGuide/Sources/TopRatedChannelsSource.cs \
 	Banshee.Paas/Banshee.Paas.Utils/OpmlParser.cs \
 	Banshee.Paas/Banshee.Paas.Utils/StringUtils.cs \
 	Banshee.Paas/Banshee.Paas/PaasImageFetchJob.cs \
@@ -111,9 +66,7 @@ SOURCES =  \
 RESOURCES =  \
 	Banshee.Paas.addin.xml \
 	Resources/ActiveSourceUI.xml \
-	Resources/MiroGuideActiveSourceUI.xml \
-	Resources/GlobalUI.xml \
-	Resources/MiroGuideUI.xml
+	Resources/GlobalUI.xml
 
 if ENABLE_PODCAST_NG
 include $(top_srcdir)/build/build.mk

@@ -4,9 +4,6 @@
     <separator />      
     <menuitem name="PaasExportAllOpml" action="PaasExportAllOpmlAction" />
     <menuitem name="PaasImportOpml" action="PaasImportOpmlAction" />
-    <separator />
-<!--    <menuitem name="PaasMiroGuideSubscribeAll" action="PaasMiroGuideSubscribAlleAction" /> 
-    <menuitem name="PaasMiroGuideGetSubscriptions" action="PaasMiroGuideGetSubscriptionsAction" /> -->   
     <separator />    
     <menuitem name="PaasUpdateAll" action="PaasUpdateAllAction" />
     <menuitem name="PaasDownloadAll" action="PaasDownloadAllAction" />
@@ -20,7 +17,6 @@
     <menuitem name="PaasChannelHomepage" action="PaasChannelHomepageAction" />
     <separator />
     <menuitem name="PaasExportOpml" action="PaasExportOpmlAction" />
-<!--    <menuitem name="PaasMiroGuideSubscribe" action="PaasMiroGuideSubscribeAction" /> -->
     <separator />    
     <menuitem name="PaasChannelDownloadAll" action="PaasChannelDownloadAllAction"/>        
     <menuitem name="PaasChannelDelete" action="PaasChannelDeleteAction" />
@@ -32,10 +28,7 @@
     <menuitem name="PaasSubscribe" action="PaasSubscribeAction" />
     <separator />          
     <menuitem name="PaasExportAllOpml" action="PaasExportAllOpmlAction" />
-    <menuitem name="PaasImportOpml" action="PaasImportOpmlAction" />
-    <separator />
-<!--    <menuitem name="PaasMiroGuideSubscribeAll" action="PaasMiroGuideSubscribAlleAction" /> 
-    <menuitem name="PaasMiroGuideGetSubscriptions" action="PaasMiroGuideGetSubscriptionsAction" /> -->     
+    <menuitem name="PaasImportOpml" action="PaasImportOpmlAction" /> 
     <separator />    
     <menuitem name="PaasUpdateAll" action="PaasUpdateAllAction" />
     <menuitem name="PaasDownloadAll" action="PaasDownloadAllAction" />  

@@ -56,12 +56,7 @@ using Banshee.Paas.Gui;
 using Banshee.Paas.Data;
 using Banshee.Paas.Utils;
 
-using Banshee.Paas.MiroGuide;
-using Banshee.Paas.MiroGuide.Gui;
-
 using Banshee.Paas.Aether;
-using Banshee.Paas.Aether.MiroGuide;
-
 using Banshee.Paas.Aether.Syndication;
 
 using Banshee.Paas.DownloadManager;
@@ -86,14 +81,7 @@ namespace Banshee.Paas
         );
 
         private PaasSource source;
-
-        private MiroGuideClient mg_client;
-        private MiroGuideInterfaceManager mg_interface_manager;
-        public static MiroGuideAccountInfo MiroGuideAccount;
-
         private SyndicationClient syndication_client;
-
-        private AutoResetEvent client_handle;
 
         private PaasDownloadManager download_manager;
         private DownloadManagerInterface download_manager_interface;
@@ -117,10 +105,6 @@ namespace Banshee.Paas
             get { return source; }
         }
 
-        public MiroGuideClient MiroGuideClient {
-            get { return mg_client; }
-        }
-
         public SyndicationClient SyndicationClient {
             get { return syndication_client; }
         }
@@ -133,18 +117,6 @@ namespace Banshee.Paas
 
         static PaasService ()
         {
-            MiroGuideAccount = new MiroGuideAccountInfo (
-                MiroGuideServiceUri.Get (), MiroGuideSessionID.Get (),
-                MiroGuideUsername.Get (), MiroGuidePasswordHash.Get ()
-            );
-
-            MiroGuideAccount.Updated += (sender, e) => {
-                MiroGuideUsername.Set (MiroGuideAccount.Username);
-                MiroGuidePasswordHash.Set (MiroGuideAccount.PasswordHash);
-                MiroGuideSessionID.Set (MiroGuideAccount.SessionID);
-                MiroGuideServiceUri.Set (MiroGuideAccount.ServiceUri);
-            };
-
             ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => {
                 return true;
             };
@@ -169,30 +141,6 @@ namespace Banshee.Paas
             if (source.DbId < 1) {
                 source.Save ();
             }
-
-            client_handle = new AutoResetEvent (true);
-
-            mg_client = new MiroGuideClient (MiroGuideAccount) {
-                UserAgent = Banshee.Web.Browser.UserAgent,
-            };
-
-            mg_client.StateChanged += (sender, e) => {
-                if (e.NewState == AetherClientState.Idle) {
-                    DecrementUpdateCount ();
-                    client_handle.Set ();
-                } else {
-                    IncrementUpdateCount ();
-                    client_handle.Reset ();
-                }
-            };
-
-            mg_client.SubscriptionRequested += (sender, e) => {
-                if (e.Uri != null) {
-                    SubscribeToChannel (e.Uri);
-                } else if (e.Uris != null) {
-                    SubscribeToChannels (e.Uris);
-                }
-            };
 
             syndication_client = new SyndicationClient (source);
 
@@ -267,14 +215,6 @@ namespace Banshee.Paas
 
             DisposeInterface ();
             ServiceManager.Get<DBusCommandService> ().ArgumentPushed -= OnCommandLineArgument;
-
-            mg_client.CancelAsync ();
-            client_handle.WaitOne ();
-
-            mg_client = null;
-
-            client_handle.Close ();
-            client_handle = null;
 
             syndication_client.Dispose ();
             syndication_client.ItemsAdded -= OnItemsAddedHandler;
@@ -466,10 +406,6 @@ namespace Banshee.Paas
         private void InitializeInterface ()
         {
             ServiceManager.SourceManager.AddSource (source);
-
-            mg_interface_manager = new MiroGuideInterfaceManager ();
-            mg_interface_manager.Initialize (mg_client);
-
             download_manager_interface = new DownloadManagerInterface (source, download_manager);
         }
 
@@ -478,11 +414,6 @@ namespace Banshee.Paas
             if (source != null) {
                 ServiceManager.SourceManager.RemoveSource (source);
                 source.Dispose ();
-            }
-
-            if (mg_interface_manager != null) {
-                mg_interface_manager.Dispose ();
-                mg_interface_manager = null;
             }
 
             if (download_manager_interface != null) {
@@ -813,21 +744,5 @@ namespace Banshee.Paas
             string digest = Banshee.Base.CoverArtSpec.Digest (id);
             return digest == null ? null : String.Format ("podcast-ng-{0}", digest);
         }
-
-        public static readonly SchemaEntry<string> MiroGuideUsername = new SchemaEntry<string> (
-            "plugins.paas.miroguide", "username", String.Empty, "Miro Guide Username", ""
-        );
-
-        public static readonly SchemaEntry<string> MiroGuidePasswordHash = new SchemaEntry<string> (
-            "plugins.paas.miroguide", "password_hash", String.Empty, "Miro Guide Password Hash", ""
-        );
-
-        public static readonly SchemaEntry<string> MiroGuideSessionID = new SchemaEntry<string> (
-            "plugins.paas.miroguide", "session_id", String.Empty, "Miro Guide Session ID", ""
-        );
-
-        public static readonly SchemaEntry<string> MiroGuideServiceUri = new SchemaEntry<string> (
-            "plugins.paas.miroguide", "service_uri", "http://miroguide.com", "Miro Guide Service URI", ""
-        );
     }
 }

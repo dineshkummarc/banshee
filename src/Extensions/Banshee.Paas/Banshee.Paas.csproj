@@ -34,9 +34,15 @@
     <Reference Include="System" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Package>gtk-sharp-2.0</Package>
+    </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Package>gtk-sharp-2.0</Package>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Package>gtk-sharp-2.0</Package>
+    </Reference>
     <Reference Include="Mono.Posix" />
     <Reference Include="System.Data" />
   </ItemGroup>
@@ -44,22 +50,6 @@
     <Compile Include="Banshee.Paas\Banshee.Paas\PaasImageFetchJob.cs" />
     <Compile Include="Banshee.Paas\Banshee.Paas\PaasService.cs" />
     <Compile Include="Banshee.Paas\Banshee.Paas\PaasSource.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\GetCategoriesCompletedEventArgs.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\GetChannelsEventArgs.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\MiroGuideAccountInfo.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\MiroGuideCategoryInfo.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\MiroGuideChannelInfo.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\MiroGuideClient.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\MiroGuideClientError.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\MiroGuideClientMethod.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\MiroGuideFilterType.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\MiroGuideMethodCompletedEventArgs.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\MiroGuideRequestState.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\MiroGuideSortType.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\RequestCompletedEventArgs.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\SearchContext.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\ServiceMethodFlags.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.Aether\MiroGuideClient\SubscriptionRequestedEventArgs.cs" />
     <Compile Include="Banshee.Paas\Banshee.Paas.Aether\SyndicationClient\ChannelUpdateCompletedEventArgs.cs" />
     <Compile Include="Banshee.Paas\Banshee.Paas.Aether\SyndicationClient\ChannelUpdateManager.cs" />
     <Compile Include="Banshee.Paas\Banshee.Paas.Aether\SyndicationClient\ChannelUpdateTask.cs" />
@@ -113,44 +103,11 @@
     <Compile Include="Banshee.Paas\Banshee.Paas.Gui\PaasItemView.cs" />
     <Compile Include="Banshee.Paas\Banshee.Paas.Gui\PaasSourceContents.cs" />
     <Compile Include="Banshee.Paas\Banshee.Paas.Gui\PaasUnheardFilterView.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide\Sources\BrowseChannelsSource.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide\Sources\ChannelSource.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide\Sources\FeaturedChannelsSource.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide\Sources\HDChannelsSource.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide\Sources\MiroGuideSource.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide\Sources\MiroGuideSourcePosition.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide\Sources\PopularChannelsSource.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide\Sources\RecommendedChannelsSource.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide\Sources\SearchSource.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide\Sources\TopRatedChannelsSource.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide\MiroGuideCategoryListModel.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide\MiroGuideChannelListModel.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide\MiroGuideImageFetchJob.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide\MiroGuideInterfaceManager.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide\MiroGuideSearchFilter.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide.Gui\SourceContents\BrowserSourceContents.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide.Gui\SourceContents\ChannelSourceContents.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide.Gui\SourceContents\MiroGuideSourceContents.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide.Gui\ChannelInfoPreview.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide.Gui\ColumnCellChannel.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide.Gui\MiroGuideAccountDialog.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide.Gui\MiroGuideActions.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide.Gui\MiroGuideCategoryListView.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide.Gui\MiroGuideChannelListView.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide.Gui\MiroGuideLoginForm.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide.Gui\MiroGuideSearchEntry.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide.Gui\ReflectionInfoWidget.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide.Gui\SortPreferenceActionButton.cs" />
-    <Compile Include="Banshee.Paas\Banshee.Paas.MiroGuide.Gui\SortPreferenceChangedEventArgs.cs" />
     <Compile Include="Banshee.Paas\Banshee.Paas.Utils\OpmlParser.cs" />
     <Compile Include="Banshee.Paas\Banshee.Paas.Utils\StringUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\Hyena\Hyena.csproj">
-      <Project>{95374549-9553-4C1E-9D89-667755F90E12}</Project>
-      <Name>Hyena</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Core\Banshee.Core\Banshee.Core.csproj">
       <Project>{2ADB831A-A050-47D0-B6B9-9C19D60233BB}</Project>
       <Name>Banshee.Core</Name>
@@ -158,10 +115,6 @@
     <ProjectReference Include="..\..\Core\Banshee.Services\Banshee.Services.csproj">
       <Project>{B28354F0-BA87-44E8-989F-B864A3C7C09F}</Project>
       <Name>Banshee.Services</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Hyena.Gui\Hyena.Gui.csproj">
-      <Project>{C856EFD8-E812-4E61-8B76-E3583D94C233}</Project>
-      <Name>Hyena.Gui</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Banshee.Widgets\Banshee.Widgets.csproj">
       <Project>{A3701765-E571-413D-808C-9788A22791AF}</Project>
@@ -174,6 +127,14 @@
     <ProjectReference Include="..\..\Libraries\Migo2\Migo2.csproj">
       <Project>{599406D8-2723-44D7-9FEE-AB30BFD70F0D}</Project>
       <Name>Migo2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Hyena\Hyena\Hyena.csproj">
+      <Project>{95374549-9553-4C1E-9D89-667755F90E12}</Project>
+      <Name>Hyena</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Hyena\Hyena.Gui\Hyena.Gui.csproj">
+      <Project>{C856EFD8-E812-4E61-8B76-E3583D94C233}</Project>
+      <Name>Hyena.Gui</Name>
     </ProjectReference>
   </ItemGroup>
   <ProjectExtensions>
@@ -195,7 +156,5 @@
     <None Include="Banshee.Paas.addin.xml" />
     <None Include="Resources\ActiveSourceUI.xml" />
     <None Include="Resources\GlobalUI.xml" />
-    <None Include="Resources\MiroGuideActiveSourceUI.xml" />
-    <None Include="Resources\MiroGuideUI.xml" />
   </ItemGroup>
 </Project>

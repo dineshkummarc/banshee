@@ -104,16 +104,6 @@ namespace Banshee.Paas.Gui
                      Catalog.GetString ("Export Selected as OPML"), null,
                      null, OnPaasExportOpmlHandler
                 ),
-//                new ActionEntry (
-//                    "PaasMiroGuideSubscribeAction", null,
-//                     Catalog.GetString ("Export Selected to Miro Guide"), null,
-//                     null, OnPaasMiroguideSubscribeHandler
-//                ),
-//                new ActionEntry (
-//                    "PaasMiroGuideGetSubscriptionsAction", null,
-//                     Catalog.GetString ("Import Channels from Miro Guide"), null,
-//                     null, OnPaasGetMiroGuideSubscriptionsHandler
-//                ),
                 new ActionEntry (
                     "PaasItemDownloadAction", Stock.SaveAs,
                      Catalog.GetString ("Download"), null,
@@ -524,11 +514,6 @@ namespace Banshee.Paas.Gui
             return response;
         }
 
-//        private void ExportToMiroGuide (IEnumerable<PaasChannel> channels)
-//        {
-//            service.MiroGuideClient.AddSubscriptionsAsync (channels.Select (c => c.Url));
-//        }
-
         private void ExportToOpml (IEnumerable<PaasChannel> channels)
         {
             if (channels.Count () == 0) {
@@ -566,16 +551,6 @@ namespace Banshee.Paas.Gui
 
             chooser.Run ();
         }
-
-//        private void OnPaasMiroguideSubscribeHandler (object sender, EventArgs e)
-//        {
-//            ExportToMiroGuide (GetSelectedChannels ());
-//        }
-//
-//        private void OnPaasGetMiroGuideSubscriptionsHandler (object sender, EventArgs e)
-//        {
-//            service.MiroGuideClient.GetSubscriptionsAsync ();
-//        }
 
         private void OnPaasExportOpmlHandler (object sender, EventArgs e)
         {
