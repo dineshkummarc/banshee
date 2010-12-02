@@ -141,8 +141,7 @@ namespace Banshee.Paas
                     PaasItem pi = item as PaasItem;
 
                     return (pi != null) ?
-                        service.DownloadManager.CheckActiveDownloadStatus (pi.DbId) :
-                        TaskState.None;
+                        service.DownloadManager.CheckActiveDownloadStatus (pi.DbId) : TaskState.None;
                 }
             );
 

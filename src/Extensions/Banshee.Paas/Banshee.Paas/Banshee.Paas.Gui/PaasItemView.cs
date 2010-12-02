@@ -65,14 +65,8 @@ namespace Banshee.Paas.Gui
             return base.OnPopupMenu ();
         }
 
-        protected override void ColumnCellDataProvider (ColumnCell cell, object boundItem)
+        protected override void ColumnRowDataProvider (object boundItem)
         {
-            ColumnCellText text_cell = cell as ColumnCellText;
-
-            if (text_cell == null) {
-                return;
-            }
-
             DatabaseTrackInfo track = boundItem as DatabaseTrackInfo;
 
             if (track != null) {
@@ -81,13 +75,8 @@ namespace Banshee.Paas.Gui
                 if (pti == null) {
                     return;
                 }
-/*
-                if (track.IsPlaying || pti.IsDownloaded) {
-                    text_cell.Sensitive = true;
-                } else {
-                    text_cell.Sensitive = false;
-                }
-*/                
+
+                track.Enabled = track.IsPlaying || pti.IsDownloaded;
             }
         }
     }
