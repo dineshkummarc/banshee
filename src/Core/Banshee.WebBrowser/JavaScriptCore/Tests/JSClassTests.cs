@@ -35,8 +35,21 @@ namespace JavaScriptCore.Tests
     public class JSClassTests
     {
         private JSContext context;
+        private JSTestStaticClass static_class;
+        private JSTestInstanceClass instance_class;
 
-        private class JSClassTest : JSClassDefinition
+        [TestFixtureSetUp]
+        public void Init ()
+        {
+            context = new JSContext ();
+            static_class = new JSTestStaticClass ();
+            instance_class = new JSTestInstanceClass ();
+
+            context.GlobalObject.SetProperty ("x", new JSObject (context, static_class.ClassHandle));
+            context.GlobalObject.SetProperty ("y", new JSObject (context, instance_class.ClassHandle));
+        }
+
+        private class JSTestStaticClass : JSClassDefinition
         {
             [JSStaticFunction ("return_managed_null")]
             private static JSValue ReturnManagedNull (JSObject function, JSObject thisObject, JSValue [] args)
@@ -96,13 +109,6 @@ namespace JavaScriptCore.Tests
             }
         }
 
-        [TestFixtureSetUp]
-        public void Init ()
-        {
-            context = new JSContext ();
-            context.GlobalObject.SetProperty ("x", new JSObject (context, new JSClassTest ().CreateClass ()));
-        }
-
         [Test]
         public void TestEnsureJavaScriptCoreVoidReturnIsUndefined ()
         {
@@ -149,6 +155,22 @@ namespace JavaScriptCore.Tests
         public void TestStaticArgs ()
         {
             context.EvaluateScript ("x.args (true, 42, 'banshee', x.args, null, undefined)");
+        }
+
+        private class JSTestInstanceClass : JSClassDefinition
+        {
+            protected override JSObject OnJSCallAsConstructor (JSObject constructor, JSValue [] args)
+            {
+                var o = new JSObject (constructor.Context, ClassHandle);
+                o.SetProperty ("hello", new JSValue (constructor.Context, "world"));
+                return o;
+            }
+        }
+
+        [Test]
+        public void TestConstructor ()
+        {
+            Assert.AreEqual ("world", context.EvaluateScript ("new y ().hello").StringValue);
         }
     }
 }
