@@ -108,6 +108,7 @@
       <placeholder name="PlaybackMenuAdditions"/>
       <menuitem name="RepeatMenu" action="RepeatMenuAction"/>
       <menuitem name="ShuffleMenu" action="ShuffleMenuAction"/>
+      <menuitem name="SubtitleMenu" action="SubtitleMenuAction"/>
     </menu>
     
     <menu name="ToolsMenu" action="ToolsMenuAction">
@@ -182,6 +183,7 @@
       <menuitem name="SearchForSameAlbum" action="SearchForSameAlbumAction"/>
     </menu>
     <separator/>
+    <placeholder name="AboveTrackProperties"/>
     <menuitem name="TrackProperties" action="TrackPropertiesAction"/>
     <menuitem name="TrackEditor" action="TrackEditorAction"/>
   </popup>

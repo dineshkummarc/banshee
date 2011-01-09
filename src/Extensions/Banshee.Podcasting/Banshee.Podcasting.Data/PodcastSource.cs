@@ -219,6 +219,8 @@ namespace Banshee.Podcasting.Gui
             Properties.SetString ("Icon.Name", "podcast");
             Properties.Set<string> ("SearchEntryDescription", Catalog.GetString ("Search your podcasts"));
 
+            Properties.Set<string> ("TrackPropertiesActionLabel", Catalog.GetString ("Episode Properties"));
+
             Properties.SetString ("ActiveSourceUIResource", "ActiveSourceUI.xml");
             Properties.Set<bool> ("ActiveSourceUIResourcePropagate", true);
             Properties.Set<System.Reflection.Assembly> ("ActiveSourceUIResource.Assembly", typeof(PodcastSource).Assembly);
@@ -314,7 +316,13 @@ namespace Banshee.Podcasting.Gui
 
         protected override DatabaseTrackListModel CreateTrackModelFor (DatabaseSource src)
         {
-            return PodcastTrackModel = new PodcastTrackListModel (ServiceManager.DbConnection, DatabaseTrackInfo.Provider, src);
+            var model = new PodcastTrackListModel (ServiceManager.DbConnection, DatabaseTrackInfo.Provider, src);
+
+            if (PodcastTrackModel == null) {
+                PodcastTrackModel = model;
+            }
+
+            return model;
         }
 
         protected override IEnumerable<IFilterListModel> CreateFiltersFor (DatabaseSource src)

@@ -2,10 +2,10 @@ dnl Granularly define the version components
 dnl Remember to also update the Display Version
 m4_define([banshee_version_major], [1])
 m4_define([banshee_version_minor], [9])
-m4_define([banshee_version_micro], [0])
+m4_define([banshee_version_micro], [1])
 
 dnl this can sometimes differ manually
-m4_define([banshee_display_version], ["1.9.0"])
+m4_define([banshee_display_version], ["1.9.1"])
 
 dnl set to 0 when doing an official release
 m4_define([banshee_version_pre_release], [0])
@@ -99,6 +99,10 @@ else
 fi
 AC_SUBST(BANSHEE_DESKTOP_NAME)
 
+dnl Check for gdk-x11 >= 2.22 for NotificationArea extension, bgo#638477
+PKG_CHECK_MODULES(GDK_2_22, gdk-x11-2.0 >= 2.22, have_gdk_2_22=yes, have_gdk_2_22=no)
+AM_CONDITIONAL(HAVE_GDK_2_22, test "x$have_gdk_2_22" = "xyes")
+
 dnl NDesk DBus libraries
 BANSHEE_CHECK_NDESK_DBUS
 
@@ -175,6 +179,12 @@ BANSHEE_CHECK_TORRENT
 
 dnl MeeGo integration (optional)
 BANSHEE_CHECK_MEEGO
+
+dnl Sound menu integration (optional)
+BANSHEE_CHECK_SOUNDMENU
+
+dnl Ubuntu One Music Store (optional)
+BANSHEE_CHECK_UBUNTUONE
 
 dnl Gapless, if we have a new-enough playbin2
 ENABLE_GAPLESS="no"
@@ -366,10 +376,12 @@ src/Extensions/Banshee.PlayQueue/Makefile
 src/Extensions/Banshee.PlayerMigration/Makefile
 src/Extensions/Banshee.Paas/Makefile
 src/Extensions/Banshee.Podcasting/Makefile
+src/Extensions/Banshee.SoundMenu/Makefile
 src/Extensions/Banshee.SqlDebugConsole/Makefile
 src/Extensions/Banshee.Sample/Makefile
 src/Extensions/Banshee.Torrent/Makefile
 src/Extensions/Banshee.RemoteAudio/Makefile
+src/Extensions/Banshee.UbuntuOneMusicStore/Makefile
 src/Extensions/Banshee.Wikipedia/Makefile
 src/Extensions/Banshee.YouTube/Makefile
 
@@ -423,6 +435,8 @@ ${PACKAGE}-${VERSION}
     Podcast NG:        ${enable_podcast_ng}
     Gapless playback:  ${ENABLE_GAPLESS} (gstreamer-plugins-base > 0.10.25.2)
     YouTube extension: ${enable_youtube} (gdata-sharp >= 1.4)
+    Sound menu:        ${enable_soundmenu} (indicate-sharp >= 0.4.1)
+    Ubuntu One Store:  ${enable_ubuntuone} (ubuntuone-sharp)
 
   Build/Development:
     Unit Tests:        ${do_tests} (nunit >= ${NUNIT_REQUIRED})

@@ -49,8 +49,8 @@ namespace Banshee.Sources.Gui
                 return;
             }
 
-            var type = (SourceModel.EntryType) model.GetValue (iter, (int)SourceModel.Columns.Type);
-            if (type != SourceModel.EntryType.Source) {
+            var type = model.GetValue (iter, (int)SourceModel.Columns.Type);
+            if (type == null || (SourceModel.EntryType) type != SourceModel.EntryType.Source) {
                 renderer.Visible = false;
                 return;
             }
@@ -318,7 +318,7 @@ namespace Banshee.Sources.Gui
 
         private int Middle (Gdk.Rectangle area, int height)
         {
-            return area.Y + (int)Math.Round ((double)(area.Height - height) / 2.0) + 1;
+            return area.Y + (int)Math.Round ((double)(area.Height - height) / 2.0, MidpointRounding.AwayFromZero);
         }
 
         public override CellEditable StartEditing (Gdk.Event evnt, Widget widget, string path,

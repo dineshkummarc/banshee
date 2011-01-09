@@ -119,6 +119,11 @@ namespace Banshee.Podcasting.Gui
                      OnPodcastProperties
                 ),
                 new ActionEntry (
+                    "EpisodePodcastProperties", null,
+                     Catalog.GetString ("Podcast Properties"), null, String.Empty,
+                     OnEpisodePodcastProperties
+                ),
+                new ActionEntry (
                     "PodcastItemMarkNewAction", null,
                      Catalog.GetString ("Mark as New"),
                      null, String.Empty,
@@ -250,7 +255,8 @@ namespace Banshee.Podcasting.Gui
             if (IsPodcastSource) {
                 int count = ActiveDbSource.TrackModel.Selection.Count;
 
-                //bool has_single_podcast = podcast_source.PodcastTrackModel.SelectionPodcastCount == 1;
+                bool has_single_podcast = podcast_source.PodcastTrackModel.SelectionPodcastCount == 1;
+                UpdateAction ("EpisodePodcastProperties", true, has_single_podcast);
 
                 UpdateAction ("PodcastItemLinkAction", true, count == 1);
 
@@ -288,9 +294,9 @@ namespace Banshee.Podcasting.Gui
             }
         }
 
-        private void SubscribeToPodcast (Uri uri, FeedAutoDownload syncPreference)
+        private void SubscribeToPodcast (Uri uri, FeedAutoDownload syncPreference, int max_items)
         {
-            FeedsManager.Instance.FeedManager.CreateFeed (uri.ToString (), syncPreference);
+            FeedsManager.Instance.FeedManager.CreateFeed (uri.ToString (), syncPreference, max_items);
         }
 
         private IEnumerable<TrackInfo> GetSelectedItems ()
@@ -323,6 +329,7 @@ namespace Banshee.Podcasting.Gui
             ResponseType response = (ResponseType) subscribeDialog.Run ();
 
             syncPreference = subscribeDialog.SyncPreference;
+            int max_items = subscribeDialog.MaxItemCount;
 
             if (response == ResponseType.Ok) {
                 url = subscribeDialog.Url.Trim ().Trim ('/');
@@ -344,7 +351,7 @@ namespace Banshee.Podcasting.Gui
                     Catalog.GetString ("Podcast URL is invalid.")
                 );
             } else {
-                SubscribeToPodcast (feedUri, syncPreference);
+                SubscribeToPodcast (feedUri, syncPreference, max_items);
             }
         }
 
@@ -510,6 +517,17 @@ namespace Banshee.Podcasting.Gui
             Feed feed = ActiveFeedModel.FocusedItem;
             if (feed != null) {
                 new PodcastFeedPropertiesDialog (podcast_source, feed).Run ();
+            }
+        }
+
+        private void OnEpisodePodcastProperties (object sender, EventArgs e)
+        {
+            foreach (PodcastTrackInfo pi in PodcastTrackInfo.From (GetSelectedItems ())) {
+                var feed = pi.Feed;
+                if (feed != null) {
+                    new PodcastFeedPropertiesDialog (podcast_source, feed).Run ();
+                }
+                break;
             }
         }
 

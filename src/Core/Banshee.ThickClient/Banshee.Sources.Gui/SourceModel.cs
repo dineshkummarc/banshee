@@ -194,6 +194,7 @@ namespace Banshee.Sources.Gui
 
         public void AddSource (Source source, TreeIter parent)
         {
+            ThreadAssist.AssertInMainThread ();
             lock (sync) {
                 if (Filter != null && !Filter (source)) {
                     return;
@@ -211,10 +212,13 @@ namespace Banshee.Sources.Gui
 
                 int position = source.Order;
 
-                var type = source is SourceManager.GroupSource ? EntryType.Group : EntryType.Source;
                 TreeIter iter = parent.Equals (TreeIter.Zero)
-                    ? InsertWithValues (position, source, source.Order, type)
-                    : InsertWithValues (parent, position, source, source.Order, type);
+                    ? InsertNode (position)
+                    : InsertNode (parent, position);
+
+                SetValue (iter, 0, source);
+                SetValue (iter, 1, source.Order);
+                SetValue (iter, 2, source is SourceManager.GroupSource ? EntryType.Group : EntryType.Source);
 
                 lock (source.Children) {
                     foreach (Source child in source.Children) {
@@ -231,6 +235,7 @@ namespace Banshee.Sources.Gui
 
         public void RemoveSource (Source source)
         {
+            ThreadAssist.AssertInMainThread ();
             lock (sync) {
                 TreeIter iter = FindSource (source);
                 if (!iter.Equals (TreeIter.Zero)) {
@@ -246,6 +251,7 @@ namespace Banshee.Sources.Gui
 
         public void Refresh ()
         {
+            ThreadAssist.AssertInMainThread ();
             Clear ();
             foreach (Source source in ServiceManager.SourceManager.Sources) {
                 AddSource (source);

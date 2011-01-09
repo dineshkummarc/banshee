@@ -317,6 +317,7 @@
     <Compile Include="Banshee.CairoGlyphs\BansheeLineLogo.cs" />
     <Compile Include="Banshee.Sources.Gui\IImplementsCustomSearch.cs" />
     <Compile Include="Banshee.Gui\IGlobalUIActions.cs" />
+    <Compile Include="Banshee.Gui\PlaybackSubtitleActions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

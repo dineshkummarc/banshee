@@ -114,6 +114,7 @@ src/Core/Banshee.ThickClient/Banshee.Gui/InterfaceActionService.cs
 src/Core/Banshee.ThickClient/Banshee.Gui/PlaybackActions.cs
 src/Core/Banshee.ThickClient/Banshee.Gui/PlaybackRepeatActions.cs
 src/Core/Banshee.ThickClient/Banshee.Gui/PlaybackShuffleActions.cs
+src/Core/Banshee.ThickClient/Banshee.Gui/PlaybackSubtitleActions.cs
 src/Core/Banshee.ThickClient/Banshee.Gui/SourceActions.cs
 src/Core/Banshee.ThickClient/Banshee.Gui/TrackActions.cs
 src/Core/Banshee.ThickClient/Banshee.Gui.TrackEditor/AlbumArtistEntry.cs
@@ -294,8 +295,10 @@ src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastManager/Dialog/P
 src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastManager/Dialog/SyncPreferenceComboBox.cs
 src/Extensions/Banshee.RemoteAudio/Banshee.RemoteAudio/RemoteSpeakersWidget.cs
 src/Extensions/Banshee.Sample/Banshee.Sample/SampleSource.cs
+src/Extensions/Banshee.SoundMenu/Banshee.SoundMenu/SoundMenuService.cs
 src/Extensions/Banshee.SqlDebugConsole/Banshee.SqlDebugConsole/SqlActions.cs
 src/Extensions/Banshee.Torrent/Banshee.Torrent.addin.xml
+src/Extensions/Banshee.UbuntuOneMusicStore/Banshee.UbuntuOneMusicStore/UbuntuOneMusicStoreSource.cs
 src/Extensions/Banshee.Wikipedia/Banshee.Wikipedia.addin.xml
 src/Extensions/Banshee.Wikipedia/Banshee.Wikipedia/ContextPage.cs
 src/Extensions/Banshee.Wikipedia/Banshee.Wikipedia/WikipediaView.cs
