@@ -94,6 +94,10 @@ namespace Banshee.Paas
             get { return channel_model; }
         }
 
+        public PaasTrackListModel PaasTrackModel {
+            get; private set;
+        }
+
         public override string PreferencesPageId {
             get { return UniqueId; }
         }
@@ -120,8 +124,12 @@ namespace Banshee.Paas
 
             Properties.SetString ("Icon.Name", "podcast");
 
+            Properties.Set<bool> ("SourceView.HideCount", false);
+            Properties.Set<string> ("SearchEntryDescription", Catalog.GetString ("Search your podcasts"));
+
             Properties.SetString ("ActiveSourceUIResource", "ActiveSourceUI.xml");
-            Properties.Set<bool> ("ActiveSourceUIResourcePropagate", false);
+            Properties.Set<bool> ("ActiveSourceUIResourcePropagate", true);
+
             Properties.Set<System.Reflection.Assembly> ("ActiveSourceUIResource.Assembly", typeof(PaasSource).Assembly);
 
             Properties.SetString ("GtkActionPath", "/PaasSourcePopup");
@@ -132,7 +140,7 @@ namespace Banshee.Paas
             (contents.TrackView as PaasItemView).FuckedPopupMenu += OnItemViewFuckedPopupMenuHandler;
 
             Properties.Set<ISourceContents> ("Nereid.SourceContents", contents);
-            Properties.Set<bool> ("Nereid.SourceContentsPropagate", false);
+            Properties.Set<bool> ("Nereid.SourceContentsPropagate", true);
 
             PaasColumnController column_controller = new PaasColumnController ();
 
@@ -255,7 +263,18 @@ namespace Banshee.Paas
 
         protected override DatabaseTrackListModel CreateTrackModelFor (DatabaseSource src)
         {
-            return new PaasTrackListModel (ServiceManager.DbConnection, DatabaseTrackInfo.Provider, src);
+            var model = new PaasTrackListModel (ServiceManager.DbConnection, DatabaseTrackInfo.Provider, src);
+
+            if (PaasTrackModel == null) {
+                PaasTrackModel = model;
+            }
+
+            return model;
+        }
+
+        public override string GetPluralItemCountString (int count)
+        {
+            return Catalog.GetPluralString ("{0} episode", "{0} episodes", count);
         }
 
         [GLib.ConnectBefore]

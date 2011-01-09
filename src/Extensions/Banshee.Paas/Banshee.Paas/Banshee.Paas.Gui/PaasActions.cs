@@ -323,6 +323,8 @@ namespace Banshee.Paas.Gui
             UpdateAction ("PaasItemMarkOldAction", show_mark_old);
 
             UpdateAction ("PaasItemLinkAction", (ActiveDbSource.TrackModel.Selection.Count == 1));
+
+            Actions["Track.SearchMenuAction"].Visible = false;
         }
 
         public void UpdateChannelActions ()
