@@ -28,8 +28,8 @@ namespace Banshee.Paas.Data
 {
     public enum DownloadPreference : int
     {
-        All  = 0,
-        One  = 1,
+        One  = 0,
+        All  = 1,
         None = 2
     }
 }

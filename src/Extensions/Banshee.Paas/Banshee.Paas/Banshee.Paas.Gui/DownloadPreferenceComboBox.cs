@@ -35,8 +35,8 @@ namespace Banshee.Paas.Gui
     public class DownloadPreferenceComboBox : Gtk.ComboBox
     {
         private static readonly string [] combo_text_entries = {
-            Catalog.GetString ("Download all episodes"),
             Catalog.GetString ("Download the most recent episode"),
+            Catalog.GetString ("Download all episodes"),
             Catalog.GetString ("Let me decide which episodes to download")
         };
 
@@ -47,11 +47,11 @@ namespace Banshee.Paas.Gui
 
         public DownloadPreferenceComboBox (DownloadPreference download_pref) : base (combo_text_entries)
         {
-            if ((int) download_pref >= (int) DownloadPreference.All &&
-                (int) download_pref <= (int) DownloadPreference.None) {
-                Active = (int) download_pref;
+            if (download_pref == DownloadPreference.All ||
+                download_pref == DownloadPreference.None) {
+                Active = (int)download_pref;
             } else {
-                Active = (int) DownloadPreference.One;
+                Active = (int)DownloadPreference.One;
             }
         }
 
