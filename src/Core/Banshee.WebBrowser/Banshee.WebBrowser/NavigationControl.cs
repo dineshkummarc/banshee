@@ -28,6 +28,7 @@
 using System;
 
 using Gtk;
+using WebKit;
 using Hyena.Gui;
 using Hyena.Widgets;
 
@@ -60,7 +61,11 @@ namespace Banshee.WebBrowser
 
             reload_button.Clicked += (o, e) => {
                 if (web_view != null) {
-                    web_view.Reload (!GtkUtilities.NoImportantModifiersAreSet ());
+                    if (GtkUtilities.NoImportantModifiersAreSet ()) {
+                        web_view.Reload ();
+                    } else {
+                        web_view.ReloadBypassCache ();
+                    }
                 }
             };
 
@@ -106,8 +111,8 @@ namespace Banshee.WebBrowser
             return link;
         }
 
-        private OssiferWebView web_view;
-        public OssiferWebView WebView {
+        private Banshee.WebSource.WebView web_view;
+        public Banshee.WebSource.WebView WebView {
             get { return web_view; }
             set {
                 if (web_view == value) {
@@ -143,8 +148,8 @@ namespace Banshee.WebBrowser
 
         private void OnOssiferWebViewLoadStatusChanged (object o, EventArgs args)
         {
-            if (web_view.LoadStatus == OssiferLoadStatus.Committed ||
-                web_view.LoadStatus == OssiferLoadStatus.Failed) {
+            if (web_view.LoadStatus == LoadStatus.Committed ||
+                web_view.LoadStatus == LoadStatus.Failed) {
                 UpdateNavigation ();
             }
         }

@@ -48,7 +48,7 @@ namespace Banshee.Wikipedia
         // Translators: this is used for looking up artist pages on Wikipedia; change to your wikipedia language if you want
         private string url_format = Catalog.GetString ("http://en.wikipedia.org/wiki/{0}");
 
-        private OssiferWebView view;
+        private WebKit.WebView view;
         private ContextPage page;
 
         public WikipediaView (ContextPage page)
@@ -77,9 +77,9 @@ namespace Banshee.Wikipedia
             Hyena.Log.DebugFormat ("Opening {0}", uri);
 
             if (view == null) {
-                view = new OssiferWebView ();
+                view = new WebKit.WebView ();
                 view.LoadStatusChanged += delegate {
-                    if (view.LoadStatus == Banshee.WebBrowser.OssiferLoadStatus.FirstVisuallyNonEmptyLayout) {
+                    if (view.LoadStatus == WebKit.LoadStatus.FirstVisuallyNonEmptyLayout) {
                         page.SetLoaded ();
                     }
                 };

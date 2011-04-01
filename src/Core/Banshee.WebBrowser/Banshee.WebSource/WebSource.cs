@@ -54,7 +54,7 @@ namespace Banshee.WebSource
             actions.Add (
                 new ActionEntry ("ZoomIn"  + id, Stock.ZoomIn,  null, "<control>plus", null, (o, a) => view.ZoomIn ()),
                 new ActionEntry ("ZoomOut" + id, Stock.ZoomOut, null, "<control>minus", null, (o, a) => view.ZoomOut ()),
-                new ActionEntry ("Zoom100" + id, Stock.Zoom100, null, "<control>0", null, (o, a) => view.Zoom = 1f)
+                new ActionEntry ("Zoom100" + id, Stock.Zoom100, null, "<control>0", null, (o, a) => view.ZoomLevel = 1f)
             );
 
             Properties.Set<string> ("ActiveSourceUIString", String.Format (@"
@@ -83,7 +83,7 @@ namespace Banshee.WebSource
 
                 // float isn't supported by gconf apparently
                 var zoom_conf = CreateSchema<double> ("webview_zoom", 1f, null, null);
-                shell.View.Zoom = (float)zoom_conf.Get ();
+                shell.View.ZoomLevel = (float)zoom_conf.Get ();
                 shell.View.ZoomChanged += z => zoom_conf.Set (z);
                 view = shell.View;
 

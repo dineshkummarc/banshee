@@ -28,6 +28,7 @@
 using System;
 
 using Gtk;
+using WebKit;
 
 using Hyena;
 using Hyena.Downloader;
@@ -38,7 +39,7 @@ using Banshee.WebBrowser;
 
 namespace Banshee.WebSource
 {
-    public abstract class WebView : OssiferWebView
+    public abstract class WebView : WebKit.WebView
     {
         protected string FixupJavascriptUrl { get; set; }
         private string fixup_javascript;
@@ -47,55 +48,111 @@ namespace Banshee.WebSource
         public bool IsReady { get; private set; }
         public bool CanSearch { get; protected set; }
 
+        const float ZOOM_STEP = 0.05f;
+
         public event EventHandler Ready;
+        public event Action<float> ZoomChanged;
 
         public WebView ()
         {
+            Settings.EnablePlugins = false;
+            Settings.EnablePageCache = true;
+            Settings.EnableDefaultContextMenu = false;
+            Settings.JavascriptCanOpenWindowsAutomatically = false;
+            //Settings.UserAgent = ..
+
+            FullContentZoom = true;
+
             CanSearch = false;
+
+            LoadStatusChanged += HandleLoadStatusChanged;
+
+            //CreateWebView += (o, a) => { Console.WriteLine ("{0} CreateWebView", this); a.Frame = MainFrame; };
+            ResourceRequestStarting += (o, a) => Console.WriteLine ("{0} ResourceRequestStarting uri={1}", this, a.Request.Uri);
+            LoadError += (o, a) => Console.WriteLine ("{0} LoadError uri={1}", this, a.Uri);
+            ScriptAlert += (o, a) => Console.WriteLine ("{0} ScriptAlert msg={1}", this, a.Message);
+            PopulatePopup += (o, a) => Console.WriteLine ("{0} PopulatePopup", this);
+            ConsoleMessage += (o, a) => Console.WriteLine ("{0} ConsoleMessage msg={1}", this, a.Message);
         }
 
-        const float ZOOM_STEP = 0.05f;
-
-        public void ZoomIn ()
+        protected override WebKit.WebView OnCreateWebView (WebKit.WebFrame frame)
         {
-            Zoom += ZOOM_STEP;
+            Console.WriteLine ("{0} CreateWebView", this);
+            return this;
         }
 
-        public void ZoomOut ()
-        {
-            Zoom -= ZOOM_STEP;
+        public new float ZoomLevel {
+            get { return base.ZoomLevel; }
+            set {
+                if (value != ZoomLevel) {
+                    ZoomLevel = value;
+                    var handler = ZoomChanged;
+                    if (handler != null) {
+                        handler (value);
+                    }
+                }
+            }
         }
 
         protected override bool OnScrollEvent (Gdk.EventScroll scroll)
         {
             if ((scroll.State & Gdk.ModifierType.ControlMask) != 0) {
-                Zoom += (scroll.Direction == Gdk.ScrollDirection.Up) ? ZOOM_STEP : -ZOOM_STEP;
+                ZoomLevel += (scroll.Direction == Gdk.ScrollDirection.Up) ? ZOOM_STEP : -ZOOM_STEP;
                 return true;
             }
 
             return base.OnScrollEvent (scroll);
         }
 
-        protected override void OnLoadStatusChanged (OssiferLoadStatus status)
+        protected override bool OnDownloadRequested (Download download)
         {
-            if ((status == OssiferLoadStatus.FirstVisuallyNonEmptyLayout ||
-                status == OssiferLoadStatus.Finished) && Uri != "about:blank") {
+            var dest_uri = OnDownloadRequested (
+                download,
+                download.GetContentType (),
+                download.Uri,
+                download.SuggestedFilename
+            );
+
+            if (dest_uri != null) {
+                download.DestinationUri = dest_uri;
+                return true;
+            }
+
+            return false;
+        }
+
+        protected virtual string OnDownloadRequested (Download download, string mimetype, string uri, string suggestedFilename)
+        {
+            return null;
+        }
+
+        private void HandleLoadStatusChanged (object o, EventArgs args)
+        {
+            OnLoadStatusChanged ();
+        }
+
+        protected virtual void OnLoadStatusChanged ()
+        {
+            Console.WriteLine ("{0} LoadStatusChanged to {1}", this, LoadStatus);
+            if ((LoadStatus == LoadStatus.FirstVisuallyNonEmptyLayout ||
+                LoadStatus == LoadStatus.Finished) && Uri != "about:blank") {
                 if (fixup_javascript != null) {
                     ExecuteScript (fixup_javascript);
                 }
             }
-
-            base.OnLoadStatusChanged (status);
         }
 
-        protected override OssiferNavigationResponse OnMimeTypePolicyDecisionRequested (string mimetype)
+        protected override bool OnMimeTypePolicyDecisionRequested (WebKit.WebFrame frame, WebKit.NetworkRequest request, string mimetype, WebKit.WebPolicyDecision policy_decision)
         {
             // We only explicitly accept (render) text/html -- everything else is ignored.
             switch (mimetype) {
-                case "text/html": return OssiferNavigationResponse.Accept;
+                case "text/html":
+                    policy_decision.Use ();
+                    return true;
                 default:
                     Log.Debug ("OssiferWebView: ignoring mime type", mimetype);
-                    return OssiferNavigationResponse.Ignore;
+                    policy_decision.Ignore ();
+                    return true;
             }
         }
 
@@ -153,6 +210,14 @@ namespace Banshee.WebSource
                 }
                 return false;
             });
+        }
+    }
+
+    public static class WebKitExtensions
+    {
+        public static string GetContentType (this Download download)
+        {
+            return download.NetworkResponse.Message.ResponseHeaders.GetContentType (IntPtr.Zero);
         }
     }
 }

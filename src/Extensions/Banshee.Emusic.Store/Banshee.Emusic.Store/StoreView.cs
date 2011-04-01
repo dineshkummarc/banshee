@@ -30,6 +30,7 @@
 using System;
 
 using Gtk;
+using WebKit;
 
 using Hyena;
 using Hyena.Downloader;
@@ -42,7 +43,7 @@ using Banshee.Emusic;
 
 namespace Banshee.Emusic.Store
 {
-    public class StoreView : WebView
+    public class StoreView : Banshee.WebSource.WebView
     {
         private static bool IsEmusicContentType (string contentType)
         {
@@ -53,23 +54,24 @@ namespace Banshee.Emusic.Store
         {
             CanSearch = true;
             IsSignedIn = false;
-            OssiferSession.CookieChanged += (o, n) => CheckSignIn ();
+            //Session.CookieChanged += (o, n) => CheckSignIn ();
             CheckSignIn ();
             FullReload ();
         }
 
-        protected override OssiferNavigationResponse OnMimeTypePolicyDecisionRequested (string mimetype)
+        protected override bool OnMimeTypePolicyDecisionRequested (WebKit.WebFrame frame, WebKit.NetworkRequest request, string mimetype, WebKit.WebPolicyDecision policy_decision)
         {
             // We only explicitly accept (render) text/html types, and only
             // download what we can import or preview.
             if (IsEmusicContentType (mimetype) || mimetype == "audio/x-mpegurl") {
-                return OssiferNavigationResponse.Download;
+                policy_decision.Download ();
+                return true;
             }
 
-            return base.OnMimeTypePolicyDecisionRequested (mimetype);
+            return base.OnMimeTypePolicyDecisionRequested (frame, request, mimetype, policy_decision);
         }
 
-        protected override string OnDownloadRequested (string mimetype, string uri, string suggestedFilename)
+        protected override string OnDownloadRequested (Download download, string mimetype, string uri, string suggestedFilename)
         {
             if (IsEmusicContentType (mimetype)) {
                 // BZZT BZZT! Secret "insecure temporary file" code detected.
@@ -77,6 +79,7 @@ namespace Banshee.Emusic.Store
                 var dest_uri = new SafeUri (dest_uri_base);
                 for (int i = 1; File.Exists (dest_uri);
                     dest_uri = new SafeUri (String.Format ("{0} ({1})", dest_uri_base, ++i)));
+                download.StatusChanged += OnDownloadStatusChanged;
                 return dest_uri.AbsoluteUri;
             } else if (mimetype == "audio/x-mpegurl") {
                 Banshee.Streaming.RadioTrackInfo.OpenPlay (uri);
@@ -87,17 +90,21 @@ namespace Banshee.Emusic.Store
             return null;
         }
 
-        protected override void OnDownloadStatusChanged (OssiferDownloadStatus status, string mimetype, string destinationUri)
+        private void OnDownloadStatusChanged (object o, EventArgs args)
         {
+            var download = o as Download;
+
             // FIXME: handle the error case
-            if (status != OssiferDownloadStatus.Finished) {
+            if (download.Status != DownloadStatus.Finished) {
                 return;
+            } else {
+                download.StatusChanged -= OnDownloadStatusChanged;
             }
 
-            if (IsEmusicContentType (mimetype)) {
-                Log.Debug ("OssiferWebView: downloaded purchase list", destinationUri);
+            if (IsEmusicContentType (download.GetContentType ())) {
+                Log.Debug ("OssiferWebView: downloaded purchase list", download.DestinationUri);
                 Banshee.ServiceStack.ServiceManager.Get<EmusicService> ()
-                    .ImportEmx (new SafeUri (destinationUri).LocalPath);
+                    .ImportEmx (new SafeUri (download.DestinationUri).LocalPath);
                 Reload ();
             }
         }
@@ -122,7 +129,7 @@ namespace Banshee.Emusic.Store
 
         private void CheckSignIn ()
         {
-            bool signed_in = OssiferSession.GetCookie ("EMUSIC_REMEMBER_ME_COOKIE", "www.emusic.com", "/") != null;
+            bool signed_in = false;//OssiferSession.GetCookie ("EMUSIC_REMEMBER_ME_COOKIE", "www.emusic.com", "/") != null;
 
             if (IsSignedIn != signed_in) {
                 IsSignedIn = signed_in;

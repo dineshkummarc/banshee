@@ -28,6 +28,7 @@
 using System;
 
 using Gtk;
+using WebKit;
 using Mono.Unix;
 
 using Banshee.Widgets;
@@ -59,7 +60,7 @@ namespace Banshee.WebSource
             RowSpacing = 5;
 
             view.LoadStatusChanged += (o, e) => {
-                if (view.LoadStatus == OssiferLoadStatus.FirstVisuallyNonEmptyLayout) {
+                if (view.LoadStatus == LoadStatus.FirstVisuallyNonEmptyLayout) {
                     UpdateTitle (view.Title);
 
                     switch (search_clear_on_navigate_state) {

@@ -284,7 +284,6 @@ src/Core/Banshee.Services/Makefile
 src/Core/Banshee.ThickClient/Makefile
 src/Core/Banshee.Widgets/Makefile
 src/Core/Banshee.WebBrowser/Makefile
-src/Core/Banshee.WebBrowser/libossifer/Makefile
 
 src/Backends/Makefile
 src/Backends/Banshee.Gio/Makefile
@@ -383,8 +382,8 @@ ${PACKAGE}-${VERSION}
     MTP:                   ${enable_libmtp}
 
   Extra Features:
-    Web Browser:           ${have_libwebkit} (webkit-1.0 >= $WEBKIT_MIN_VERSION, libsoup-2.4 >= $SOUP_MIN_VERSION)
-      + GNOME Proxy        ${have_libsoup_gnome} (libsoup-gnome-2.4 >= $SOUP_GNOME_MIN_VERSION)
+    Web Browser:           ${have_webkit_sharp} (webkit-sharp >= 0.3)
+      + GNOME Proxy        no (not yet ported to webkit#/soup#)
     Boo Scripting:         ${enable_boo}
     DAAP:                  ${enable_daap}
     GIO Backend:           ${enable_gio} (glib >= 2.22, gtk-sharp-beans, and gio-sharp)

@@ -30,6 +30,7 @@ using System.Web;
 using Mono.Unix;
 
 using Gtk;
+using WebKit;
 
 using Hyena;
 using Hyena.Json;
@@ -39,6 +40,7 @@ using Banshee.Base;
 using Banshee.IO;
 using Banshee.ServiceStack;
 using Banshee.WebBrowser;
+using Banshee.WebSource;
 
 namespace Banshee.MiroGuide
 {
@@ -58,25 +60,28 @@ namespace Banshee.MiroGuide
                 : Catalog.GetString ("Search for video podcasts");
         }
 
-        protected override void OnLoadStatusChanged (OssiferLoadStatus status)
+        protected override void OnLoadStatusChanged ()
         {
-            if (status == OssiferLoadStatus.Finished && Uri != null && Uri.StartsWith ("http://miroguide.com")) {
+            if (LoadStatus == LoadStatus.Finished && Uri != null && Uri.StartsWith ("http://miroguide.com")) {
                 LastPageWasAudio = Uri.Contains ("miroguide.com/audio/");
                 UpdateSearchText ();
             }
 
-            base.OnLoadStatusChanged (status);
+            base.OnLoadStatusChanged ();
         }
 
-        protected override OssiferNavigationResponse OnMimeTypePolicyDecisionRequested (string mimetype)
+        protected override bool OnMimeTypePolicyDecisionRequested (WebKit.WebFrame frame, WebKit.NetworkRequest request, string mimetype, WebKit.WebPolicyDecision policy_decision)
         {
             switch (mimetype) {
-                case "application/x-miro": return OssiferNavigationResponse.Download;
-                default:                   return base.OnMimeTypePolicyDecisionRequested (mimetype);
+                case "application/x-miro":
+                    policy_decision.Download ();
+                    return true;
+                default:
+                    return base.OnMimeTypePolicyDecisionRequested (frame, request, mimetype, policy_decision);
             }
         }
 
-        protected override string OnDownloadRequested (string mimetype, string uri, string suggestedFilename)
+        protected override string OnDownloadRequested (Download download, string mimetype, string uri, string suggestedFilename)
         {
             switch (mimetype) {
                 case "application/x-miro":
@@ -84,37 +89,40 @@ namespace Banshee.MiroGuide
                     var dest_uri = new SafeUri (dest_uri_base);
                     for (int i = 1; File.Exists (dest_uri);
                         dest_uri = new SafeUri (String.Format ("{0} ({1})", dest_uri_base, ++i)));
+                    download.StatusChanged += OnDownloadStatusChanged;
                     return dest_uri.AbsoluteUri;
             }
 
             return null;
         }
 
-        protected override OssiferNavigationResponse OnNavigationPolicyDecisionRequested (string uri)
+        protected override bool OnNavigationPolicyDecisionRequested (WebKit.WebFrame frame, WebKit.NetworkRequest request, WebKit.WebNavigationAction navigation_action, WebKit.WebPolicyDecision policy_decision)
         {
             try {
-                if (TryBypassRedirect (uri) || TryInterceptListenWatch (uri)) {
-                    return OssiferNavigationResponse.Ignore;
+                if (TryBypassRedirect (request.Uri) || TryInterceptListenWatch (request.Uri)) {
+                    policy_decision.Ignore ();
+                    return true;
                 }
             } catch (Exception e) {
                 Log.Exception ("MiroGuide caught error trying to shortcut navigation", e);
             }
 
-            return OssiferNavigationResponse.Unhandled;
+            return false;
         }
 
-
-        protected override void OnDownloadStatusChanged (OssiferDownloadStatus status, string mimetype, string destinationUri)
+        private void OnDownloadStatusChanged (object o, EventArgs args)
         {
+            var download = (Download) o;
+
             // FIXME: handle the error case
-            if (status != OssiferDownloadStatus.Finished) {
+            if (download.Status != DownloadStatus.Finished) {
                 return;
             }
 
-            switch (mimetype) {
+            switch (download.GetContentType ()) {
                 case "application/x-miro":
-                    Log.Debug ("MiroGuide: downloaded Miro subscription file", destinationUri);
-                    ServiceManager.Get<DBusCommandService> ().PushFile (destinationUri);
+                    Log.Debug ("MiroGuide: downloaded Miro subscription file", download.DestinationUri);
+                    ServiceManager.Get<DBusCommandService> ().PushFile (download.DestinationUri);
                     break;
             }
         }
