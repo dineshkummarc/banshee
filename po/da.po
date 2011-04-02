@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: banshee\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-13 12:51+0100\n"
-"PO-Revision-Date: 2011-02-26 23:31+0200\n"
+"POT-Creation-Date: 2011-04-02 19:11+0200\n"
+"PO-Revision-Date: 2011-04-02 23:31+0200\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
@@ -596,9 +596,8 @@ msgstr ""
 "producerer større filer med lavere bitrater."
 
 #: ../data/audio-profiles/mp3-lame.xml.in.h:2
-#, fuzzy
 msgid "Average Bitrate"
-msgstr "Variabel bitrate"
+msgstr "Gennemsnitlig bitrate"
 
 #: ../data/audio-profiles/mp3-lame.xml.in.h:3
 #: ../data/audio-profiles/vorbis.xml.in.h:2
@@ -612,41 +611,36 @@ msgid "Constant Bitrate"
 msgstr "Konstant bitrate"
 
 #: ../data/audio-profiles/mp3-lame.xml.in.h:6
-#, fuzzy
 msgid "Extreme"
-msgstr "Yderligere"
+msgstr "Ekstrem"
 
 #: ../data/audio-profiles/mp3-lame.xml.in.h:7
 msgid "Insane"
-msgstr ""
+msgstr "Vanvittig"
 
 #: ../data/audio-profiles/mp3-lame.xml.in.h:8
-#, fuzzy
 msgid "LAME Preset"
-msgstr "Nyt forvalg"
+msgstr "LAME-forvalg"
 
 #: ../data/audio-profiles/mp3-lame.xml.in.h:9
 msgid "MP3 (LAME Encoder)"
 msgstr "MP3 (LAME-koder)"
 
 #: ../data/audio-profiles/mp3-lame.xml.in.h:10
-#, fuzzy
 msgid "Medium"
-msgstr "Medie"
+msgstr "Mellem"
 
 #: ../data/audio-profiles/mp3-lame.xml.in.h:11
-#, fuzzy
 msgid "Preset"
-msgstr "Nyt forvalg"
+msgstr "Forvalg"
 
 #: ../data/audio-profiles/mp3-lame.xml.in.h:12
 msgid "Standard"
-msgstr ""
+msgstr "Standard"
 
 #: ../data/audio-profiles/mp3-lame.xml.in.h:13
-#, fuzzy
 msgid "VBR Mode"
-msgstr "Tilstand"
+msgstr "VBR-tilstand"
 
 #: ../data/audio-profiles/mp3-lame.xml.in.h:14
 msgid "VBR Quality"
@@ -1627,9 +1621,8 @@ msgid "Techno"
 msgstr "Tekno"
 
 #: ../src/Core/Banshee.Services/Banshee.Library/HomeDirectoryImportSource.cs:48
-#, fuzzy
 msgid "Home Folder"
-msgstr "Lydmappe"
+msgstr "Hjemmemappe"
 
 #: ../src/Core/Banshee.Services/Banshee.Library/LibrarySource.cs:58
 msgid "Remove From Library"
@@ -3089,13 +3082,12 @@ msgid "Modify your personal preferences"
 msgstr "Rediger dine personlige indstillinger"
 
 #: ../src/Core/Banshee.ThickClient/Banshee.Gui/GlobalActions.cs:83
-#, fuzzy
 msgid "Manage _Extensions"
-msgstr "Udvidelser"
+msgstr "Håndter _udvidelser"
 
 #: ../src/Core/Banshee.ThickClient/Banshee.Gui/GlobalActions.cs:84
 msgid "Manage extensions to add new features to Banshee"
-msgstr ""
+msgstr "Håndter udvidelser for at tilføje nye funktioner til Banshee"
 
 #: ../src/Core/Banshee.ThickClient/Banshee.Gui/GlobalActions.cs:88
 msgid "_Tools"
@@ -3112,15 +3104,15 @@ msgstr "_Indhold"
 
 #: ../src/Core/Banshee.ThickClient/Banshee.Gui/GlobalActions.cs:99
 msgid "_Web Resources"
-msgstr ""
+msgstr "_Internetressourcer"
 
 #: ../src/Core/Banshee.ThickClient/Banshee.Gui/GlobalActions.cs:102
 msgid "Banshee _User Guide (Wiki)"
-msgstr ""
+msgstr "Banshees _brugermanual (wiki)"
 
 #: ../src/Core/Banshee.ThickClient/Banshee.Gui/GlobalActions.cs:103
 msgid "Learn about how to use Banshee"
-msgstr ""
+msgstr "Lær om brugen af Banshee"
 
 #: ../src/Core/Banshee.ThickClient/Banshee.Gui/GlobalActions.cs:108
 msgid "Advanced Collection Searching"
@@ -3165,9 +3157,8 @@ msgid "Playlists"
 msgstr "Afspilningslister"
 
 #: ../src/Core/Banshee.ThickClient/Banshee.Gui/PlaybackActions.cs:67
-#, fuzzy
 msgid "Play or pause the current item"
-msgstr "Sæt det nuværende element på pause"
+msgstr "Afspil eller sæt det nuværende element på pause"
 
 #: ../src/Core/Banshee.ThickClient/Banshee.Gui/PlaybackActions.cs:70
 msgid "_Next"
@@ -4021,9 +4012,8 @@ msgid "Folders"
 msgstr "Mapper"
 
 #: ../src/Core/Banshee.ThickClient/Banshee.Library.Gui/FolderImportSource.cs:57
-#, fuzzy
 msgid "C_hoose Folders"
-msgstr "_Vælg mapper..."
+msgstr "_Vælg mapper"
 
 #: ../src/Core/Banshee.ThickClient/Banshee.Library.Gui/FolderImportSource.cs:75
 msgid "_Folders to import:"
@@ -4060,9 +4050,8 @@ msgid "_Import"
 msgstr "_Importer"
 
 #: ../src/Core/Banshee.ThickClient/Banshee.Library.Gui/PhotoFolderImportSource.cs:69
-#, fuzzy
 msgid "Videos From Photos Folder"
-msgstr "Mappe til videoer"
+msgstr "Vidoer fra billedmappen"
 
 #: ../src/Core/Banshee.ThickClient/Banshee.MediaProfiles.Gui/ProfileComboBox.cs:86
 msgid "No available profiles"
@@ -4770,9 +4759,8 @@ msgid "Book Title"
 msgstr "Bogtitel"
 
 #: ../src/Extensions/Banshee.Audiobook/Banshee.Audiobook/AudiobookLibrarySource.cs:68
-#, fuzzy
 msgid "Audiobooks, etc"
-msgstr "Lydbøger"
+msgstr "Lydbøger etc."
 
 #: ../src/Extensions/Banshee.Audiobook/Banshee.Audiobook/AudiobookLibrarySource.cs:75
 msgid "Search your audiobooks"
@@ -4886,14 +4874,12 @@ msgid "Duplicate this audio CD"
 msgstr "Kopier denne lyd-cd"
 
 #: ../src/Extensions/Banshee.AudioCd/Banshee.AudioCd/AudioCdSource.cs:130
-#, fuzzy
 msgid "Searching for CD metadata..."
-msgstr "Søger efter nummerinformation..."
+msgstr "Søger efter cd-metadata..."
 
 #: ../src/Extensions/Banshee.AudioCd/Banshee.AudioCd/AudioCdSource.cs:163
-#, fuzzy
 msgid "Could not fetch metadata for CD."
-msgstr "Kunne ikke hente nummerinformation"
+msgstr "Kunne ikke hente metadata for cd."
 
 #: ../src/Extensions/Banshee.AudioCd/Banshee.AudioCd/AudioCdSource.cs:191
 msgid "Automatic import off since this album is already in the Music Library."
@@ -6207,7 +6193,7 @@ msgstr "Personlige"
 #: ../src/Extensions/Banshee.LastfmStreaming/Banshee.LastfmStreaming/StationSource.cs:585
 #: ../src/Extensions/Banshee.LastfmStreaming/Banshee.LastfmStreaming/StationType.cs:102
 msgid "Loved"
-msgstr ""
+msgstr "Elskede"
 
 #: ../src/Extensions/Banshee.LastfmStreaming/Banshee.LastfmStreaming/StationSource.cs:586
 msgid "Banshee Group"
@@ -6224,7 +6210,6 @@ msgid "For User:"
 msgstr "For bruger:"
 
 #: ../src/Extensions/Banshee.LastfmStreaming/Banshee.LastfmStreaming/StationType.cs:103
-#, fuzzy
 msgid "By User:"
 msgstr "Af bruger:"
 
@@ -6593,9 +6578,8 @@ msgid "All Items"
 msgstr "Alle elementer"
 
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/ColumnCellDownloadStatus.cs:59
-#, fuzzy
 msgid "Not Downloaded"
-msgstr "Hentet"
+msgstr "Ikke hentet"
 
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/ColumnCellPodcast.cs:113
 msgid "Never updated"
@@ -6620,9 +6604,8 @@ msgid "New Items"
 msgstr "Nye elementer"
 
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/ColumnCellUnheard.cs:59
-#, fuzzy
 msgid "Old Items"
-msgstr "Alle elementer"
+msgstr "Gamle elementer"
 
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/DownloadManager/DownloadUserJob.cs:50
 msgid "Downloading Podcast(s)"
@@ -6666,15 +6649,13 @@ msgid "Mark as New"
 msgstr "Marker som ny"
 
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastActions.cs:125
-#, fuzzy
 msgid "Mark as Old"
-msgstr "Marker som ny"
+msgstr "Marker som gammel"
 
 #. Translators: this is a verb used as a button name, not a noun
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastActions.cs:131
-#, fuzzy
 msgid "Download Podcast(s)"
-msgstr "Henter podcasts"
+msgstr "Hent podcasts"
 
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastActions.cs:137
 msgid "Cancel Download"
@@ -6682,7 +6663,7 @@ msgstr "Annuller hentning"
 
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastActions.cs:143
 msgid "Remove Downloaded File(s)"
-msgstr ""
+msgstr "Fjern hentede filer"
 
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastActions.cs:149
 msgid "Visit Website"
@@ -6705,14 +6686,12 @@ msgid "Episode Details"
 msgstr "Afsnitdetaljer"
 
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastManager/Dialog/PodcastFeedPropertiesDialog.cs:85
-#, fuzzy
 msgid "Last updated:"
-msgstr "Sidst afspillet:"
+msgstr "Sidst opdateret:"
 
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastManager/Dialog/PodcastFeedPropertiesDialog.cs:89
-#, fuzzy
 msgid "Podcast Name:"
-msgstr "Podcast:"
+msgstr "Podcastnavn:"
 
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastManager/Dialog/PodcastFeedPropertiesDialog.cs:99
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastManager/Dialog/PodcastPropertiesDialog.cs:85
@@ -6722,7 +6701,7 @@ msgstr "URL:"
 
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastManager/Dialog/PodcastFeedPropertiesDialog.cs:103
 msgid "When feed is updated:"
-msgstr ""
+msgstr "Når nyhedskilde opdateres:"
 
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastManager/Dialog/PodcastFeedPropertiesDialog.cs:119
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastManager/Dialog/PodcastPropertiesDialog.cs:105
@@ -6748,9 +6727,8 @@ msgid ""
 msgstr "Indtast venligst URL'en på den podcast du vil abonnere på."
 
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastManager/Dialog/PodcastSubscribeDialog.cs:112
-#, fuzzy
 msgid "When new episodes are available:  "
-msgstr "Ingen nye sange tilgængelige for {0}."
+msgstr "Når nye episoder er tilgængelige:  "
 
 #: ../src/Extensions/Banshee.Podcasting/Banshee.Podcasting.Gui/PodcastManager/Dialog/SyncPreferenceComboBox.cs:41
 msgid "Download all episodes"
