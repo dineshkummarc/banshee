@@ -15,9 +15,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: banshee.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=banshee&component=general\n"
-"POT-Creation-Date: 2011-02-23 13:34+0000\n"
-"PO-Revision-Date: 2011-02-26 18:26+0100\n"
+"product=banshee&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2011-04-02 11:42+0000\n"
+"PO-Revision-Date: 2011-04-04 20:10+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -779,7 +779,6 @@ msgid "Could not create filesrc element"
 msgstr "No se pudo crear el elemento «filesrc»"
 
 #: ../libbanshee/banshee-bpmdetector.c:214
-#| msgid "Could not create decodebin plugin"
 msgid "Could not create decodebin2 plugin"
 msgstr "No se pudo crear el complemento «decodebin2»"
 
@@ -821,7 +820,6 @@ msgid "Could not create source element"
 msgstr "No se pudo crear el elemento «source»"
 
 #: ../libbanshee/banshee-transcoder.c:246
-#| msgid "Could not create 'decodebin' plugin"
 msgid "Could not create 'decodebin2' plugin"
 msgstr "No se pudo crear el complemento «decodebin2»"
 
@@ -1025,7 +1023,7 @@ msgstr "Conmutar la reproducción"
 
 #: ../src/Clients/Booter/Booter/Entry.cs:171
 msgid "Completely stop playback"
-msgstr "Detiene completamente la reproducción"
+msgstr "Detener completamente la reproducción"
 
 #: ../src/Clients/Booter/Booter/Entry.cs:173
 msgid ""
@@ -1033,8 +1031,7 @@ msgid ""
 "should be either 'true' or 'false')"
 msgstr ""
 "Activar o desactivar la detención de la reproducción tras la pista "
-"actualmente en reproducción. El valor debe ser «true» (verdadero) o "
-"«false» (falso)."
+"actualmente en reproducción. El valor debe ser «true» o «false»."
 
 #: ../src/Clients/Booter/Booter/Entry.cs:174
 msgid "Set the playback volume (0-100), prefix with +/- for relative values"
@@ -3205,7 +3202,7 @@ msgstr ""
 
 #: ../src/Core/Banshee.ThickClient/Banshee.Gui/PlaybackActions.cs:99
 msgid "_Playback"
-msgstr "_Reproducir"
+msgstr "_Reproducción"
 
 #: ../src/Core/Banshee.ThickClient/Banshee.Gui/PlaybackActions.cs:190
 msgid "_Pause"
@@ -6812,7 +6809,6 @@ msgstr "Esconder <i>{0}</i>"
 #. Translators: {0} is substituted with the application name
 #: ../src/Hyena/Hyena.Gui/Hyena.Gui.Dialogs/ExceptionDialog.cs:53
 #, csharp-format
-#| msgid "Banshee Encountered a Fatal Error"
 msgid "{0} Encountered a Fatal Error"
 msgstr "{0} encontró un error fatal"
 
@@ -6953,8 +6949,6 @@ msgstr "vacío"
 
 #: ../src/Hyena/Hyena/Hyena.Query/RelativeTimeSpanQueryValue.cs:90
 #, csharp-format
-#| msgid "{0} day"
-#| msgid_plural "{0} days"
 msgid "{0} ago"
 msgstr "{0} antes"
 
